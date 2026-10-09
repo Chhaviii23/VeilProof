@@ -1,0 +1,7 @@
+PROMPT R04 — Reduce remaining VeilProof scope to the working hackathon core under MASTER.
+
+Inspect actual completed code, failing tests, missing dependencies, and time remaining if provided. Prioritize: existing frontend unchanged; persistent complaint; distinct staff principals; real JPEG protection/encryption; safe tracking; Privacy release and eligible assignment; independent original reviews; exact-file server grant/revoke; real local-chain receipt verification; one complete walkthrough and denial tests.
+
+Defer arbitrary PDF/audio/video processing, custom access durations, complex real-time delivery, full-text search, enterprise key custody, and production integrations. Defer Amoy only if externally blocked, and label local-chain mode honestly. Do not remove access checks, leak keys, merge requester/reviewers, fake sanitization, or skip testing the claims retained.
+
+Produce a short ordered remaining-task list and execute the next smallest blocking task. Update CAPABILITY_MATRIX.md and the judge script so omitted features cannot be mistaken for working ones. Report the minimum path that is genuinely demonstrable and the features still incomplete.

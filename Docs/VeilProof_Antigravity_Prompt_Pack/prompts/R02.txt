@@ -1,0 +1,5 @@
+PROMPT R02 — Repair the current failed VeilProof subphase under MASTER.
+
+Read the current error, TEST_RESULTS.md, recent diff, API contract, and relevant logs with secrets redacted. Reproduce the smallest failing path. Identify whether the cause is code, configuration, schema, authorization, fixture validity, unavailable dependency, or a frontend binding mismatch.
+
+Fix the root cause with the smallest compatible change. Do not delete tests, disable security, replace the frontend, reset a non-disposable database, switch to fake success, or reinstall the entire project as a first response. Add a regression test where the failure affects a meaningful boundary. Run the failing check and directly affected checks. Record what changed, evidence of the result, and what still blocks progress.

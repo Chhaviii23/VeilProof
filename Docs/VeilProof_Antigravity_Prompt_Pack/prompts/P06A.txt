@@ -1,0 +1,7 @@
+PROMPT P06A — Implement original-access request and review policies. Apply MASTER.
+
+Only the assigned investigator may request one exact original version. Require purpose, protected-copy insufficiency, intended action, supported mode, duration, and urgency. Create immutable request revisions/digests. Privacy recommends/rejects/clarifies; recommendation alone grants nothing. Oversight independently approves/rejects/clarifies after a valid Privacy recommendation.
+
+Require three distinct human principals across requester and reviewers, including alternate accounts. Validate conflicts, active memberships, current case/assignment, and exact revision. Scope expansion/file/purpose change invalidates prior decisions; narrowing is allowed only within approved capabilities. Forensic mode remains unavailable until actual tooling exists.
+
+Create an Approved-unused grant bound to actor, session policy, case, version, request, mode, duration, and 24-hour unused deadline. Notification contains no capability/DEK. Test self-approval, same human with two accounts, reversed review order, changed revision, one-file scope, closed case, and concurrent final decisions. Do not make approval equivalent to opening the file.

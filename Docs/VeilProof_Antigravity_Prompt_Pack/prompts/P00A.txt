@@ -1,0 +1,7 @@
+PROMPT P00A — Audit the imported VeilProof repository. Apply MASTER.
+
+Inspect repository instructions, git status, package manifests, routes, stores, fixtures, upload/receipt code, role switching, current API calls, tests, and any existing backend. Run the current frontend's documented baseline build/type check without changing layout or components. Record pre-existing failures separately.
+
+Create docs/hackathon/REPO_AUDIT.md and FRONTEND_BINDINGS.md. For each reporter and staff flow, identify its actual route/file, handler, state source, mock data, expected request/response fields, and an appropriate integration seam. Cover details/risk, evidence, protection, submission/receipt, tracking, verification, privacy queue, assignment, cases/notes, original requests, oversight, audit, and countdown. Record absent screens as gaps; do not create them.
+
+Identify whether frontend-only in-memory role changes or reset-on-refresh behavior currently exist. Check which evidence files are real playable/viewable fixtures and which are placeholders. Inventory secrets by variable name only. Create PROGRESS.md and ENVIRONMENT.md with readiness and missing dependencies. Do not install a new frontend or implement the backend yet. End with the exact adaptation strategy for this repository and the smallest first backend vertical slice.

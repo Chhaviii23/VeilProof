@@ -1,0 +1,7 @@
+PROMPT P02A — Implement staff authentication and server authorization. Apply MASTER.
+
+Connect the selected auth provider. If Supabase is configured, validate its issuer/audience/signatures and current server membership; use invite/seeded accounts, not public staff registration. If unavailable, use an explicit test-only provider with separate seeded credentials, server sessions, password hashing, and no hardcoded universal role token. It must be impossible to enable that adapter in production-like configuration.
+
+Model role and human_principal_id separately. Implement deny-by-default policies for Privacy, assigned Investigator, and scoped Oversight. Do not infer role from request fields or a frontend role switch. Add current-session checks, logout invalidation, permitted role/session projections, safe errors, and configurable session limits. Prefer same-origin secure cookie handling for web where compatible; document CSRF and native differences.
+
+Test missing/expired token, tampered role, inactive membership, cross-case access, same human with two accounts, and logout. Implement backend separation now even if existing UI still uses mocks. Keep MFA readiness documented; do not describe an unimplemented provider capability as live.

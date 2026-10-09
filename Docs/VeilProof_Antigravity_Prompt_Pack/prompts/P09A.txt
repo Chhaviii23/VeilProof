@@ -1,0 +1,7 @@
+PROMPT P09A — Run the full hackathon end-to-end flow and repair integration defects. Apply MASTER.
+
+Create an end-to-end test against the actual configured local stack: submit uniquely edited fictional bridge report with Critical risk and real supported JPEG; preserve original/protected hashes; receive credentials; verify durable backend state after restart; Privacy releases; ACO-04 is assigned; investigator reviews only released evidence; writes distinct internal and safe updates; reporter sees only safe text; request one original; Privacy recommends; Oversight approves; investigator opens; revoke/expire; verify audit; check real proof package match/mismatch.
+
+Run browser checks on the imported UI where controls exist and API checks for documented UI gaps. Do not claim a hidden or absent UI journey works because an API test passed. Use separate staff principals/sessions and no test-only authorization bypass. Run both no-evidence and proof-outage recovery cases. Preserve useful screenshots/log summaries with no secrets.
+
+Fix within-scope backend/binding failures, then rerun affected tests. Record actual environment/network, test IDs, pass/fail/not-run, evidence references, and remaining limitations in TEST_RESULTS.md. Do not fabricate a report or regenerate the frontend.

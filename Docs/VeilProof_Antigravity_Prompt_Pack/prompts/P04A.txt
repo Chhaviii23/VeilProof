@@ -1,0 +1,7 @@
+PROMPT P04A — Implement crypto primitives and the envelope protocol, without frontend redesign. Apply MASTER.
+
+Build a headless crypto adapter compatible with the imported frontend runtime. Implement CSPRNG, SHA-256 over exact bytes, per-version AES-256-GCM keys, 12-byte nonce, 16-byte tag, architecture-defined immutable AAD, and approved key wrapping to a development broker public key. Original and derivative use different keys. Keep private wrapping keys in ignored restricted local files, never client bundles or the workflow database.
+
+Use vetted installed libraries and verify actual browser/native API support; do not migrate the frontend or write cryptographic primitives. Pin a concrete versioned wire format. If RSA-OAEP interoperability is unsupported, report the precise blocker instead of uploading a raw DEK to an improvised endpoint. Add server broker/worker helper boundaries; the public case API cannot return original keys.
+
+Create fixed non-secret cross-language vectors and run round-trip tests between the actual frontend runtime and Python. Test wrong tag/key/AAD/version, truncation, wrong object binding, and independent original/derivative keys. No plaintext before authentication succeeds. Record memory/size limits and explicitly defer large-media streaming crypto.

@@ -1,0 +1,7 @@
+PROMPT P05A — Implement Privacy queue and protected-copy release. Apply MASTER.
+
+Expose the accepted complaints to authorized Privacy staff with safe summaries, risk, evidence inventory, inspection/protection provenance, and proof state. Implement hold, reject/needs-correction, and release commands against exact immutable derivative versions. Proof Pending must not block privacy review. No raw reporter selection mapping or removed identity values in summaries.
+
+Provide authorized protected previews through the evidence service, not public storage URLs. Investigator access remains denied until release AND valid assignment. A release does not unlock originals or future versions. If correction is unsupported, record a held task rather than pretending a reporter follow-up channel exists. Version correction must create new records.
+
+Audit each decision and produce notifications through the outbox. Test unauthorized role, duplicate release, release of failed inspection, stale version, held evidence, and direct API original access. Keep API responses compatible with FRONTEND_BINDINGS.md; do not create or redesign the Privacy screen.

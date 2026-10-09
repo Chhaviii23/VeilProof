@@ -1,0 +1,7 @@
+PROMPT P11A — Create and rehearse a concise judge demonstration using the existing UI. Apply MASTER.
+
+Prepare a 5–7 minute script: introduce the fictional Indian bridge corruption/retaliation problem; submit an edited report; show real JPEG metadata findings and derivative verification; show encrypted original versus protected copy; receive receipt; Privacy releases and assigns ACO-04; investigator posts safe/internal updates; reporter sees only the safe update; demonstrate two independent review stages for one original; open then revoke/expire; show matching versus changed-file verification and actual audit/proof network.
+
+Use valid MP3 fixtures for the original-access story only if genuinely playable and supported; otherwise demonstrate the same policy with the real supported JPEG and state why. Advanced name/face/voice masking must be called controlled-fixture behavior. A local-chain receipt must be described as local, not Amoy.
+
+Rehearse actual controls and record timing/failures. Create DEMO_SCRIPT.md, JUDGE_QA.md, and FAILURE_FALLBACK.md: offline/local startup, pending proof, slow network, role login, reset, and missing hosted service. Save only non-sensitive screenshots/recordings from fictional tests if tooling permits. Clearly distinguish recorded past live evidence from a current live run. Fix blocking integration defects without changing design.

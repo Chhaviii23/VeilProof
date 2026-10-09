@@ -1,0 +1,7 @@
+PROMPT P11B — Perform the final hackathon readiness audit. Apply MASTER.
+
+Review git diff, tracked files, startup scripts, environment examples, test results, capability inventory, actual deployment/proof manifests, and frontend preservation. Confirm persistent reports do not reset on refresh; role changes do not bypass auth; same-principal approvals fail; keys/secrets are not bundled; pending proof does not lose cases; protected/original versions differ appropriately; invalid files are not marked protected; public/internal data remain separate.
+
+Run the final relevant build and smoke checks once. Create HANDOFF.md with exact start/test/reset steps, implemented modules, dependencies, configured network/contract, real versus simulated functions, remaining gaps, tested environment, known risks, and next improvements. Reference actual file paths/commands discovered in this repo. Do not list tests as passed unless run successfully.
+
+Update PROGRESS.md with completed subphases and unresolved blockers. State whether the local demo, hosted demo, and Amoy integration are each ready, partial, or blocked. Preserve unrelated user work and do not push, publish, or overwrite a release without authorization. End with a concise runnable handoff rather than an unsupported “production ready” claim.

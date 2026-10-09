@@ -1,0 +1,7 @@
+PROMPT P10A — Package a reproducible local hackathon release. Apply MASTER.
+
+Create startup and readiness scripts suited to the actual OS/repository, database migration commands, seed/reset commands scoped to fictional data, API/worker/key-broker launch configuration, and local-chain instructions. Use existing tooling rather than replacing it. Document ports, process order, frontend API base/proxy, dependencies, private key generation, storage selection, and secret variable names without values.
+
+Provide a smoke command that checks actual DB, API, worker, ciphertext storage, configured auth, and chain provider. Report optional/unavailable dependencies separately. Add shutdown/backup steps and avoid deleting user data. Verify no development private key or credentials enter tracked output. Preserve existing frontend build/deploy settings.
+
+Create docs/hackathon/RUNBOOK.md and CAPABILITY_MATRIX.md listing each function as actual, controlled fixture, unavailable, or deferred. Record local-chain versus Amoy explicitly. Test startup from documented steps using a disposable environment where available. If clean-room verification cannot run, list exactly what was tested and what remains unverified.

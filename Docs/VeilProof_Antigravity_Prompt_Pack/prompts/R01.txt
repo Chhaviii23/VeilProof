@@ -1,0 +1,5 @@
+PROMPT R01 — Resume VeilProof development under MASTER.
+
+Read applicable repo instructions, docs/hackathon/PROGRESS.md, DECISIONS.md, FRONTEND_BINDINGS.md, ENVIRONMENT.md, TEST_RESULTS.md, and current git state. Determine the last genuinely completed subphase and the next unfinished one from actual code/results, not optimistic notes. Do not recreate the project, redo migrations, reset data, or overwrite the existing frontend.
+
+Validate only the minimum current health needed to continue. Identify the next prompt ID and implement its scope using the saved contracts. If an unresolved failure blocks it, diagnose and repair that failure first. Preserve local secrets and unrelated changes. Finish with actual checks and a precise next step.

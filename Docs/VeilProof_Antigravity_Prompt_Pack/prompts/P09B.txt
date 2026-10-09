@@ -1,0 +1,7 @@
+PROMPT P09B — Test and repair the high-impact security boundaries. Apply MASTER.
+
+Cover reference-only/wrong-secret failures; reporter access to staff APIs; role tampering; unrelated-case reads; one principal under two accounts; single-review original access; changed request/file/version; grant reuse for file B; concurrent first opens; client-clock changes; revoke during delivery; logout/reassignment/closure; unavailable authoritative policy; malformed ciphertext/GCM/AAD; inspection job scope; public/internal note leak; identity-selection mapping; duplicate finalize and proof jobs; staging cleanup racing acceptance; and configured storage permissions.
+
+Use canary secrets to inspect URLs, response bodies, error output, logs, generated client bundles, and caches. Verify no original DEK reaches an investigator client and no arbitrary file can self-declare controlled-fixture provenance. Check source/env files are ignored appropriately. Do not run destructive tests against non-disposable services or scan unrelated systems.
+
+Fix critical/high boundary failures before cosmetic issues. Record passed, failed, and NOT RUN separately. If a capability cannot be secured within scope, disable it and update the truthful capability inventory instead of weakening authorization. Map results to relevant PRD AT and Security SAT IDs.

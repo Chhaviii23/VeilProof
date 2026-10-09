@@ -1,0 +1,7 @@
+PROMPT P00B — Define the implementation boundary from the actual audit. Apply MASTER.
+
+Create docs/hackathon/API_CONTRACT.md and DECISIONS.md. Map existing frontend types to backend DTOs without changing UI design. Define separate case lifecycle, protection, release, proof, request, and grant states. Define safe reporter responses independently from staff DTOs. Specify endpoints for intake, ciphertext uploads, finalize, tracking, privacy releases, assignment, updates/notes, original requests/decisions, grant activation/content/revoke, audit, and proof packages.
+
+Select one local persistence/auth/storage path based on installed tools and existing configuration. Prefer Supabase if already usable; otherwise document explicit local adapters rather than pretending to connect. Keep interfaces replaceable. Record hackathon-only defaults: fictional data, local development wrapping-key custody, automated job-scoped inspection, first-open grant activation, 24-hour unused approval, real JPEG path, allowlisted advanced-media fixtures, and no production-security claim. These do not approve a real pilot.
+
+Define server-controlled processing provenance and proof provider fields. Distinguish fixture UI reset from durable backend persistence. Draft strict error shapes, idempotency rules, version binding, and no-secret logging policy. Mark unsupported UI fields/capabilities honestly. Update progress with a phase checklist and implementable module boundaries; avoid enterprise infrastructure work.

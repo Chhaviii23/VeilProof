@@ -1,0 +1,7 @@
+PROMPT P08B — Connect only existing staff data/auth/event bindings. Apply MASTER.
+
+Wire current sign-in/session logic, Privacy queue/release, officer roster/assignment, assigned cases, notes/public updates, original requests, review queues, grant activation/viewer/countdown, revoke/end, audit, notifications, and closure to their real endpoints. Preserve every layout/style/route. Use polling or the existing supported mechanism to refresh committed data; notifications are hints, not permissions.
+
+In the backend-backed profile, switching a role label cannot grant a new identity. If the imported demo switcher exists, use it only for an explicit dev-only sign-in to distinct seeded principals; never ship shared admin tokens or expose seed secrets in a hosted client. If provider login cannot be mapped safely without new UI, use existing sign-in plus a documented manual switch and report the limitation.
+
+Derive countdown from server timestamps; viewer denial closes existing content state. Clear stale case/viewer responses on session change. Reassignment/logout/closure must revoke server access. Test reporter submission appearing in Privacy, release then assignment to ACO-04, protected review, separate safe/internal updates, and sequential original decisions. Check build and inspect diff to ensure no visual redesign.

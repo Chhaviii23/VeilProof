@@ -1,0 +1,7 @@
+PROMPT P07A — Implement the architecture's versioned proof protocol and independent verifier. Apply MASTER.
+
+Freeze and document the fixed-width v1 file-pair preimage: 32-byte domain hash, 1-byte kind, and five 32-byte fields for salt, case nonce, version nonce, original hash, protected hash; total 193 bytes. Use CSPRNG private salts/nonces. Do not substitute ambiguous JSON concatenation or raw on-chain file hashes. Freeze canonical reference/submission record schemas before enabling their kinds; otherwise report those kinds unavailable rather than invent file proofs.
+
+Implement Python/TypeScript cross-language golden vectors and strict private proof-package validation. Candidate bytes are hashed locally, the corresponding expected hash is checked, and the commitment is reproduced. State which candidate version was supplied; companion expected hash does not mean companion bytes were checked. No tracking secret in the package.
+
+Build a standalone CLI/module that runs without the case database and supports an allowlisted chain/contract adapter. Offline mode reports local consistency only. Reject unsupported versions, malformed sizes, tampered values, and arbitrary package-provided RPC URLs. Test match, one-byte mismatch, wrong salt, wrong kind, invalid schema, and zero evidence behavior.

@@ -1,0 +1,7 @@
+PROMPT P02B — Build reproducible fictional data and fixture inventory. Apply MASTER.
+
+Create an idempotent seed for one fictional authority; distinct Privacy, Investigator, and Oversight human principals; ten fictional officers with expertise/workload/availability/conflicts; recommended ACO-04 and ineligible conflicted ACO-09. Add the three baseline sample cases. Reserve VP-2026-1048 for the canonical bridge walkthrough without colliding with new references.
+
+Reuse valid existing PDF/image/audio/video assets where available. Add a generated fictional JPEG with known EXIF fields for the real processing test. Build a manifest of fixture IDs, hashes, MIME, supported operation, and actual versus simulated transformations. Do not create fake media by renaming text or generate accusations about real people. If audio/video assets/codecs are unavailable, record that gap and keep the core original-access demo on a supported JPEG.
+
+Create a protected local-demo reset command scoped to demo-tagged rows and objects, with dry-run scope and environment refusal for production-like targets. Never delete an entire database or unrelated data. Staff credentials come from ignored configuration and must not be printed in logs/docs. Test repeat seeding, fixture hashes/types, conflict roster, and reset refusal outside the demo profile.

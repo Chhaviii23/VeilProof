@@ -1,0 +1,7 @@
+PROMPT P01B — Implement the durable domain schema and migrations. Apply MASTER.
+
+Use the architecture as the entity baseline, scaled to one operator: staff memberships/human principals, intake sessions, complaints, tracking verifiers, upload objects, evidence items/immutable versions, inspection results, protected releases, assignments, request revisions, decisions, grants, internal notes, public updates, protection tasks, proofs/private proof inputs, audit, and outbox jobs. Merge tables only if security boundaries and history remain explicit.
+
+Add foreign keys, operator/case consistency, unique reference/idempotency constraints, one active assignment, one active item per evidence category, exact-version grants, UTC timestamps, and optimistic revisions. Restrict runtime privileges and sensitive-schema exposure. If using Supabase, define and test RLS/privileges; never put a service key in the client. No original keys or plaintext tracking secrets in tables.
+
+Create repositories/transaction boundaries and tests for duplicate constraints, cross-case associations, immutable completed versions, and rollback. Apply migration to an explicitly disposable local test database. Do not reset any existing database without authorization. Produce migration/run/rollback documentation and confirm persistence survives backend restart.

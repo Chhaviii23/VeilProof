@@ -1,0 +1,7 @@
+PROMPT P03A — Implement anonymous intake and idempotent complaint acceptance. Apply MASTER.
+
+Implement create-intake, authorized intake status/recovery, and finalize endpoints for written complaints first. Validate title 10–120, description 50–5000, category, optional past incident date, and risk selections. No reporter identity/account fields. Generate opaque intake capabilities and case identifiers. No-immediate-risk must be exclusive with threat selections.
+
+Prepare a local client-generated tracking secret contract, but process it only in a protected request and store a server-keyed verifier. Accept original secret transiently; never make the stored verifier a login bearer. Preserve a separate intake capability for response-loss recovery. Finalize transactionally creates complaint, safe public milestone, privacy queue state, Critical protection task when appropriate, audit, and outbox entries.
+
+Require idempotency key plus matching command digest and intake authorization. Same key/digest returns the existing result; changed digest returns conflict. Accept a written report without evidence and never claim metadata was removed. Pending blockchain proof cannot block acceptance. Test validation, duplicate concurrent finalize, rollback, response recovery, cross-intake access, and Critical task creation. Leave a strict version-binding extension point for P04C.

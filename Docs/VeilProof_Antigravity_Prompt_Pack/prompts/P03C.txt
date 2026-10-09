@@ -1,0 +1,7 @@
+PROMPT P03C — Implement the transactional audit and worker foundation. Apply MASTER.
+
+Persist safe audit and outbox events atomically with domain changes. Provide scoped staff audit queries and safe notification records. Exclude reporter selections, tracking secrets, evidence, private proof inputs, and free-form complaint text from event payloads/logs. Detailed justifications stay in restricted records referenced by ID.
+
+Build a small PostgreSQL-backed worker with leases, bounded retries/backoff, deduplication, safe failures, and a dead-letter state. Use queue locking only for job claiming; do not treat skipped rows as an authoritative permission decision. Include domain event IDs and aggregate revision. Staff polling should discover committed notifications without requiring WebSockets or a new UI.
+
+Test crash/retry, duplicate delivery, audit rollback, unauthorized audit queries, and no duplicate public milestones. Add a clearly documented worker start/health command. Do not claim administrator-proof audit immutability or implement a complex external checkpoint service for the hackathon; record that limitation.

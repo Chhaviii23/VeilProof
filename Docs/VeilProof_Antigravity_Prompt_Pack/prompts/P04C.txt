@@ -1,0 +1,7 @@
+PROMPT P04C — Implement ciphertext intake and controlled validation. Apply MASTER.
+
+Add intake-scoped object reservation, header-authorized bounded ciphertext upload, completion/digest lock, and immutable version records. Use private configured storage; provide an explicit local ciphertext adapter for unavailable hosted storage. No original filenames in remote paths, public buckets, upserts, plaintext debug files, or bearer tokens in URLs.
+
+Implement the documented fictional-data automated inspection worker: job-bound original/derivative IDs, short lease, restricted broker unwrap, authenticated plaintext verification, type/decode/resource checks, and safe inspection results. It must have no human original-preview endpoint. Check original/derivative hashes and server-derive provenance from actual processing or known fixture manifest. Label the development trust boundary honestly.
+
+Extend finalize to bind only completed inspected versions belonging to its intake. Enforce one active item per category, no-evidence acceptance, quarantine behavior, and replacement/version rules. Accept HTTPS references as canonical records without fetching them. Add cleanup for expired unattached objects that cannot race accepted finalization. Test ciphertext-at-rest, tampered envelope, cross-intake object theft, failed scan, over-limit category, partial upload, and cleanup race.

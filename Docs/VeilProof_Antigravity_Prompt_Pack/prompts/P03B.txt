@@ -1,0 +1,7 @@
+PROMPT P03B — Implement private reporter tracking and receipt contracts. Apply MASTER.
+
+Create reference+secret authentication with constant-time verifier comparison, safe rate limits, generic failures, and a short-lived complaint-scoped session. Do not expose case existence through distinct errors. Implement safe tracking DTOs containing only permitted timeline, public status, protection/proof summaries, and update time. No staff names, internal notes, original-access details, or evidence previews.
+
+Define versioned private tracking receipt data for local creation/download by the existing UI; the service never reissues a stored plaintext secret. Define a separate proof-package contract without tracking credentials, initially Pending until Phase 7. Explicitly support no-evidence submission without inventing a file proof. Lost intake/secret recovery must not become an email/support bypass.
+
+Test wrong reference/secret, enumeration behavior, session expiry, internal-field serialization, explicit receipt parsing, and idempotent recovery without secret logging. Use canary secrets in tests to inspect errors/logs. Do not build receipt or tracking screens; provide typed contracts for their existing bindings.

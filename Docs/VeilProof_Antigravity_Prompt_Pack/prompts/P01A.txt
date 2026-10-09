@@ -1,0 +1,7 @@
+PROMPT P01A — Implement the backend runtime. Apply MASTER and P00B decisions.
+
+Create or extend the existing FastAPI backend with pinned compatible dependencies, typed settings, modular routers/services/repositories, database session management, safe error handling, and request correlation IDs. Add health and readiness endpoints that expose no credentials. Readiness reports real dependency status; it must not report success for an unavailable database.
+
+Add .env.example with placeholders, ignored local secret paths, origin allowlisting, upload/body limits, and logging filters that exclude credentials and report content. Preserve the imported frontend package manager and directory structure. Add reproducible local startup instructions and dependency checks for the selected database/storage/auth adapters.
+
+Separate RUN_PROFILE and PROOF_BACKEND configuration. Production-like configuration must refuse demo role bypasses, fake proofs, or development secrets. Include meaningful settings, health, error-redaction, and startup tests. Run them and record exact results. Do not implement screens or create paid cloud resources. If external services are unavailable, complete a runnable local configuration and clearly report the blocked adapter.

@@ -1,0 +1,7 @@
+PROMPT P05B — Implement investigator selection and assignment. Apply MASTER.
+
+Expose the ten fictional officers with stable IDs, expertise, jurisdiction, availability, current workload, conflict status, and transparent recommendation reasons. Support the existing UI's sort/filter options with explicit backend mappings. ACO-04 is the canonical eligible procurement choice; ACO-09 is conflicted and ineligible.
+
+Assignment transaction rechecks eligibility/current state, records one active assignment, updates safe case status, creates audit and notification events, and makes the case visible only to the assigned investigator. Reassignment preserves history and invalidates prior investigator permissions/grants through an authorization epoch. If grant code is not implemented yet, create the revocation hook and test it when Phase 6 lands.
+
+Test manipulated conflicted-officer requests, stale availability, concurrent assignment, role denial, no eligible officer, dashboard visibility, and cross-case queries. Counts derive from actual data. Do not hardcode separate staff dashboard datasets or silently assign a fallback officer.

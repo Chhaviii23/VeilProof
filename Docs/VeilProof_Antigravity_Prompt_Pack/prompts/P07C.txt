@@ -1,0 +1,7 @@
+PROMPT P07C — Implement proof submission/reconciliation and activate Amoy when available. Apply MASTER.
+
+Create outbox-driven proof jobs for accepted immutable records. Proof worker receives opaque commitments, not files, keys, or tracking credentials. Persist logical proof identity, signer nonce/transaction attempts, broadcast result, receipt/event/block reference, and confirmation state. Serialize nonce allocation and reconcile uncertain broadcasts before replacing/retrying. Use bounded retry/backoff; duplicate work must not create a new complaint/version.
+
+Integrate actual local-chain proofs first. Then, if funded Amoy signer/RPC and authorization exist, deploy/use the configured canonical contract, record the real chain ID/address/transaction, and run an independent verification. Do not expose signing keys. Configure confirmation/reorganization behavior and distinguish Broadcast from Confirmed. A failed or delayed proof remains Pending/Failed while the case is Accepted.
+
+Complete private proof-package retrieval through the reporter's credentialed session without exposing a tracking secret. Test worker crash after broadcast, duplicate event/job, insufficient funds/RPC failure, wrong network, and confirmation update. If Amoy is blocked, finish all local work and report exact missing configuration; do not call the live path complete.

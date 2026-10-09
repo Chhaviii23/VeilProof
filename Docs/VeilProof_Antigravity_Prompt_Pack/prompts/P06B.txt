@@ -1,0 +1,7 @@
+PROMPT P06B — Implement the original-view gateway and timed grant enforcement. Apply MASTER.
+
+First authorized Open atomically sets one start/expiry using server/database time. Concurrent opens share the same timer. Return only a session-bound viewer handle, never an original DEK or storage URL. Broker/gateway recheck current actor, role, assignment, case, exact version, request decisions, grant, mode, and expiry. Use the supported small JPEG renderer first; known fixture audio may be enabled only with valid media handling.
+
+Authenticate the complete bounded encrypted object before plaintext output. Serve only the intended rendered/streamed representation; no unrestricted vault endpoint. Reject access immediately after authoritative expiry/revoke and bound continuing delivery checks to at most five seconds. End/revoke/logout/reassignment/closure invalidate active access. Background sweep is housekeeping, never permission enforcement. No viewer refresh or heartbeat extends a grant.
+
+For local fictional-demo rehearsal support a server-approved short duration through a dev-only policy, not a client clock override or production bypass. Test two concurrent Opens, file-B substitution, stolen session handle, active revoke, server failure, session logout, closure/reassignment, and browser/client absence. Document that already displayed pixels/audio cannot be recalled.

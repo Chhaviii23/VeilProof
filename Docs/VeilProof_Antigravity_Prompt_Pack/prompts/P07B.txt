@@ -1,0 +1,7 @@
+PROMPT P07B — Implement and test the minimal commitment registry. Apply MASTER.
+
+Use a compatible pinned Hardhat/Solidity toolchain and a small versioned non-upgradeable contract. Authorized relayer submits only opaque commitment and protocol version. Emit a stable event, record first anchoring, and define duplicate behavior clearly. Do not store filenames, case reference, content, category, raw hashes, identity, secret, or key. Admin changes affect future submitters, not historical proof interpretation.
+
+Add tests for authorized/unauthorized anchor, duplicate submission, unsupported versions as applicable, event fields, first-record preservation, and signer/admin changes. Deploy to a local development chain and save actual chain ID, address, transaction, and ABI in environment-specific ignored/generated deployment output, with a shareable non-secret manifest where appropriate.
+
+Connect the verifier to this actual local deployment. Verify a real seeded commitment and reject wrong contract/network/event data. Label local-chain output accurately. Do not create a fake Amoy address or explorer link. Prepare an Amoy deployment script that reads ignored credentials, but run public testnet deployment only when configured and authorized.

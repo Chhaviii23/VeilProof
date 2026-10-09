@@ -1,0 +1,7 @@
+PROMPT P08A — Connect only the existing reporter data bindings. Apply MASTER and FRONTEND_BINDINGS.md.
+
+Replace mock service calls in existing handlers/hooks/adapters for intake, risk, evidence selection, local JPEG protection, encryption/upload, finalize, receipt save/copy, tracking, and verification. Preserve markup, styles, component hierarchy, routes, and visible design. Add headless adapter/types or adjust existing bindings only. Do not introduce a new page or framework.
+
+Keep draft values and local identity selections ephemeral; never send “this is me” mappings. Use server-derived operation/proof/provenance states in existing status fields. A fixture result must remain labelled simulated; if existing UI cannot express that truthfully, leave that capability disconnected and record the gap instead of claiming protection. Preserve duplicate-submit prevention but rely on backend idempotency. Handle response-loss recovery with the actual intake capability.
+
+Existing receipt code must separate private tracking data from proof package. Tracking uses its safe API and no URL secrets. Browser refresh can lose unsaved local credentials but must not delete accepted backend cases. Run the current frontend build/type checks and a reporter API-backed smoke test with a unique title and real seeded JPEG. Report any missing UI fields/screens without generating them.

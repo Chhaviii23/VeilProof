@@ -1,0 +1,7 @@
+PROMPT P04B — Implement the real JPEG Privacy Guardian pipeline. Apply MASTER.
+
+Use a headless client service invoked later by the existing evidence handler. Read the seeded and arbitrary supported JPEG bytes, inspect supported EXIF fields, preserve exact original, normalize orientation appropriately, create a distinct metadata-minimized derivative, compute separate hashes, and return typed findings/protection results. Preview data stays local. Reinspect the derivative independently and preserve meaningful orientation/dimensions; do not claim lossless original transformation.
+
+Do not upload reporter-to-clue relationships. Advanced name/face/voice/video protection uses only known allowlisted fixtures and returns processing provenance=controlled_fixture. Actual JPEG metadata success is not a claim that visible faces/names were removed. Unknown/failed/unsupported operations cannot return Protected. Fixture hashes and IDs are validated server-side later; no client-selected flag grants protection status.
+
+Test seeded GPS/device/author cases where supported, metadata absence after processing, exact original preservation, malformed image, orientation, cancellation/replacement, and unsupported inputs. Do not add an ML service or change any screen. Document the exact supported field/format limits and what remains simulated.

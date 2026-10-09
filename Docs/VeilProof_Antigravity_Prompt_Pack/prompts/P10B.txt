@@ -1,0 +1,7 @@
+PROMPT P10B — Prepare and, where already authorized, deploy the hackathon backend. Apply MASTER.
+
+Inspect existing hosting and frontend settings first. Prepare provider-compatible API/worker configuration, secret-variable inventory, private storage/database setup, TLS/origin/cookie policy, migrations, health checks, and rollback instructions. Preserve the existing frontend hosting/build; only set its existing API configuration or proxy. Do not choose a paid provider, purchase resources, expose local secrets, or publish without authorization.
+
+A hosted demo still uses fictional data. Disable universal role bypasses, local private-key endpoints, arbitrary reset, simulated clocks, and shared seeded credentials in client bundles. Distinct staff login must work; reset is an authenticated operator action or offline command, not a public endpoint. State any development key-custody limitation clearly. Local fallback remains runnable.
+
+If provider/project/auth details or approval are missing, complete all deployment files and exact steps, then report the specific blocker. If deployed, run fresh acceptance/denial/proof smoke checks against the actual URL, inspect secret exposure and mixed-content/CORS/session behavior, and record URL/commit/network/version. A prepared config is not a successful deployment.

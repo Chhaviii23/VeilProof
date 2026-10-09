@@ -1,0 +1,5 @@
+PROMPT R03 — Continue useful VeilProof work despite missing external services, under MASTER.
+
+List missing variable names/capabilities without printing values. Separate local implementation/testing from hosted database/auth/storage, RPC, funded signer, contract deployment, and public hosting. Complete independent code, validation, migrations, local adapters, tests, and deployment scripts.
+
+Use an explicitly configured local provider where supported; record it in responses/receipts/capability inventory. Never silently simulate an external success. Do not invent accounts, addresses, keys, transaction hashes, or approvals. Provide exact non-secret setup steps for the chosen provider and identify the single next external action needed. Keep the blocker visible while continuing the next independent subphase.

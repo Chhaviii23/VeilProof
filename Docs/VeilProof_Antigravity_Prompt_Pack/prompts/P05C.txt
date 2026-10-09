@@ -1,0 +1,7 @@
+PROMPT P05C — Implement investigation, reporter-safe updates, and Oversight lifecycle. Apply MASTER.
+
+Add assigned-investigator case detail, permitted status changes, internal notes, preliminary findings, and explicit reporter-update publication. Use separate typed commands/projections for notes and public updates. No automatic guilt verdict. Enforce optimistic revisions and deduplicate retries. Update audit and safe reporter timeline transactionally.
+
+Implement Critical protection tasks independent of proof/original approval. Privacy cannot close a case; investigator can recommend closure/escalation; Oversight independently approves closure/reopen with reason and safe outcome. Closed cases block new original requests and revoke active grants via the shared hook. Reopening never restores old grants. Public milestones differ from internal access states.
+
+Test public/internal canary text separation, unauthorized changes, duplicate updates, Critical report without evidence, proof outage, closure denial for investigator, and reopening behavior. Use existing UI bindings only later; finish backend and test this flow via API now.
