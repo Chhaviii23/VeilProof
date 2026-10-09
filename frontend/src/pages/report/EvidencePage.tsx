@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../services/api';
 import { Button } from '../../components/ui/Button';
 import { TextInput } from '../../components/ui/FormField';
 import { useDraft, useApp } from '../../store/AppContext';
-import { DEMO_EVIDENCE_ITEMS, DEMO_EXAMPLE_REPORT } from '../../services/fixtures';
 import type { EvidenceItem } from '../../types';
 
 function makeId() {
@@ -26,7 +26,6 @@ interface EvidenceTypeConfig {
   mimeTypes: string[];
   maxBytes: number;
   icon: React.ReactNode;
-  demoItemId: string;
 }
 
 const EvidenceTypes: EvidenceTypeConfig[] = [
@@ -37,7 +36,6 @@ const EvidenceTypes: EvidenceTypeConfig[] = [
     accepts: ['.pdf'],
     mimeTypes: ['application/pdf'],
     maxBytes: 15 * 1024 * 1024,
-    demoItemId: 'demo-ev-pdf',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-ember">
         <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.4" />
@@ -52,7 +50,6 @@ const EvidenceTypes: EvidenceTypeConfig[] = [
     accepts: ['.jpg', '.jpeg', '.png'],
     mimeTypes: ['image/jpeg', 'image/jpg', 'image/png'],
     maxBytes: 10 * 1024 * 1024,
-    demoItemId: 'demo-ev-img',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-info">
         <rect x="2" y="4" width="16" height="12" rx="2" stroke="currentColor" strokeWidth="1.4" />
@@ -68,7 +65,6 @@ const EvidenceTypes: EvidenceTypeConfig[] = [
     accepts: ['.mp3'],
     mimeTypes: ['audio/mpeg'],
     maxBytes: 25 * 1024 * 1024,
-    demoItemId: 'demo-ev-audio',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-success">
         <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.4" />
@@ -83,7 +79,6 @@ const EvidenceTypes: EvidenceTypeConfig[] = [
     accepts: ['.mp4'],
     mimeTypes: ['video/mp4'],
     maxBytes: 100 * 1024 * 1024,
-    demoItemId: 'demo-ev-video',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-warning">
         <rect x="2" y="5" width="12" height="10" rx="2" stroke="currentColor" strokeWidth="1.4" />
@@ -98,7 +93,6 @@ const EvidenceTypes: EvidenceTypeConfig[] = [
     accepts: [],
     mimeTypes: ['link'],
     maxBytes: 0,
-    demoItemId: 'demo-ev-link',
     icon: (
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-ink-2">
         <path d="M8 12l-2 2a3 3 0 000-4.243l2-2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -178,7 +172,6 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
   const { toast } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showLinkForm, setShowLinkForm] = useState(false);
-  const demoItem = DEMO_EVIDENCE_ITEMS.find((d) => d.id === config.demoItemId);
   const hasItem = Boolean(item);
 
   function handleFile(file: File) {
@@ -209,10 +202,6 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
     if (file) handleFile(file);
   }
 
-  function loadDemo() {
-    if (!demoItem) return;
-    onAdd({ ...demoItem, scanState: 'idle' });
-  }
 
   if (hasItem && item) {
     return (
@@ -256,40 +245,6 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
           </div>
         </div>
 
-        {/* Audio speaker toggle */}
-        {config.key === 'audio' && (
-          <div className="px-4 pb-3 border-t border-rule pt-3">
-            <p className="text-[12px] font-semibold text-ink-1 mb-2">🎙️ Your voice in this recording</p>
-            <p className="text-[11px] text-ink-muted mb-2 leading-relaxed">
-              We will only anonymize your voice — the other speaker stays unchanged as evidence.
-            </p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => onUpdate(item.id, { whistleblowerIsLouder: true })}
-                className={`flex-1 text-[12px] font-medium rounded-md px-3 py-2 border transition-colors ${
-                  item.whistleblowerIsLouder !== false
-                    ? 'bg-ember-soft border-ember text-ember'
-                    : 'bg-canvas border-rule text-ink-2 hover:border-ember hover:text-ember'
-                }`}
-              >
-                🔊 Louder speaker (closer to mic)
-              </button>
-              <button
-                type="button"
-                onClick={() => onUpdate(item.id, { whistleblowerIsLouder: false })}
-                className={`flex-1 text-[12px] font-medium rounded-md px-3 py-2 border transition-colors ${
-                  item.whistleblowerIsLouder === false
-                    ? 'bg-ember-soft border-ember text-ember'
-                    : 'bg-canvas border-rule text-ink-2 hover:border-ember hover:text-ember'
-                }`}
-              >
-                🔉 Quieter speaker (farther away)
-              </button>
-            </div>
-          </div>
-        )}
-
         {config.key !== 'link' && (
           <input
             ref={fileInputRef}
@@ -332,15 +287,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               >
                 Add reference link
               </button>
-              {demoItem && (
-                <button
-                  type="button"
-                  onClick={loadDemo}
-                  className="text-[12px] text-ink-2 border border-rule rounded-md px-3 py-2 bg-canvas hover:border-ink-muted transition-colors"
-                >
-                  Use demo link
-                </button>
-              )}
+
             </div>
           )
         ) : (
@@ -364,15 +311,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               >
                 Upload {config.label.toLowerCase()}
               </button>
-              {demoItem && (
-                <button
-                  type="button"
-                  onClick={loadDemo}
-                  className="text-[12px] text-ink-2 border border-rule rounded-md px-3 py-2 bg-canvas hover:border-ink-muted transition-colors"
-                >
-                  Use demo file
-                </button>
-              )}
+
             </div>
             <input
               ref={fileInputRef}
@@ -396,6 +335,15 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
 export function EvidencePage() {
   const { draft, addEvidence, removeEvidence, updateEvidence, updateDraft } = useDraft();
   const navigate = useNavigate();
+  const [uploadLimit, setUploadLimit] = useState<number | null>(null);
+  const [policyError, setPolicyError] = useState('');
+  useEffect(() => {
+    let active = true;
+    api.uploadPolicy().then(p => { if (active) setUploadLimit(p.max_file_bytes); })
+      .catch(() => { if (active) setPolicyError('Upload settings are unavailable. Check the API connection and reload this page.'); });
+    return () => { active = false; };
+  }, []);
+
 
   function getItem(key: EvidenceTypeConfig['key']): EvidenceItem | undefined {
     return getItemForType(draft.evidence, key);
@@ -415,23 +363,6 @@ export function EvidencePage() {
     if (existing) removeEvidence(existing.id);
   }
 
-  function loadAllDemo() {
-    const videoItem = DEMO_EVIDENCE_ITEMS.find((d) => d.id === 'demo-ev-video');
-    const linkItem = DEMO_EVIDENCE_ITEMS.find((d) => d.id === 'demo-ev-link');
-    if (videoItem && !getItem('video')) addEvidence({ ...videoItem, scanState: 'idle' });
-    if (linkItem && !getItem('link')) addEvidence({ ...linkItem, scanState: 'idle' });
-    if (!draft.title.trim()) {
-      updateDraft({
-        title: DEMO_EXAMPLE_REPORT.title,
-        category: DEMO_EXAMPLE_REPORT.category,
-        description: DEMO_EXAMPLE_REPORT.description,
-        incidentDate: DEMO_EXAMPLE_REPORT.incidentDate,
-        location: DEMO_EXAMPLE_REPORT.location,
-        involvedParties: DEMO_EXAMPLE_REPORT.involvedParties,
-      });
-    }
-  }
-
   const totalAdded = EvidenceTypes.filter((t) => getItem(t.key)).length;
   const allAdded = totalAdded === EvidenceTypes.length;
 
@@ -442,13 +373,7 @@ export function EvidencePage() {
           <h1 className="text-[24px] font-semibold text-ink-1">Attach evidence</h1>
           <p className="text-[14px] text-ink-2 mt-1 leading-relaxed">One item per evidence type. Maximum five items total.</p>
         </div>
-        <button
-          type="button"
-          onClick={loadAllDemo}
-          className="shrink-0 text-[12px] text-ink-2 border border-rule rounded-md px-3 py-2 bg-canvas hover:border-ember hover:text-ember transition-colors"
-        >
-          Preload video + link
-        </button>
+
       </div>
 
       {/* Evidence summary */}
@@ -469,10 +394,12 @@ export function EvidencePage() {
       </div>
 
       <div className="flex flex-col gap-4 mb-6">
-        {EvidenceTypes.map((config) => (
+        {policyError && <p role="alert" className="text-error text-sm">{policyError}</p>}
+        {!uploadLimit && !policyError && <p role="status">Loading upload settings…</p>}
+        {uploadLimit !== null && EvidenceTypes.map((config) => (
           <EvidenceCard
             key={config.key}
-            config={config}
+            config={{ ...config, maxBytes: uploadLimit ?? 0, description: config.description.replace(/up to [0-9]+ MB/, `up to ${formatSize(uploadLimit ?? 0)}`) }}
             item={getItem(config.key)}
             onAdd={handleAdd}
             onRemove={() => handleRemove(config.key)}

@@ -59,7 +59,7 @@ export default function ReviewScreen() {
   const { draft, updateDraft } = useDraft();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const hasBaseErrors = !draft.title.trim() || !draft.category || draft.description.trim().length < 50;
+  const hasBaseErrors = draft.title.trim().length < 10 || !draft.category || draft.description.trim().length < 50;
 
   function validate() {
     const e: Record<string, string> = {};

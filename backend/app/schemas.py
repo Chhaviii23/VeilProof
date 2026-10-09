@@ -60,6 +60,7 @@ class ObjectCompleteRequest(BaseModel):
 
 
 class EnvelopeBinding(BaseModel):
+    protection_receipt: str | None = Field(default=None, max_length=2000)
     original_object_id: str
     derivative_object_id: str | None = None
     category: EvidenceCategory

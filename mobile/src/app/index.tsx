@@ -25,7 +25,7 @@ const CATEGORIES = Object.entries(CATEGORY_LABELS) as [ReportCategory, string][]
 const DEMO_EXAMPLE = {
   title: 'Procurement officer accepting bribes from vendor',
   category: 'corruption' as ReportCategory,
-  description: 'Between March and August 2026, the senior procurement officer at the Mumbai regional office awarded a contract worth ₹4.2 crore to Nexus Supplies Pvt Ltd, despite their bid being 22% higher than competitors. Multiple colleagues witnessed cash exchanges at the officer's residence. Two junior staff were pressured to alter bid evaluation records.',
+  description: 'Between March and August 2026, the senior procurement officer at the Mumbai regional office awarded a contract worth ₹4.2 crore to Nexus Supplies Pvt Ltd, despite their bid being 22% higher than competitors. Multiple colleagues witnessed cash exchanges at the officer’s residence. Two junior staff were pressured to alter bid evaluation records.',
   incidentDate: '2026-03-01',
   location: 'Mumbai, Maharashtra — Regional Procurement Office',
   involvedParties: 'Senior Procurement Officer (fictional), Nexus Supplies Pvt Ltd (fictional)',

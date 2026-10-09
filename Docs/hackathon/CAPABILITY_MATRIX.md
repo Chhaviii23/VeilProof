@@ -31,8 +31,8 @@ Legend: **ACTUAL** = implemented and tested; **FIXTURE** = controlled-fictional 
 | PostgreSQL persistence | BLOCKED | No server/Docker; SQLite adapter used |
 | Supabase storage/auth | BLOCKED | Not configured |
 | RLS / DB privilege isolation | DEFERRED | SQLite has no RLS |
-| PDF/audio/video sanitization | UNAVAILABLE | Recorded as skipped, never marked Protected |
-| Name/face/voice masking | FIXTURE only | No real implementation |
+| PDF/audio/video sanitization | ACTUAL (bounded) | PDF selected redactions; audio muting by interval; video full-frame concealment. See ../../README.md |
+| Name/face/voice protection | ACTUAL (human review required) | Local candidates, selected image/PDF redaction and audio interval muting; no automatic speaker identification |
 | Forensic analysis mode | UNAVAILABLE | Request rejected (422) |
 | Production KMS / Tor / threshold | DEFERRED | Explicitly out of scope |
 | Custom access durations | DEFERRED | Bounded 1-480 min only |

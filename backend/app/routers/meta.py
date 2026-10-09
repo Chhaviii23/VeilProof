@@ -14,6 +14,11 @@ from ..security.keys import broker_public_pem
 router = APIRouter(tags=["meta"])
 
 
+@router.get("/public/upload-policy")
+def upload_policy() -> dict:
+    return {"max_file_bytes": get_settings().max_upload_bytes, "max_items": 5}
+
+
 @router.get("/public/broker-key")
 def broker_key(db: Session = Depends(get_db)) -> dict:
     s = get_settings()

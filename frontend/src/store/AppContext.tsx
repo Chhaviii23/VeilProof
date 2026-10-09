@@ -100,7 +100,8 @@ function officerCodeOf(investigatorId: string): string | undefined {
 }
 
 function withPrivacyCompletion(c: CaseRecord, now: string): CaseRecord {
-  const done = c.evidence.length > 0 && c.evidence.every((e) => e.protectedCopyStatus === 'released');
+  // Reference links never require a protected copy ('not_required').
+  const done = c.evidence.length > 0 && c.evidence.every((e) => e.protectedCopyStatus === 'released' || e.protectedCopyStatus === 'not_required');
   if (!done || c.publicUpdates.some((u) => u.text === PRIVACY_DONE_TEXT)) return c;
   return { ...c, correctionRequest: undefined, publicUpdates: [...c.publicUpdates, { id: `pu-${uid()}`, status: 'privacy_review', text: PRIVACY_DONE_TEXT, addedAt: now }] };
 }
@@ -156,9 +157,9 @@ function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'UPDATE_DRAFT': return { ...state, draft: { ...state.draft, ...action.payload } };
     case 'RESET_DRAFT': return { ...state, draft: makeDraft() };
-    case 'ADD_EVIDENCE': return { ...state, draft: { ...state.draft, evidence: [...state.draft.evidence, action.payload] } };
-    case 'REMOVE_EVIDENCE': return { ...state, draft: { ...state.draft, evidence: state.draft.evidence.filter((e) => e.id !== action.payload) } };
-    case 'UPDATE_EVIDENCE': return { ...state, draft: { ...state.draft, evidence: state.draft.evidence.map((e) => e.id === action.payload.id ? { ...e, ...action.payload.patch } : e) } };
+    case 'ADD_EVIDENCE': return { ...state, draft: { ...state.draft, identityProtectionApplied: false, evidence: [...state.draft.evidence, action.payload] } };
+    case 'REMOVE_EVIDENCE': return { ...state, draft: { ...state.draft, identityProtectionApplied: false, evidence: state.draft.evidence.filter((e) => e.id !== action.payload) } };
+    case 'UPDATE_EVIDENCE': return { ...state, draft: { ...state.draft, identityProtectionApplied: false, evidence: state.draft.evidence.map((e) => e.id === action.payload.id ? { ...e, ...action.payload.patch } : e) } };
 
     case 'SUBMIT_COMPLAINT': {
       const { caseRecord, receipt, trackingSecret } = action.payload;
@@ -210,12 +211,12 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         cases: updateCase(state.cases, caseId, (c) => {
-          const pending = c.evidence.filter((e) => e.protectedCopyStatus !== 'released');
+          const pending = c.evidence.filter((e) => e.protectedCopyStatus !== 'released' && e.protectedCopyStatus !== 'not_required');
           if (pending.length === 0) return c;
           return withPrivacyCompletion({
             ...c,
             lastUpdated: now,
-            evidence: c.evidence.map((ev) => ev.protectedCopyStatus === 'released' ? ev : { ...ev, protectedCopyStatus: 'released' as const, protectedCopyReleasedAt: now, protectedCopyReleasedBy: officerId, protectedCopyReleasedByName: officerName }),
+            evidence: c.evidence.map((ev) => ev.protectedCopyStatus === 'released' || ev.protectedCopyStatus === 'not_required' ? ev : { ...ev, protectedCopyStatus: 'released' as const, protectedCopyReleasedAt: now, protectedCopyReleasedBy: officerId, protectedCopyReleasedByName: officerName }),
             auditTrail: [...c.auditTrail, auditEv('protected_copy_released', caseId, { actorId: officerId, actorName: officerName, actorRole: ROLE_PRIVACY, detail: `Protected copies released — ${pending.length} item${pending.length === 1 ? '' : 's'}. Originals remain sealed.` })],
           }, now);
         }),
@@ -244,7 +245,7 @@ function reducer(state: AppState, action: Action): AppState {
       const target = state.cases.find((c) => c.id === caseId);
       if (!target || !officer || officer.conflictDetected) return state;
       if (target.assignedOfficerCode || target.status === 'closed') return state;
-      if (target.evidence.some((e) => e.protectedCopyStatus !== 'released')) return state;
+      if (target.evidence.some((e) => e.protectedCopyStatus !== 'released' && e.protectedCopyStatus !== 'not_required')) return state;
       const note = makeNotification({
         roleType: 'case-investigator', officerCode, caseId,
         title: target.priority === 'critical' ? 'New Critical Case Assigned' : 'New Case Assigned',

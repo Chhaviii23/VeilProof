@@ -57,12 +57,15 @@ async def upload_content(
 ):
     session = intake_svc.authenticate_intake(db, intake_id, capability)
     s = get_settings()
-    data = await request.body()
-    if len(data) > s.max_upload_bytes:
-        raise PayloadTooLargeError("ciphertext exceeds limit")
+    data = bytearray()
+    async for chunk in request.stream():
+        data.extend(chunk)
+        # AES-GCM appends a 16-byte authentication tag to the plaintext.
+        if len(data) > s.max_upload_bytes + 16:
+            raise PayloadTooLargeError("ciphertext exceeds limit")
     if not data:
         raise ValidationFailure("empty ciphertext")
-    obj = intake_svc.store_content(db, session, object_id, data)
+    obj = intake_svc.store_content(db, session, object_id, bytes(data))
     return {"object_id": obj.id, "state": obj.state, "ciphertext_digest": obj.ciphertext_digest}
 
 

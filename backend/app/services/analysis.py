@@ -1,42 +1,31 @@
-"""Privacy Guardian — Local + Gemini evidence analysis service.
-
-Detection pipeline:
-  - When GEMINI_API_KEY is set in environment: uses Gemini 2.0 Flash Vision
-    for face detection, name/PII extraction, and metadata analysis.
-    The file is sent as a base64 inline-data part directly to the Gemini REST
-    API. No third-party SDKs are required.
-  - Fallback (no API key): uses OpenCV Haar cascade (faces) + Tesseract OCR
-    (text/PII) + Pillow EXIF (metadata) entirely on-device.
-
-Security:
-  - Gemini receives the raw file bytes encoded as base64 — this is an explicit,
-    user-approved trust boundary since the user requested Gemini integration.
-  - The prompt is a static system instruction. Evidence content is passed as
-    binary data, NOT as text instructions, preventing prompt injection.
-  - Results from Gemini are parsed as structured JSON only. Raw model text is
-    never executed or interpreted as code.
-  - Extracted values are returned in the HTTP response only; never stored in
-    logs, localStorage, analytics, or crash reporters.
-
-Detection produces *candidates* that require human review. We do not identify
-individuals from their faces or compare against any identity database.
+"""Local identity-clue screening. Candidates require human review.
+No evidence is forwarded to external services or persisted by this module.
 """
 
 from __future__ import annotations
 
-import base64
 import io
-import json
 import os
 import re
 import uuid
 from dataclasses import dataclass, field
 from typing import Literal
 
-import cv2
-import numpy as np
-import pytesseract
-from PIL import Image, ExifTags
+try:  # OpenCV is required for local face detection; the API must boot without it.
+    import cv2
+    import numpy as np
+    CV2_AVAILABLE = True
+except ImportError:  # pragma: no cover - environment without opencv
+    cv2 = None          # type: ignore[assignment]
+    np = None           # type: ignore[assignment]
+    CV2_AVAILABLE = False
+
+try:  # Tesseract is optional; OCR is skipped when unavailable.
+    import pytesseract
+except ImportError:  # pragma: no cover - environment without tesseract binding
+    pytesseract = None  # type: ignore[assignment]
+
+from PIL import Image, ImageOps, ExifTags
 
 # ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -92,175 +81,17 @@ class AnalysisManifest:
     faces: list[FaceCandidate] = field(default_factory=list)
     texts: list[TextCandidate] = field(default_factory=list)
     metadata: list[MetadataCandidate] = field(default_factory=list)
+    voices: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
     image_width: int | None = None
     image_height: int | None = None
 
 
-# ── Gemini Vision Detection ────────────────────────────────────────────────────
-
-GEMINI_MODEL = "gemini-3.8-flash"
-GEMINI_API_URL = (
-    "https://generativelanguage.googleapis.com/v1beta/models/"
-    f"{GEMINI_MODEL}:generateContent"
-)
-
-# Static system instruction — evidence content is passed as binary data only,
-# preventing prompt injection from document text.
-_GEMINI_PROMPT = """You are a Privacy Guardian analyzing evidence files for a whistleblower protection platform.
-
-Analyze the provided file and identify ALL possible identity clues that could expose someone's identity.
-
-Return a JSON object with this EXACT structure:
-{
-  "faces": [
-    {
-      "label": "Face 1",
-      "bbox_x_pct": 0.25,
-      "bbox_y_pct": 0.10,
-      "bbox_w_pct": 0.15,
-      "bbox_h_pct": 0.20,
-      "confidence_pct": 92.0,
-      "notes": "Front-facing person near left side"
-    }
-  ],
-  "names": [
-    {
-      "text": "Rahul Sharma",
-      "category": "name_pattern",
-      "context": "Signed by Rahul Sharma, Assistant Engineer",
-      "location": "Bottom-left signature area",
-      "confidence_pct": 95.0
-    }
-  ],
-  "other_pii": [
-    {
-      "text": "+91 98765 43210",
-      "category": "phone",
-      "location": "Top header",
-      "confidence_pct": 99.0
-    }
-  ],
-  "notes": "Brief summary of what was found"
-}
-
-Rules:
-- bbox values are FRACTIONS of image width/height (0.0 to 1.0)
-- category must be one of: name_pattern, phone, email, address, id_pattern, raw
-- Do NOT identify who the person is — only detect that a face exists
-- Do NOT compare faces against any database
-- Include ALL visible text that could identify a person
-- Specifically look for and extract the names: Arsh Chakraborty, Vikram Sethi, Rohan Malhotra if present
-- For PDFs/documents: extract author names, signatures, employee IDs, letterhead names
-- For images: detect all faces, OCR all text, note any ID cards or badges
-- For videos: analyze the key frame provided
-- Return ONLY valid JSON, no markdown fences"""
-
-
-def _get_gemini_key() -> str | None:
-    return os.environ.get("GEMINI_API_KEY", "").strip() or None
-
-
-def _call_gemini(file_bytes: bytes, mime_type: str) -> dict:
-    """Call Gemini Vision API with the file as inline base64 data.
-    
-    The file is passed as binary data — not as text — preventing prompt injection.
-    """
-    import urllib.request
-
-    api_key = _get_gemini_key()
-    if not api_key:
-        raise RuntimeError("GEMINI_API_KEY not configured")
-
-    b64 = base64.b64encode(file_bytes).decode("ascii")
-
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": _GEMINI_PROMPT},
-                    {
-                        "inline_data": {
-                            "mime_type": mime_type,
-                            "data": b64,
-                        }
-                    },
-                ]
-            }
-        ],
-        "generationConfig": {
-            "temperature": 0.1,
-            "responseMimeType": "application/json",
-        },
-    }
-
-    body = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(
-        f"{GEMINI_API_URL}?key={api_key}",
-        data=body,
-        headers={"Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=110) as resp:
-        raw = resp.read().decode("utf-8")
-
-    result = json.loads(raw)
-    text = result["candidates"][0]["content"]["parts"][0]["text"]
-    # Strip markdown fences if present
-    text = re.sub(r"^```json\s*", "", text.strip())
-    text = re.sub(r"\s*```$", "", text)
-    return json.loads(text)
-
-
-def _gemini_to_manifest(
-    gemini_data: dict,
-    file_name: str,
-    image_width: int | None,
-    image_height: int | None,
-) -> tuple[list[FaceCandidate], list[TextCandidate]]:
-    """Convert Gemini response to typed candidates."""
-    faces: list[FaceCandidate] = []
-    texts: list[TextCandidate] = []
-
-    w = image_width or 1000
-    h = image_height or 1000
-
-    for i, f in enumerate(gemini_data.get("faces") or []):
-        # Convert percentage bbox to pixels
-        x = int(float(f.get("bbox_x_pct", 0)) * w)
-        y = int(float(f.get("bbox_y_pct", 0)) * h)
-        fw = int(float(f.get("bbox_w_pct", 0.1)) * w)
-        fh = int(float(f.get("bbox_h_pct", 0.1)) * h)
-        faces.append(FaceCandidate(
-            id=f"face-{uuid.uuid4().hex[:8]}",
-            bbox=BoundingBox(x, y, fw, fh),
-            confidence_pct=float(f.get("confidence_pct", 85.0)),
-            source_file=file_name,
-        ))
-
-    def _add_text(item: dict) -> None:
-        text = str(item.get("text", "")).strip()
-        if not text:
-            return
-        raw_cat = item.get("category", "raw")
-        valid_cats = {"name_pattern", "phone", "email", "address", "id_pattern", "raw"}
-        cat = raw_cat if raw_cat in valid_cats else "raw"
-        ctx = item.get("context") or item.get("location") or ""
-        texts.append(TextCandidate(
-            id=f"text-{uuid.uuid4().hex[:8]}",
-            text=text,
-            category=cat,  # type: ignore[arg-type]
-            bbox=BoundingBox(0, 0, 0, 0),  # Gemini doesn't always give pixel coords for text
-            source_file=file_name,
-            confidence_pct=float(item.get("confidence_pct", 90.0)),
-        ))
-
-    for item in gemini_data.get("names") or []:
-        _add_text(item)
-    for item in gemini_data.get("other_pii") or []:
-        _add_text(item)
-
-    return faces, texts
+def _configure_tesseract() -> bool:
+    if pytesseract is None or not CV2_AVAILABLE:
+        return False
+    from .tesseract_util import configure_tesseract
+    return configure_tesseract()
 
 
 # ── Fallback: Local OpenCV + Tesseract Detection ───────────────────────────────
@@ -295,10 +126,10 @@ def _classify(text: str) -> str:
     return "raw"
 
 
-_FACE_CASCADE: cv2.CascadeClassifier | None = None
+_FACE_CASCADE = None
 
 
-def _get_face_cascade() -> cv2.CascadeClassifier:
+def _get_face_cascade() -> "cv2.CascadeClassifier":
     global _FACE_CASCADE
     if _FACE_CASCADE is None:
         _FACE_CASCADE = cv2.CascadeClassifier(
@@ -307,52 +138,91 @@ def _get_face_cascade() -> cv2.CascadeClassifier:
     return _FACE_CASCADE
 
 
-def _detect_faces_local(img_bgr: np.ndarray, source_file: str) -> list[FaceCandidate]:
-    cascade = _get_face_cascade()
-    gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-    detections = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    results = []
-    if len(detections) == 0:
-        return results
-    for x, y, w, h in detections:
-        results.append(FaceCandidate(
-            id=f"face-{uuid.uuid4().hex[:8]}",
-            bbox=BoundingBox(int(x), int(y), int(w), int(h)),
-            confidence_pct=85.0,
-            source_file=source_file,
-        ))
-    return results
+def _detect_faces_local(img_bgr: "np.ndarray", source_file: str) -> list[FaceCandidate]:
+    if not CV2_AVAILABLE:
+        return []
+    from .identity_detection import face_regions
+    return [FaceCandidate(id=f"face-{uuid.uuid4().hex[:8]}",
+                          bbox=BoundingBox(x, y, w, h), confidence_pct=confidence,
+                          source_file=source_file)
+            for x, y, w, h, confidence in face_regions(img_bgr)]
 
 
-def _run_ocr_local(img_bgr: np.ndarray, source_file: str) -> list[TextCandidate]:
+def _run_ocr_local(img_bgr: "np.ndarray", source_file: str, include_raw: bool = False) -> list[TextCandidate]:
+    if pytesseract is None or not CV2_AVAILABLE or not _configure_tesseract():
+        return []
     try:
         data = pytesseract.image_to_data(img_bgr, output_type=pytesseract.Output.DICT, lang="eng")
     except Exception:
         return []
-    candidates = []
-    for i in range(len(data["text"])):
-        raw = str(data["text"][i]).strip()
-        if not raw or len(raw) < 3:
+    # Group word tokens into lines before classifying: names like "Rahul Sharma"
+    # arrive as separate tokens and are never matched word-by-word.
+    lines: dict[tuple, list[int]] = {}
+    for i, raw in enumerate(data["text"]):
+        if not str(raw).strip():
             continue
-        try:
-            conf = float(data["conf"][i])
-        except (ValueError, TypeError):
-            conf = 0.0
+        key = (data["block_num"][i], data["par_num"][i], data["line_num"][i])
+        lines.setdefault(key, []).append(i)
+
+    candidates = []
+    for idxs in lines.values():
+        line_text = " ".join(str(data["text"][i]).strip() for i in idxs).strip()
+        if len(line_text) < 3:
+            continue
+        confs: list[float] = []
+        for i in idxs:
+            try:
+                value = float(data["conf"][i])
+                if value >= 0:
+                    confs.append(value)
+            except (ValueError, TypeError):
+                continue
+        conf = sum(confs) / len(confs) if confs else 0.0
         if conf < 55:
             continue
-        cat = _classify(raw)
-        if cat == "raw":
-            continue
-        candidates.append(TextCandidate(
-            id=f"text-{uuid.uuid4().hex[:8]}",
-            text=raw,
-            category=cat,  # type: ignore[arg-type]
-            bbox=BoundingBox(int(data["left"][i]), int(data["top"][i]),
-                             int(data["width"][i]), int(data["height"][i])),
-            confidence_pct=conf,
-            source_file=source_file,
-        ))
+        from .identity_detection import person_spans
+        spans = [(0, len(line_text))] if include_raw else person_spans(line_text)
+        offsets = []
+        cursor = 0
+        for i in idxs:
+            word = str(data["text"][i]).strip()
+            offsets.append((cursor, cursor + len(word), i))
+            cursor += len(word) + 1
+        for start, end in spans:
+            selected = [i for a, b, i in offsets if a < end and b > start]
+            if not selected:
+                continue
+            x1 = min(int(data["left"][i]) for i in selected)
+            y1 = min(int(data["top"][i]) for i in selected)
+            x2 = max(int(data["left"][i]) + int(data["width"][i]) for i in selected)
+            y2 = max(int(data["top"][i]) + int(data["height"][i]) for i in selected)
+            candidates.append(TextCandidate(
+                id=f"text-{uuid.uuid4().hex[:8]}", text=line_text[start:end],
+                category="raw" if include_raw else "name_pattern",
+                bbox=BoundingBox(x1, y1, x2-x1, y2-y1),
+                confidence_pct=conf, source_file=source_file,
+            ))
     return candidates
+
+
+def _pil_to_bgr(pil_img: Image.Image):
+    if not CV2_AVAILABLE:
+        return None
+    rgb = pil_img.convert("RGB")
+    return cv2.cvtColor(np.array(rgb), cv2.COLOR_RGB2BGR)
+
+
+def _local_detect(pil_img: Image.Image, file_name: str, manifest: AnalysisManifest) -> None:
+    """Run local OpenCV + Tesseract detection; degrade gracefully when unavailable."""
+    img_bgr = _pil_to_bgr(pil_img)
+    if img_bgr is None:
+        manifest.notes.append(
+            "Local detection unavailable (OpenCV not installed). "
+            "Faces and text were not screened — review this file manually."
+        )
+        return
+    manifest.faces = _detect_faces_local(img_bgr, file_name)
+    manifest.texts = _run_ocr_local(img_bgr, file_name)
 
 
 # ── EXIF Metadata ──────────────────────────────────────────────────────────────
@@ -397,8 +267,9 @@ def analyze_image(image_bytes: bytes, file_name: str) -> AnalysisManifest:
     )
     try:
         pil_img = Image.open(io.BytesIO(image_bytes))
-        manifest.image_width, manifest.image_height = pil_img.size
         manifest.metadata = _extract_exif(pil_img, file_name)
+        pil_img = ImageOps.exif_transpose(pil_img)
+        manifest.image_width, manifest.image_height = pil_img.size
 
         if manifest.metadata:
             manifest.notes.append(
@@ -406,60 +277,10 @@ def analyze_image(image_bytes: bytes, file_name: str) -> AnalysisManifest:
                 "GPS, camera model, and timestamps will be stripped from the protected copy."
             )
 
-        gemini_key = _get_gemini_key()
-        if gemini_key:
-            # ── Gemini Vision path ──────────────────────────────────────────
-            manifest.notes.append("Using Gemini Vision for face and name detection.")
-            try:
-                # Determine MIME type
-                fmt = (pil_img.format or "JPEG").upper()
-                mime_map = {"JPEG": "image/jpeg", "PNG": "image/png",
-                            "WEBP": "image/webp", "GIF": "image/gif"}
-                mime = mime_map.get(fmt, "image/jpeg")
-
-                gemini_data = _call_gemini(image_bytes, mime)
-                faces, texts = _gemini_to_manifest(
-                    gemini_data, file_name,
-                    manifest.image_width, manifest.image_height
-                )
-                manifest.faces = faces
-                manifest.texts = texts
-
-                summary = gemini_data.get("notes", "")
-                if summary:
-                    manifest.notes.append(f"Gemini analysis: {summary}")
-
-                manifest.notes.append(
-                    f"Detected {len(faces)} face(s) and {len(texts)} PII item(s) via Gemini Vision. "
-                    "Review each candidate — automated detection is not perfect."
-                )
-            except Exception as exc:
-                # Gemini failed — fall back to local
-                manifest.notes.append(
-                    f"Gemini Vision failed ({type(exc).__name__}). Falling back to local OpenCV + Tesseract."
-                )
-                rgb = pil_img.convert("RGB")
-                img_bgr = cv2.cvtColor(np.array(rgb), cv2.COLOR_RGB2BGR)
-                manifest.faces = _detect_faces_local(img_bgr, file_name)
-                manifest.texts = _run_ocr_local(img_bgr, file_name)
-        else:
-            # ── Local fallback path ─────────────────────────────────────────
-            manifest.notes.append(
-                "No GEMINI_API_KEY configured — using local OpenCV + Tesseract detection. "
-                "Set GEMINI_API_KEY in backend/.env for more accurate results."
-            )
-            rgb = pil_img.convert("RGB")
-            img_bgr = cv2.cvtColor(np.array(rgb), cv2.COLOR_RGB2BGR)
-            manifest.faces = _detect_faces_local(img_bgr, file_name)
-            manifest.texts = _run_ocr_local(img_bgr, file_name)
-
-            if manifest.faces:
-                manifest.notes.append(
-                    f"{len(manifest.faces)} face region(s) detected by Haar cascade. "
-                    "Faces are not identified against any database."
-                )
-
-        manifest.state = "review_required"
+        _local_detect(pil_img, file_name, manifest)
+        manifest.state = "review_required" if CV2_AVAILABLE and _configure_tesseract() else "partially_analyzed"
+        if not _configure_tesseract():
+            manifest.notes.append("OCR unavailable: text was not screened. Inspect the original and mark any sensitive regions.")
 
     except Exception as exc:
         manifest.state = "failed"
@@ -471,58 +292,126 @@ def analyze_image(image_bytes: bytes, file_name: str) -> AnalysisManifest:
 
 # ── PDF Analysis ──────────────────────────────────────────────────────────────
 
-def analyze_pdf(pdf_bytes: bytes, file_name: str) -> AnalysisManifest:
-    manifest = AnalysisManifest(
-        file_name=file_name, file_category="document", state="analyzing"
-    )
+def _extract_pdf_metadata(doc, file_name: str, manifest: AnalysisManifest) -> None:
+    """Record sensitive PDF document properties (author etc.) as candidates."""
+    try:
+        meta = doc.metadata or {}
+    except Exception:
+        return
+    for field, sensitive in (
+        ("author", True), ("title", False), ("subject", False),
+        ("keywords", False), ("creator", False),
+    ):
+        value = str(meta.get(field) or "").strip()
+        if not value:
+            continue
+        manifest.metadata.append(MetadataCandidate(
+            id=f"meta-{uuid.uuid4().hex[:8]}",
+            field=f"PDF {field.capitalize()}",
+            value=value[:120],
+            is_sensitive=sensitive,
+            source_file=file_name,
+        ))
 
-    gemini_key = _get_gemini_key()
-    if gemini_key:
-        manifest.notes.append("Sending PDF to Gemini Vision for text and identity clue extraction.")
+
+def _analyze_pdf_local(pdf_bytes: bytes, file_name: str, manifest: AnalysisManifest) -> None:
+    """Local PDF screening — no external API.
+
+    1. Searchable text layer: names, phones, emails, IDs classified with the
+       same rules as OCR (works without Tesseract).
+    2. Per-page rendering: Haar face detection on every page.
+    3. OCR on pages that have no text layer (scanned documents), when the
+       Tesseract binary is available.
+    """
+    try:
         try:
-            gemini_data = _call_gemini(pdf_bytes, "application/pdf")
-            faces, texts = _gemini_to_manifest(gemini_data, file_name, None, None)
-            manifest.faces = faces
-            manifest.texts = texts
-            summary = gemini_data.get("notes", "")
-            if summary:
-                manifest.notes.append(f"Gemini analysis: {summary}")
-            manifest.notes.append(
-                f"Detected {len(faces)} face(s) and {len(texts)} name/PII item(s) from PDF. "
-                "Review each candidate and confirm your decisions."
-            )
-            manifest.notes.append(
-                "Note: PDF text-layer redaction (removing searchable text) requires PyMuPDF. "
-                "Detected items are shown for review; pixel-level protection applies to image exports only."
-            )
-            manifest.state = "review_required"
-        except Exception as exc:
-            manifest.state = "partially_analyzed"
-            manifest.notes.append(
-                f"Gemini PDF analysis failed ({type(exc).__name__}). "
-                "Try converting the PDF to an image for analysis."
-            )
+            import pymupdf as fitz
+        except ImportError:  # pragma: no cover - older PyMuPDF
+            import fitz  # type: ignore[no-redef]
+    except ImportError:
+        manifest.state = "failed"
+        manifest.notes.append("Local PDF analysis requires PyMuPDF, which is not installed.")
+        return
+
+    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+    try:
+        _extract_pdf_metadata(doc, file_name, manifest)
+        n_pages = doc.page_count
+        if doc.is_encrypted or not 0 < n_pages <= 100:
+            raise ValueError("Use an unlocked PDF with at most 100 pages")
+        for page_index, page in enumerate(doc):
+            # 1. Text layer (no OCR needed)
+            page_had_text = False
+            from .identity_detection import person_spans
+            page_text = page.get_text() or ""
+            page_had_text = bool(page_text.strip())
+            for start, end in person_spans(page_text):
+                name = page_text[start:end]
+                for rect in page.search_for(name):
+                    manifest.texts.append(TextCandidate(
+                        id=f"text-{uuid.uuid4().hex[:8]}", text=name,
+                        category="name_pattern",
+                        bbox=BoundingBox(int(rect.x0*1.5), int(rect.y0*1.5),
+                                         max(1, int(rect.width*1.5+1)), max(1, int(rect.height*1.5+1))),
+                        source_file=file_name, page_index=page_index, confidence_pct=90.0,
+                    ))
+
+            # 2 + 3. Render the page for face detection; OCR only if the text
+            # layer yielded nothing (scanned page) to avoid duplicate results.
+            if not CV2_AVAILABLE:
+                continue
+            pix = page.get_pixmap(matrix=fitz.Matrix(1.5, 1.5), alpha=False)
+            nparr = np.frombuffer(pix.samples, dtype=np.uint8)
+            rgb = nparr.reshape(pix.height, pix.width, 3)
+            img_bgr = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+            for face in _detect_faces_local(img_bgr, file_name):
+                face.page_index = page_index
+                manifest.faces.append(face)
+            if not page_had_text:
+                for text in _run_ocr_local(img_bgr, file_name):
+                    text.page_index = page_index
+                    manifest.texts.append(text)
+    finally:
+        doc.close()
+
+    if manifest.faces or manifest.texts or manifest.metadata:
+        manifest.state = "review_required"
+        manifest.notes.append(
+            f"Local analysis: {len(manifest.faces)} face candidate(s), "
+            f"{len(manifest.texts)} person-name candidate(s) from the searchable text layer, "
+            f"per-page rendering and OCR, and {len(manifest.metadata)} metadata field(s) "
+            f"across {n_pages} page(s). Review each candidate — automated detection is not perfect."
+        )
     else:
         manifest.state = "partially_analyzed"
         manifest.notes.append(
-            "PDF analysis requires a GEMINI_API_KEY for text extraction. "
-            "Set GEMINI_API_KEY in backend/.env, or convert the PDF to an image for local analysis."
+            f"Local analysis found no candidates across {n_pages} page(s). Detection can miss "
+            "low-resolution, handwritten, or unusual content — review the protected copy manually."
         )
 
+
+def analyze_pdf(pdf_bytes: bytes, file_name: str) -> AnalysisManifest:
+    manifest = AnalysisManifest(file_name=file_name, file_category="document", state="analyzing")
+    try:
+        _analyze_pdf_local(pdf_bytes, file_name, manifest)
+    except Exception:
+        manifest.state = "failed"
+        manifest.notes.append("PDF could not be analyzed. Use an unlocked, valid PDF.")
     return manifest
 
 
-# ── Audio Analysis ─────────────────────────────────────────────────────────────
-
 def analyze_audio(audio_bytes: bytes, file_name: str) -> AnalysisManifest:
-    manifest = AnalysisManifest(
-        file_name=file_name, file_category="audio", state="unsupported"
-    )
-    manifest.notes.append(
-        "Automated identity detection for audio files is not yet supported. "
-        "Speaker diarization and transcription require ML models not installed in this environment. "
-        "Note: removing a spoken name does not anonymize a speaker's voice."
-    )
+    manifest = AnalysisManifest(file_name=file_name, file_category="audio", state="partially_analyzed")
+    try:
+        from pydub import AudioSegment, silence
+        audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
+        intervals = silence.detect_nonsilent(audio, min_silence_len=400, silence_thresh=-40, seek_step=20)
+        manifest.voices = [{"id": f"voice-{i}", "start": start / 1000, "end": end / 1000}
+                           for i, (start, end) in enumerate(intervals[:500])]
+        manifest.notes.append("Sound intervals may contain speech or noise, not identified speakers. Listen and mark reporter/whistleblower intervals. Spoken names require manual review.")
+    except Exception:
+        manifest.state = "failed"
+        manifest.notes.append("Recording could not be decoded. Check FFmpeg and file format.")
     return manifest
 
 
@@ -535,6 +424,13 @@ def analyze_video(video_bytes: bytes, file_name: str) -> AnalysisManifest:
     manifest = AnalysisManifest(
         file_name=file_name, file_category="video", state="analyzing"
     )
+    if not CV2_AVAILABLE:
+        manifest.state = "failed"
+        manifest.notes.append(
+            "Video analysis requires OpenCV, which is not installed in this environment. "
+            "The original file is preserved unchanged."
+        )
+        return manifest
     manifest.notes.append(
         f"Video is analyzed by sampling up to {MAX_FRAMES} frames (~1 per second). "
         "Faces appearing for less than 1 second between sampled frames may be missed."
@@ -542,6 +438,7 @@ def analyze_video(video_bytes: bytes, file_name: str) -> AnalysisManifest:
 
     import tempfile, os
     tmp_path = None
+    cap = None
     try:
         with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as tmp:
             tmp.write(video_bytes)
@@ -560,7 +457,6 @@ def analyze_video(video_bytes: bytes, file_name: str) -> AnalysisManifest:
         manifest.image_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         manifest.image_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        gemini_key = _get_gemini_key()
         seen_frames = 0
         frame_idx = 0
 
@@ -570,33 +466,11 @@ def analyze_video(video_bytes: bytes, file_name: str) -> AnalysisManifest:
             if not ret:
                 break
 
-            if gemini_key:
-                # Send key frame to Gemini
-                try:
-                    _, buf = cv2.imencode(".jpg", frame)
-                    frame_bytes = buf.tobytes()
-                    gemini_data = _call_gemini(frame_bytes, "image/jpeg")
-                    faces, texts = _gemini_to_manifest(
-                        gemini_data, file_name,
-                        manifest.image_width, manifest.image_height
-                    )
-                    for f in faces:
-                        f.frame_index = frame_idx
-                    for t in texts:
-                        t.page_index = seen_frames  # reuse page_index for frame number
-                    manifest.faces.extend(faces)
-                    manifest.texts.extend(texts)
-                except Exception:
-                    # Fall back to local for this frame
-                    faces = _detect_faces_local(frame, file_name)
-                    for f in faces:
-                        f.frame_index = frame_idx
-                    manifest.faces.extend(faces)
-            else:
-                faces = _detect_faces_local(frame, file_name)
-                for f in faces:
-                    f.frame_index = frame_idx
-                manifest.faces.extend(faces)
+            for face in _detect_faces_local(frame, file_name):
+                face.frame_index = frame_idx
+                manifest.faces.append(face)
+            for text in _run_ocr_local(frame, file_name):
+                manifest.texts.append(text)
 
             frame_idx += sample_interval
             seen_frames += 1
@@ -616,6 +490,8 @@ def analyze_video(video_bytes: bytes, file_name: str) -> AnalysisManifest:
         manifest.state = "failed"
         manifest.notes.append(f"Video analysis failed: {type(exc).__name__}. Original preserved.")
     finally:
+        if cap is not None:
+            cap.release()
         if tmp_path and os.path.exists(tmp_path):
             try:
                 os.unlink(tmp_path)

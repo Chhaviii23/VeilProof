@@ -87,7 +87,10 @@ def build_case_view(db: Session, complaint: models.Complaint) -> CaseRecordView:
         protected_status = "pending_release"
         released_at = None
         released_by = None
-        if derivative is not None:
+        if item.category == "reference":
+            # Reference links have no file content — no protected copy required.
+            protected_status = "not_required"
+        elif derivative is not None:
             rel = db.scalars(
                 select(models.ProtectedRelease)
                 .where(models.ProtectedRelease.derivative_version_id == derivative.id)
@@ -239,7 +242,7 @@ def _request_model(db: Session, req: models.AccessRequest, names: dict[str, str]
     return OriginalAccessRequestModel(
         id=req.id,
         caseId=req.complaint_id,
-        evidenceId=req.original_version_id,
+        evidenceId=db.get(models.EvidenceVersion, req.original_version_id).item_id,
         requestedBy=req.requester_principal_id,
         requestedByName=names.get(req.requester_principal_id, req.requester_principal_id),
         requestedAt=iso(req.created_at),

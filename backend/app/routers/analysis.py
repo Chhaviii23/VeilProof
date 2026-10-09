@@ -20,24 +20,15 @@ Security boundaries:
 
 from __future__ import annotations
 
-import io
 from dataclasses import asdict
-from typing import Annotated
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 
 from ..config import get_settings
 from ..services.analysis import analyze_file, AnalysisManifest
-from ..services.redaction import (
-    redact_image_content,
-    redact_audio_content,
-    redact_video_content,
-)
 
 router = APIRouter(prefix="/analysis", tags=["analysis"])
-
-_MAX = None  # resolved at request time from settings
 
 
 def _check_size(data: bytes) -> None:
@@ -49,7 +40,8 @@ def _check_size(data: bytes) -> None:
 # ── Scan endpoint ─────────────────────────────────────────────────────────────
 
 @router.post("/scan")
-async def scan_file(
+def scan_file(
+    response: Response,
     file: UploadFile = File(...),
     category: str = Form(...),
 ) -> dict:
@@ -74,11 +66,12 @@ async def scan_file(
       - Extracted values are returned only in this HTTP response; not logged.
       - Temporary files are deleted immediately after processing.
     """
+    response.headers["Cache-Control"] = "no-store"
     allowed_categories = {"image", "document", "audio", "video"}
     if category not in allowed_categories:
         raise HTTPException(status_code=422, detail="unsupported_category")
 
-    file_bytes = await file.read()
+    file_bytes = file.file.read(get_settings().max_upload_bytes + 1)
     _check_size(file_bytes)
 
     file_name = file.filename or "upload"
@@ -132,95 +125,39 @@ async def scan_file(
             }
             for m in manifest.metadata
         ],
+        "voices": manifest.voices,
         "notes": manifest.notes,
     }
 
 
-# ── Sanitize endpoint ─────────────────────────────────────────────────────────
-
+# Sanitization runs in a worker thread, so media processing does not block API I/O.
 @router.post("/sanitize")
-async def sanitize_file(
-    file: UploadFile = File(...),
-    category: str = Form(...),
-) -> Response:
-    """
-    Produce a sanitized derivative of the uploaded file.
-
-    For images  : Blur all detected faces and redact OCR-detected text regions.
-                  Strip all EXIF metadata from the output.
-    For audio   : Selective voice pitch-shift on the dominant speaker.
-                  Note: removing a spoken name does not anonymize speaker voice.
-    For video   : Frame-by-frame face blurring via OpenCV.
-                  ffmpeg must be available for audio remuxing.
-    For PDFs    : Unsupported in this release (see notes).
-    For others  : Returns 415 Unsupported Media Type.
-
-    The original file is never modified.  The derivative is returned directly
-    in the HTTP response body and is not stored server-side.
-
-    Privacy guarantees:
-      - No intermediate files are persisted after the response is sent.
-      - Original file hash is preserved separately (caller's responsibility).
-    """
-    file_bytes = await file.read()
+def sanitize_file(file: UploadFile = File(...), category: str = Form(...),
+                  plan: str = Form(...)) -> Response:
+    from pydantic import ValidationError
+    from ..services.protection import ProtectionPlan, protect, receipt
+    file_bytes = file.file.read(get_settings().max_upload_bytes + 1)
     _check_size(file_bytes)
-
-    if category == "image":
-        sanitized = redact_image_content(file_bytes)
-        return Response(
-            content=sanitized,
-            media_type="image/jpeg",
-            headers={
-                "Content-Disposition": "attachment; filename=protected.jpg",
-                "X-VeilProof-Protection": "faces-blurred,text-redacted,exif-stripped",
-            },
-        )
-
-    elif category == "audio":
-        sanitized = redact_audio_content(file_bytes)
-        return Response(
-            content=sanitized,
-            media_type="audio/mpeg",
-            headers={
-                "Content-Disposition": "attachment; filename=protected.mp3",
-                "X-VeilProof-Protection": "voice-pitch-shifted",
-                "X-VeilProof-Warning": (
-                    "Voice pitch-shifting reduces speaker recognition risk but "
-                    "does not guarantee anonymization.  Spoken names are not "
-                    "automatically removed."
-                ),
-            },
-        )
-
-    elif category == "video":
-        sanitized = redact_video_content(file_bytes)
-        media_type = "video/mp4"
-        return Response(
-            content=sanitized,
-            media_type=media_type,
-            headers={
-                "Content-Disposition": "attachment; filename=protected.mp4",
-                "X-VeilProof-Protection": "faces-blurred-on-sampled-frames",
-                "X-VeilProof-Warning": (
-                    "Video protection covers sampled frames only. "
-                    "Brief appearances may be missed.  Verify the output."
-                ),
-            },
-        )
-
-    elif category == "document":
-        raise HTTPException(
-            status_code=415,
-            detail={
-                "code": "unsupported_format",
-                "message": (
-                    "PDF sanitization (genuine text-layer redaction) requires "
-                    "PyMuPDF which is not yet installed.  "
-                    "The original file is preserved unchanged.  "
-                    "Convert the PDF to images for pixel-level protection."
-                ),
-            },
-        )
-
-    else:
+    if category not in {"image", "document", "audio", "video"}:
         raise HTTPException(status_code=415, detail="unsupported_category")
+    try:
+        choices = ProtectionPlan.model_validate_json(plan)
+    except ValidationError:
+        raise HTTPException(status_code=422, detail="Invalid protection choices")
+    try:
+        sanitized = protect(file_bytes, category, choices)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    except Exception:
+        raise HTTPException(status_code=422, detail="Protection could not complete. Check media tools and file format; original preserved.")
+    if not sanitized:
+        raise HTTPException(status_code=422, detail="Protection produced an empty file")
+    if len(sanitized) > get_settings().max_upload_bytes:
+        raise HTTPException(status_code=413, detail="Protected copy exceeds the upload limit. Reduce the source file size and regenerate.")
+    mime, ext = {"image": ("image/jpeg", "jpg"), "document": ("application/pdf", "pdf"),
+                 "audio": ("audio/mpeg", "mp3"), "video": ("video/mp4", "mp4")}[category]
+    return Response(content=sanitized, media_type=mime, headers={
+        "Content-Disposition": f"attachment; filename=protected.{ext}",
+        "X-VeilProof-Receipt": receipt(file_bytes, sanitized, category),
+        "Cache-Control": "no-store",
+    })

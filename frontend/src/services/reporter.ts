@@ -10,7 +10,8 @@ import {
   bytesToHex,
   sha256Hex,
 } from './crypto';
-import { protectJpeg, type MetadataFinding } from './jpegProtect';
+import { type MetadataFinding } from './jpegProtect';
+import { inferCategory } from './localAnalysis';
 
 export type SubmitStage = 'prepare' | 'protect' | 'encrypt' | 'upload' | 'finalize';
 
@@ -27,8 +28,8 @@ export interface SubmitResult {
 }
 
 function generateTrackingSecret(): string {
-  const seg = () => Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `TRK-${seg()}-${seg()}-${seg()}`;
+  const bytes = crypto.getRandomValues(new Uint8Array(24));
+  return `TRK-${bytesToHex(bytes)}`;
 }
 
 async function uploadOne(
@@ -66,10 +67,15 @@ async function uploadOne(
   return reserve.object_id;
 }
 
+// Keep a failed finalization retry in memory with the same intake and secret.
+// A network failure after acceptance must not create a second report.
+let pendingFinalize: { draft: ReportDraft; run: () => Promise<SubmitResult> } | undefined;
+
 export async function submitReport(
   draft: ReportDraft,
   onStage?: (stage: SubmitStage) => void,
 ): Promise<SubmitResult> {
+  if (pendingFinalize?.draft === draft) { onStage?.('finalize'); return pendingFinalize.run(); }
   onStage?.('prepare');
   const trackingSecret = generateTrackingSecret();
   const broker = await api.brokerKey();
@@ -81,25 +87,19 @@ export async function submitReport(
   let removedCount = 0;
 
   for (const item of draft.evidence) {
-    if (item.type === 'image/jpeg' && item.file) {
-      onStage?.('protect');
-      const protection = await protectJpeg(item.file);
-      findings.push(...protection.findings);
-      removedCount += protection.removedFields.length;
+    if (item.file) {
+      if (!draft.identityProtectionApplied || !item.protectedBlob || !item.protectionReceipt || !item.protectedReviewed) {
+        throw new Error('Review identity protection and generate each protected copy before submitting.');
+      }
+      const category = inferCategory(item.file);
       onStage?.('encrypt');
-      const originalId = await uploadOne(
-        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'image', protection.originalBytes, [],
-      );
-      const derivativeId = await uploadOne(
-        intake.intake_id, intake.capability, broker, KIND_DERIVATIVE, 'image',
-        protection.derivativeBytes, protection.removedFields,
-      );
-      bindings.push({
-        original_object_id: originalId,
-        derivative_object_id: derivativeId,
-        category: 'image',
-        display_label: item.sanitizedName ?? item.name,
-      });
+      const originalId = await uploadOne(intake.intake_id, intake.capability, broker,
+        KIND_ORIGINAL, category, new Uint8Array(await item.file.arrayBuffer()), []);
+      const derivativeId = await uploadOne(intake.intake_id, intake.capability, broker,
+        KIND_DERIVATIVE, category, new Uint8Array(await item.protectedBlob.arrayBuffer()), ['metadata']);
+      bindings.push({ original_object_id: originalId, derivative_object_id: derivativeId,
+        category, display_label: `Evidence ${bindings.length + 1}`,
+        protection_receipt: item.protectionReceipt });
       onStage?.('upload');
     } else if (item.type === 'link' && item.url) {
       const urlBytes = new TextEncoder().encode(item.url);
@@ -110,88 +110,40 @@ export async function submitReport(
         category: 'reference',
         display_label: item.linkTitle ?? item.name,
       });
-    } else if (
-      (item.type === 'audio/mpeg' || item.type.startsWith('audio/')) && item.file
-    ) {
-      // Audio: upload original only. Backend auto-generates redacted derivative via voice modulation.
-      onStage?.('protect');
-      const audioBytes = new Uint8Array(await item.file.arrayBuffer());
-      onStage?.('encrypt');
-      // Pass speaker preference via metadata_removed field so backend can route correctly
-      const speakerMeta = item.whistleblowerIsLouder === false
-        ? ['whistleblower_is_quieter']
-        : ['whistleblower_is_louder'];
-      const originalId = await uploadOne(
-        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'audio', audioBytes, speakerMeta,
-      );
-      bindings.push({
-        original_object_id: originalId,
-        derivative_object_id: null, // backend generates this
-        category: 'audio',
-        display_label: item.sanitizedName ?? item.name,
-      });
-      onStage?.('upload');
-    } else if (
-      (item.type === 'video/mp4' || item.type.startsWith('video/')) && item.file
-    ) {
-      // Video: upload original only. Backend auto-generates redacted derivative with face blurring.
-      onStage?.('protect');
-      const videoBytes = new Uint8Array(await item.file.arrayBuffer());
-      onStage?.('encrypt');
-      const originalId = await uploadOne(
-        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'video', videoBytes, [],
-      );
-      bindings.push({
-        original_object_id: originalId,
-        derivative_object_id: null,
-        category: 'video',
-        display_label: item.sanitizedName ?? item.name,
-      });
-      onStage?.('upload');
-    } else if (item.type === 'application/pdf' && item.file) {
-      // PDF: upload original only (no local protection; backend records as-is).
-      onStage?.('encrypt');
-      const pdfBytes = new Uint8Array(await item.file.arrayBuffer());
-      const originalId = await uploadOne(
-        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'document', pdfBytes, [],
-      );
-      bindings.push({
-        original_object_id: originalId,
-        derivative_object_id: null,
-        category: 'document',
-        display_label: item.sanitizedName ?? item.name,
-      });
-      onStage?.('upload');
-    } else if (!item.file && item.type !== 'link') {
-      skipped.push(item.name);
+    } else {
+      throw new Error(`Please reselect the evidence file: ${item.name}`);
     }
   }
 
   onStage?.('finalize');
-  const result = await api.finalize(intake.intake_id, intake.capability, draft.idempotencyKey, {
-    title: draft.title && draft.title.length >= 10 ? draft.title : 'Untitled Confidential Report',
-    description: draft.description && draft.description.length >= 50 ? draft.description : (draft.description || 'No description provided by the reporter.') + ' '.repeat(50),
-    category: draft.category || 'other',
-    incident_date: draft.incidentDate || null,
-    location: draft.location || null,
-    involved_parties: draft.involvedParties || null,
-    risk_factors: draft.riskFactors.filter(r => r !== 'no_risk'),
-    no_immediate_risk: draft.riskFactors.length === 0 || draft.riskFactors.includes('no_risk'),
-    objects: bindings,
-    tracking_secret: trackingSecret,
-  });
+  const finalize = async (): Promise<SubmitResult> => {
+    const result = await api.finalize(intake.intake_id, intake.capability, draft.idempotencyKey, {
+      title: draft.title.trim(),
+      description: draft.description.trim(),
+      category: draft.category || 'other',
+      incident_date: draft.incidentDate || null,
+      location: draft.location || null,
+      involved_parties: draft.involvedParties || null,
+      risk_factors: draft.riskFactors.filter(r => r !== 'no_risk'),
+      no_immediate_risk: draft.riskFactors.length === 0 || draft.riskFactors.includes('no_risk'),
+      objects: bindings,
+      tracking_secret: trackingSecret,
+    });
 
-  return {
-    caseId: result.case_id,
-    caseReference: result.case_reference,
-    acceptedAt: result.accepted_at,
-    attachmentCount: result.attachment_count,
-    proofStatus: result.proof_status,
-    priority: result.priority,
-    trackingSecret,
-    intakeCapability: intake.capability,
-    protection: { metadataFieldsRemoved: removedCount, findings, skipped },
+    return {
+      caseId: result.case_id,
+      caseReference: result.case_reference,
+      acceptedAt: result.accepted_at,
+      attachmentCount: result.attachment_count,
+      proofStatus: result.proof_status,
+      priority: result.priority,
+      trackingSecret,
+      intakeCapability: intake.capability,
+      protection: { metadataFieldsRemoved: removedCount, findings, skipped },
+    };
   };
+  pendingFinalize = { draft, run: finalize };
+  return finalize();
 }
 
 export async function trackComplaint(caseReference: string, trackingSecret: string) {

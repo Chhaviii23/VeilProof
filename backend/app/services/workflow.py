@@ -14,6 +14,9 @@ from . import audit as audit_svc
 from . import roster
 
 PRIVACY_DONE_TEXT = "Evidence privacy review completed."
+# Categories that require a released protected derivative before the privacy
+# review can complete. Reference links have no file content to protect.
+REQUIRES_DERIVATIVE_CATEGORIES = {"image", "audio", "video", "document"}
 
 
 def _item(db: Session, complaint_id: str, evidence_id: str) -> models.EvidenceItem:
@@ -44,7 +47,10 @@ def protected_images(db: Session, complaint: models.Complaint) -> list[dict]:
         status = "pending_release"
         provenance = "real"
         inspection = "pending"
-        if deriv is None and item.seeded_meta:
+        if item.category not in REQUIRES_DERIVATIVE_CATEGORIES:
+            # Reference links carry no file content — nothing to redact or release.
+            status = "not_required"
+        elif deriv is None and item.seeded_meta:
             status = item.seeded_meta.get("protectedCopyStatus", "pending_release")
         elif deriv is not None:
             rel = db.scalars(
@@ -144,6 +150,9 @@ def hold_derivative(
 
 
 def _maybe_privacy_done(db: Session, complaint: models.Complaint) -> None:
+    # Sessions run with autoflush=False; flush so the release row added by the
+    # caller is visible to the queries below (otherwise completion never fires).
+    db.flush()
     items = db.scalars(
         select(models.EvidenceItem).where(
             models.EvidenceItem.complaint_id == complaint.id, models.EvidenceItem.active.is_(True)
@@ -152,6 +161,9 @@ def _maybe_privacy_done(db: Session, complaint: models.Complaint) -> None:
     if not items:
         return
     for item in items:
+        if item.category not in REQUIRES_DERIVATIVE_CATEGORIES:
+            # Reference links have nothing to redact — they never block completion.
+            continue
         deriv = _derivative_version(db, item.id)
         if deriv is None:
             return

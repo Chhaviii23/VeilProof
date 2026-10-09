@@ -44,6 +44,8 @@ function EvidencePanel({ caseId, ev, oar, onRequestOriginal, sessionRole }: Evid
     pending_release: 'Awaiting Privacy Officer release',
     released: 'Protected copy released',
     rejected: 'Release rejected',
+    held: 'Held for protection correction',
+    not_required: 'No protected copy required (reference link)',
   };
 
   const sealedLabel: Record<EvidenceRecord['sealedOriginalStatus'], string> = {
@@ -338,9 +340,9 @@ export function CaseDetailPage() {
         await api.staffAction(session.token, `/cases/${caseId}/access-requests`, {
           evidence_id: evidenceId,
           purpose: input.purpose,
-          reason: input.reason,
+          insufficiency_reason: input.reason,
           duration_minutes: input.durationMinutes,
-          access_mode: input.accessMode,
+          mode: input.accessMode,
           urgency: input.urgency,
           intended_action: input.intendedAction
         });

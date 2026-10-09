@@ -56,6 +56,7 @@ async function request<T>(
 }
 
 export const api = {
+  uploadPolicy: () => request<{ max_file_bytes: number; max_items: number }>('GET', '/public/upload-policy'),
   // Meta
   brokerKey: () =>
     request<{ key_id: string; wrap: string; operator_id: string; public_key_pem: string }>(

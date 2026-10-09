@@ -83,8 +83,11 @@ export interface EvidenceItem {
   findings: MetadataFinding[];
   sanitizedName?: string;
   isDemo?: boolean;
-  // In-memory only: the user's selected file, used for local protection/encryption. Never sent raw.
+  // In-memory only. Analysis sends the file to this backend; vault uploads are encrypted.
   file?: File;
+  protectedReviewed?: boolean;
+  protectedBlob?: Blob;
+  protectionReceipt?: string;
   // Link-type fields
   url?: string;
   linkTitle?: string;
@@ -101,7 +104,7 @@ export interface EvidenceRecord {
   type: string;
   size: number;
   metadataRemoved: string[];
-  protectedCopyStatus: 'pending_release' | 'released' | 'rejected';
+  protectedCopyStatus: 'pending_release' | 'released' | 'rejected' | 'held' | 'not_required';
   protectedCopyReleasedAt?: string;
   protectedCopyReleasedBy?: string;
   protectedCopyReleasedByName?: string;

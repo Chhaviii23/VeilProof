@@ -137,3 +137,7 @@ def run_forever(interval: float = 2.0) -> None:
             db.close()
         if processed == 0:
             time.sleep(interval)
+
+
+if __name__ == "__main__":
+    run_forever()

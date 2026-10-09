@@ -68,12 +68,19 @@ def submit_report(
     operator_id = broker["operator_id"]
 
     objects = []
-    original_sha = protected_sha = None
+    original_sha = protected_sha = uploaded_derivative_sha = None
     if with_image:
         data = build_fixture()
         result = jpeg.protect(data)
         original_sha = result.original_sha256
-        protected_sha = result.protected_sha256
+        # The server re-applies content redaction (face/text blur + re-encode) to any
+        # client-uploaded derivative at finalize time. Recompute the expected
+        # protected hash with the same pipeline so tests verify independently.
+        from app.security.crypto import sha256_hex
+        from app.services.redaction import redact_image_content
+
+        uploaded_derivative_sha = result.protected_sha256
+        protected_sha = sha256_hex(redact_image_content(result.derivative_bytes))
         oid, vid = _upload_object(client, intake_id, cap, broker, operator_id, "original", "image", data)
         did, dvid = _upload_object(
             client, intake_id, cap, broker, operator_id, "derivative", "image",
@@ -109,6 +116,7 @@ def submit_report(
             "tracking_secret": tracking_secret,
             "original_sha256": original_sha,
             "protected_sha256": protected_sha,
+            "uploaded_derivative_sha256": uploaded_derivative_sha,
             "body": body,
             "headers": h,
         }

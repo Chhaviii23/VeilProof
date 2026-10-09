@@ -6,7 +6,7 @@
 // Change this to your backend URL.
 // On a real device, use your computer's local IP (e.g. http://192.168.x.x:8000)
 // In development with Expo Go on same Wi-Fi, use your machine's local IP.
-export const API_BASE = 'http://192.168.5.12:8000';
+export const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 export type ReportCategory =
   | 'corruption'
@@ -32,9 +32,15 @@ export const RISK_LABELS: Record<string, string> = {
   public_safety: 'Public safety danger',
 };
 
-async function request<T>(method: string, path: string, options?: { body?: unknown; token?: string }): Promise<T> {
+async function request<T>(
+  method: string,
+  path: string,
+  options?: { body?: unknown; token?: string; capability?: string; idempotencyKey?: string },
+): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (options?.token) headers['Authorization'] = `Bearer ${options.token}`;
+  if (options?.idempotencyKey) headers['Idempotency-Key'] = options.idempotencyKey;
+  if (options?.capability) headers['X-Intake-Capability'] = options.capability;
 
   const res = await fetch(`${API_BASE}${path}`, {
     method,
@@ -45,7 +51,7 @@ async function request<T>(method: string, path: string, options?: { body?: unkno
   const text = await res.text();
   if (!res.ok) {
     let msg = `HTTP ${res.status}`;
-    try { msg = JSON.parse(text)?.detail ?? msg; } catch {}
+    try { msg = JSON.parse(text)?.safe_message ?? JSON.parse(text)?.detail ?? msg; } catch {}
     throw new Error(msg);
   }
   if (!text) return undefined as T;
@@ -96,9 +102,9 @@ export interface VerifyResponse {
 }
 
 export const api = {
-  createIntake: () => request<IntakeSession>('POST', '/intake'),
+  createIntake: () => request<IntakeSession>('POST', '/intakes'),
 
-  finalizeReport: (intakeId: string, capability: string, body: {
+  finalizeReport: (intakeId: string, capability: string, idempotencyKey: string, body: {
     title: string;
     description: string;
     category: ReportCategory;
@@ -109,22 +115,23 @@ export const api = {
     no_immediate_risk: boolean;
     tracking_secret: string;
     objects: unknown[];
-  }) => request<SubmitReceiptResponse>('POST', `/intake/${intakeId}/finalize`, {
+  }) => request<SubmitReceiptResponse>('POST', `/intakes/${intakeId}/finalize`, {
     body,
-    token: capability,
+    capability,
+    idempotencyKey,
   }),
 
   trackSession: (case_reference: string, tracking_secret: string) =>
-    request<{ session_token: string; expires_at: string }>('POST', '/track/session', {
+    request<{ session_token: string; expires_at: string }>('POST', '/tracking/sessions', {
       body: { case_reference, tracking_secret },
     }),
 
   trackStatus: (token: string) =>
-    request<TrackStatusResponse>('GET', '/track/status', { token }),
+    request<TrackStatusResponse>('GET', '/tracking/status', { token }),
 
   verifyProof: (pkg: unknown) =>
     request<VerifyResponse>('POST', '/verify/proof', { body: { package: pkg, candidates: {} } }),
 
   proofPackage: (token: string) =>
-    request<{ package: unknown }>('GET', '/track/proof-package', { token }),
+    request<{ package: unknown }>('GET', '/tracking/proof-package', { token }),
 };

@@ -64,6 +64,7 @@ export interface AnalysisManifest {
   faces: FaceCandidate[];
   texts: TextCandidate[];
   metadata: MetadataCandidate[];
+  voices?: { id: string; start: number; end: number }[];
   notes: string[];
 }
 
@@ -87,7 +88,7 @@ export function inferCategory(file: File): string {
   return 'unknown';
 }
 
-const API_BASE = '/api/v1/analysis';
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL ?? '/api/v1'}/analysis`;
 
 /**
  * Send a file to the backend for local identity-clue analysis.
@@ -147,12 +148,21 @@ export async function scanFile(file: File): Promise<AnalysisManifest> {
  *
  * The original file is never modified.
  */
-export async function sanitizeFile(file: File): Promise<{ blob: Blob; warnings: string[] }> {
+export interface ProtectionPlan {
+  regions: (BoundingBox & { page_index?: number | null })[];
+  terms: string[];
+  audio: 'mute' | 'intervals' | 'keep';
+  intervals: { start: number; end: number }[];
+  protect_video: boolean;
+}
+
+export async function sanitizeFile(file: File, plan: ProtectionPlan): Promise<{ blob: Blob; receipt: string; warnings: string[] }> {
   const category = inferCategory(file);
 
   const form = new FormData();
   form.append('file', file);
   form.append('category', category);
+  form.append('plan', JSON.stringify(plan));
 
   const resp = await fetch(`${API_BASE}/sanitize`, {
     method: 'POST',
@@ -179,5 +189,7 @@ export async function sanitizeFile(file: File): Promise<{ blob: Blob; warnings: 
   if (warning) warnings.push(warning);
 
   const blob = await resp.blob();
-  return { blob, warnings };
+  const receipt = resp.headers.get('X-VeilProof-Receipt');
+  if (!receipt) throw new Error('Protected copy receipt is missing.');
+  return { blob, receipt, warnings };
 }

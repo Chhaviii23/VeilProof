@@ -374,7 +374,10 @@ def protected_content(
         plaintext = open_envelope(version.envelope, get_storage().get(obj.storage_path))
     except CryptoError as exc:
         raise ForbiddenError("content failed authentication") from exc
-    return Response(content=plaintext, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+    from ..services.views import CATEGORY_MIME
+
+    media_type = CATEGORY_MIME.get(item.category, "application/octet-stream")
+    return Response(content=plaintext, media_type=media_type, headers={"Cache-Control": "no-store"})
 
 
 # ─── Notifications ───────────────────────────────────────────────────────────

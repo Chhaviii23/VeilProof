@@ -68,27 +68,28 @@ function EvidenceContentViewer({
   if (!contentUrl) return null;
   
   const type = ev.type || '';
+  const download = !isOriginalMode && <a href={contentUrl} download={`protected.${type === 'application/pdf' ? 'pdf' : type.startsWith('audio/') ? 'mp3' : type.startsWith('video/') ? 'mp4' : 'jpg'}`} className="block p-3 text-sm text-ember underline">Download protected copy</a>;
   if (type.startsWith('image/')) {
     return (
-      <div className="flex justify-center p-5">
+      <div className="flex flex-col items-center p-5">{download}
         <img src={contentUrl} className="max-w-full h-auto max-h-[70vh] rounded-md border border-rule object-contain" alt="Evidence" />
       </div>
     );
   } else if (type.startsWith('video/')) {
     return (
-      <div className="flex justify-center p-5">
+      <div className="flex flex-col items-center p-5">{download}
         <video src={contentUrl} controls className="max-w-full rounded-md border border-rule" />
       </div>
     );
   } else if (type.startsWith('audio/')) {
     return (
-      <div className="p-5">
+      <div className="p-5">{download}
         <audio src={contentUrl} controls className="w-full" />
       </div>
     );
   } else {
     return (
-      <div className="p-0">
+      <div className="p-0">{download}
         <iframe src={contentUrl} className="w-full h-150 border-0 bg-white" title="Evidence" />
       </div>
     );
@@ -171,7 +172,7 @@ export function EvidenceViewerPage() {
 
   // Protected copy mode
   if (!isOriginalMode) {
-    if (ev.protectedCopyStatus !== 'released') {
+    if (ev.protectedCopyStatus !== 'released' && session?.investigator.roleType === 'case-investigator') {
       return (
         <div className="flex flex-col gap-6 max-w-150">
           <nav className="flex items-center gap-2 text-[13px] text-ink-muted">

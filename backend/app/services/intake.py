@@ -28,6 +28,8 @@ from . import audit as audit_svc
 
 CRITICAL_FACTORS = {"physical_threat", "family_threat", "public_safety"}
 PROTECTED_CATEGORY_LIMIT = {"document", "image", "audio", "video", "reference"}
+# Categories whose protected copy requires server-side content redaction.
+CONTENT_PROTECTED_CATEGORIES = {"image", "audio", "video", "document"}
 
 
 def create_intake(db: Session) -> IntakeCreateResponse:
@@ -93,7 +95,7 @@ def store_content(
     if obj.attached or obj.state in ("complete", "inspected"):
         raise ConflictError("object already completed")
     s = get_settings()
-    if len(data) > s.max_upload_bytes:
+    if len(data) > s.max_upload_bytes + 16:
         raise PayloadTooLargeError("ciphertext exceeds limit")
     if obj.expected_ciphertext_digest and sha256_hex(data) != obj.expected_ciphertext_digest:
         raise ValidationFailure("ciphertext digest does not match reservation")
@@ -119,6 +121,10 @@ def complete_object(
     if obj.state not in ("complete", "inspected"):
         raise ConflictError("object content not uploaded")
     stored = get_storage().get(obj.storage_path)
+    if req.plaintext_length > get_settings().max_upload_bytes:
+        raise PayloadTooLargeError("plaintext exceeds limit")
+    if req.plaintext_length != obj.expected_size or len(stored) != req.plaintext_length + 16:
+        raise ValidationFailure("uploaded size does not match reservation")
     if sha256_hex(stored) != req.ciphertext_digest:
         raise ValidationFailure("stored ciphertext digest mismatch")
     if obj.expected_ciphertext_digest and req.ciphertext_digest != obj.expected_ciphertext_digest:
@@ -195,14 +201,30 @@ def finalize(
         seen_categories.add(binding.category)
         original = _get_session_object(db, session, binding.original_object_id)
         _require_attachable(original)
+        if original.kind != "original" or original.category != binding.category or original.attached:
+            raise ValidationFailure("invalid original binding")
         derivative = None
         if binding.derivative_object_id:
             derivative = _get_session_object(db, session, binding.derivative_object_id)
             _require_attachable(derivative)
-        elif original.category in ("image", "audio", "video"):
-            # Auto-generate a redacted derivative
+            if derivative.kind != "derivative" or derivative.category != binding.category or derivative.attached:
+                raise ValidationFailure("invalid derivative binding")
+            if binding.protection_receipt:
+                from .protection import verify_receipt
+                if not verify_receipt(binding.protection_receipt, original.plaintext_sha256,
+                                      derivative.plaintext_sha256, binding.category):
+                    raise ValidationFailure("protected copy receipt is invalid or expired; regenerate the copy")
+                derivative.provenance = "reporter_reviewed_redaction"
+            else:
+                # Legacy clients cannot assert that arbitrary bytes are protected.
+                derivative = _reprotect_uploaded_derivative(db, session, derivative, original.category)
+        elif binding.protection_receipt:
+            raise ValidationFailure("protected copy is missing")
+        if derivative is None and original.category in CONTENT_PROTECTED_CATEGORIES:
             derivative = _auto_generate_derivative(db, session, original)
-            
+        if derivative is None and original.category in CONTENT_PROTECTED_CATEGORIES:
+            raise ValidationFailure("protected copy could not be generated; original has not been submitted")
+
         prepared.append((original, derivative, binding))
 
     priority = "critical" if any(f in CRITICAL_FACTORS for f in req.risk_factors) else "standard"
@@ -363,57 +385,61 @@ def intake_state(db: Session, session: models.IntakeSession) -> IntakeStateRespo
     )
 
 
-def _auto_generate_derivative(db: Session, session: models.IntakeSession, original: models.UploadObject) -> models.UploadObject | None:
-    from ..security.crypto import open_envelope, sha256_hex, seal, new_dek, new_nonce, wrap_dek, make_envelope, KIND_DERIVATIVE
-    from ..storage import get_storage
-    from .redaction import redact_image_content
-    
-    storage = get_storage()
-    try:
-        ciphertext = storage.get(original.storage_path)
-        plaintext = open_envelope(original.envelope, ciphertext)
-    except Exception as e:
-        print(f"Failed to decrypt original for redaction: {e}")
-        return None
-        
-    if original.category == "audio":
+def _redact_plaintext(category: str, plaintext: bytes, metadata_removed: list[str] | None = None) -> bytes:
+    """Dispatch to the content-redaction pipeline for a category."""
+    if category == "audio":
         from .redaction import redact_audio_content
         is_louder = True
-        if original.metadata_removed and "whistleblower_is_quieter" in original.metadata_removed:
+        if metadata_removed and "whistleblower_is_quieter" in metadata_removed:
             is_louder = False
-        redacted = redact_audio_content(plaintext, whistleblower_is_louder=is_louder)
-        removed_metadata = ["voice_characteristics", "metadata"]
-    elif original.category == "video":
+        return redact_audio_content(plaintext, whistleblower_is_louder=is_louder)
+    if category == "video":
         from .redaction import redact_video_content
-        redacted = redact_video_content(plaintext)
-        removed_metadata = ["faces", "metadata"]
-    else:
-        from .redaction import redact_image_content
-        redacted = redact_image_content(plaintext)
-        removed_metadata = ["faces", "text", "exif", "metadata"]
-    
-    obj = models.UploadObject(
-        intake_session_id=session.id,
-        kind="derivative",
-        category=original.category,
-        storage_path=original.storage_path + "_deriv",
-        state="inspected",
-        expires_at=session.expires_at,
+        return redact_video_content(plaintext)
+    if category == "document":
+        from .redaction import redact_pdf_content
+        return redact_pdf_content(plaintext)
+    from .redaction import redact_image_content
+    return redact_image_content(plaintext)
+
+
+def _removed_metadata_for(category: str) -> list[str]:
+    if category == "audio":
+        return ["voice_characteristics", "metadata"]
+    if category == "video":
+        return ["faces", "metadata"]
+    if category == "document":
+        return ["faces", "text", "embedded_text_layer", "metadata"]
+    return ["faces", "text", "exif", "metadata"]
+
+
+def _seal_derivative(
+    db: Session,
+    session: models.IntakeSession,
+    obj: models.UploadObject,
+    redacted: bytes,
+) -> None:
+    """Seal redacted plaintext into an upload object and persist it to storage."""
+    from ..security.crypto import (
+        KIND_DERIVATIVE,
+        build_aad,
+        make_envelope,
+        new_dek,
+        new_nonce,
+        seal,
+        sha256_hex,
+        wrap_dek,
     )
-    db.add(obj)
-    db.flush()
-    
+    from ..storage import get_storage
+
     dek = new_dek()
     nonce = new_nonce()
-    from ..security.crypto import build_aad
     aad = build_aad(session.operator_id, obj.id, obj.planned_version_id, KIND_DERIVATIVE, len(redacted))
     new_ciphertext = seal(redacted, dek, nonce, aad)
-    wrapped_dek = wrap_dek(dek)
-    
     obj.envelope = make_envelope(
         key_id=get_settings().key_broker_public_key_id,
         nonce=nonce,
-        wrapped_dek=wrapped_dek,
+        wrapped_dek=wrap_dek(dek),
         operator_id=session.operator_id,
         object_id=obj.id,
         version_id=obj.planned_version_id,
@@ -425,8 +451,73 @@ def _auto_generate_derivative(db: Session, session: models.IntakeSession, origin
     obj.plaintext_sha256 = sha256_hex(redacted)
     obj.plaintext_length = len(redacted)
     obj.provenance = "automated_redaction"
-    obj.metadata_removed = removed_metadata
-    
-    storage.put(obj.storage_path, new_ciphertext)
+    storage = get_storage()
+    try:
+        storage.replace(obj.storage_path, new_ciphertext)
+    except FileNotFoundError:
+        storage.put(obj.storage_path, new_ciphertext)
+
+
+def _reprotect_uploaded_derivative(
+    db: Session, session: models.IntakeSession,
+    derivative: models.UploadObject, category: str,
+) -> models.UploadObject | None:
+    """Re-run server-side content redaction on a client-uploaded derivative.
+
+    Reporters may upload a metadata-minimized derivative, but visible-content
+    protection (face/text blurring) is server-authoritative: the derivative's
+    plaintext is decrypted, redacted, and re-sealed in place before it can be
+    released to staff. Returns None when the content cannot be re-protected so
+    the caller can fall back to generating a derivative from the original.
+    """
+    from ..security.crypto import open_envelope
+    from ..storage import get_storage
+
+    try:
+        ciphertext = get_storage().get(derivative.storage_path)
+        plaintext = open_envelope(derivative.envelope, ciphertext)
+        redacted = _redact_plaintext(category, plaintext)
+    except Exception as e:
+        print(f"Failed to re-protect client derivative: {type(e).__name__}")
+        return None
+
+    if not redacted or redacted == plaintext:
+        # Redaction produced no change — protection did not take effect.
+        return None
+
+    _seal_derivative(db, session, derivative, redacted)
+    derivative.metadata_removed = sorted(
+        set(derivative.metadata_removed or []) | set(_removed_metadata_for(category))
+    )
+    db.flush()
+    return derivative
+
+
+def _auto_generate_derivative(db: Session, session: models.IntakeSession, original: models.UploadObject) -> models.UploadObject | None:
+    from ..security.crypto import open_envelope
+    from ..storage import get_storage
+
+    try:
+        ciphertext = get_storage().get(original.storage_path)
+        plaintext = open_envelope(original.envelope, ciphertext)
+        redacted = _redact_plaintext(original.category, plaintext, original.metadata_removed)
+    except Exception as e:
+        print(f"Failed to generate protected copy: {type(e).__name__}")
+        return None
+
+    obj = models.UploadObject(
+        intake_session_id=session.id,
+        kind="derivative",
+        category=original.category,
+        storage_path=original.storage_path + "_deriv",
+        state="inspected",
+        expires_at=session.expires_at,
+    )
+    db.add(obj)
+    db.flush()
+
+    _seal_derivative(db, session, obj, redacted)
+    obj.metadata_removed = _removed_metadata_for(original.category)
+    db.flush()
     return obj
 

@@ -18,6 +18,12 @@ function formatSize(bytes: number) {
   return bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(0)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// Evidence that has a protected copy to release. Reference links carry no file
+// content, so they never require a release (backend reports 'not_required').
+function needsRelease(ev: EvidenceRecord): boolean {
+  return ev.protectedCopyStatus !== 'released' && ev.protectedCopyStatus !== 'not_required';
+}
+
 const textareaClass = 'w-full border border-rule rounded-[8px] bg-canvas px-3 py-2 text-[13px] text-ink-1 placeholder:text-ink-muted resize-none focus:outline-2 focus:outline-offset-2 focus:outline-ink-1 h-20';
 
 function Stat({ label, value, tone }: { label: string; value: React.ReactNode; tone?: string }) {
@@ -59,7 +65,7 @@ function CaseSummary({ c }: { c: CaseRecord }) {
   );
 }
 
-function ProtectedCopyCard({ ev }: { ev: EvidenceRecord }) {
+function ProtectedCopyCard({ ev, caseId }: { ev: EvidenceRecord; caseId: string }) {
   return (
     <div className="border border-rule rounded-[12px] bg-surface overflow-hidden">
       <div className="px-5 py-3 bg-surface-2 border-b border-rule flex items-center justify-between gap-3">
@@ -69,8 +75,11 @@ function ProtectedCopyCard({ ev }: { ev: EvidenceRecord }) {
         </div>
         {ev.protectedCopyStatus === 'pending_release' && <span className="px-2 py-0.5 rounded-full text-[11px] bg-warning-bg text-warning font-medium shrink-0">Awaiting release</span>}
         {ev.protectedCopyStatus === 'released' && <span className="px-2 py-0.5 rounded-full text-[11px] bg-success-bg text-success font-medium shrink-0">Released</span>}
+        {ev.protectedCopyStatus === 'not_required' && <span className="px-2 py-0.5 rounded-full text-[11px] bg-surface-2 text-ink-muted font-medium shrink-0">No protected copy needed</span>}
+        {ev.protectedCopyStatus === 'held' && <span className="px-2 py-0.5 rounded-full text-[11px] bg-warning-bg text-warning font-medium shrink-0">Held for correction</span>}
       </div>
       <div className="p-5 flex flex-col gap-3">
+        {ev.versions?.some(v => v.kind === 'derivative') && <Link className="text-sm text-ember underline" to={`/investigator/cases/${caseId}/evidence/${ev.id}`}>Inspect protected copy before release</Link>}
         {ev.protectionNote && <p className="text-[13px] text-ink-1">{ev.protectionNote}</p>}
         <div>
           <p className="text-[13px] font-medium text-ink-1 mb-2">Metadata removed by Privacy Guardian</p>
@@ -94,7 +103,7 @@ function ReleasePanel({ c, officerId, officerName }: { c: CaseRecord; officerId:
   const [loading, setLoading] = useState(false);
   const [returning, setReturning] = useState(false);
   const [reason, setReason] = useState('');
-  const pending = c.evidence.filter((e) => e.protectedCopyStatus !== 'released').length;
+  const pending = c.evidence.filter(needsRelease).length;
   const locked = !!c.assignedOfficerCode || c.status === 'closed';
 
   const { session } = useInvestigator();
@@ -103,7 +112,7 @@ function ReleasePanel({ c, officerId, officerName }: { c: CaseRecord; officerId:
     setLoading(true);
     try {
       if (session?.token) {
-        const pendingEv = c.evidence.filter((e) => e.protectedCopyStatus !== 'released');
+        const pendingEv = c.evidence.filter(needsRelease);
         for (const ev of pendingEv) {
           await api.staffAction(session.token, `/cases/${c.id}/releases`, { evidence_id: ev.id, version_id: null });
         }
@@ -389,7 +398,7 @@ export function CasePrivacyReviewPage() {
 
   const officerId = session.investigator.id;
   const officerName = session.investigator.name;
-  const allReleased = caseRecord.evidence.length === 0 || caseRecord.evidence.every((e) => e.protectedCopyStatus === 'released');
+  const allReleased = caseRecord.evidence.length === 0 || caseRecord.evidence.every((e) => !needsRelease(e));
 
   return (
     <div className="flex flex-col gap-6 max-w-190">
@@ -412,7 +421,7 @@ export function CasePrivacyReviewPage() {
         <h2 className="text-[16px] font-semibold text-ink-1">Protected evidence</h2>
         {caseRecord.evidence.length === 0 ? (
           <div className="border border-rule rounded-[10px] bg-surface p-6 text-center"><p className="text-[14px] text-ink-muted">No evidence attached to this case.</p></div>
-        ) : caseRecord.evidence.map((ev) => <ProtectedCopyCard key={ev.id} ev={ev} />)}
+        ) : caseRecord.evidence.map((ev) => <ProtectedCopyCard key={ev.id} ev={ev} caseId={caseRecord.id} />)}
         <ReleasePanel c={caseRecord} officerId={officerId} officerName={officerName} />
       </section>
 

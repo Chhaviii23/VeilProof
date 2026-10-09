@@ -13,29 +13,10 @@ interface Stage {
 
 const STAGES: Omit<Stage, 'state'>[] = [
   { id: 'prepare', label: 'Preparing report' },
-  { id: 'encrypt', label: 'Protecting metadata locally' },
-  { id: 'upload', label: 'Encrypting and uploading' },
+  { id: 'encrypt', label: 'Encrypting reviewed copies' },
+  { id: 'upload', label: 'Uploading sealed evidence' },
   { id: 'proof', label: 'Recording evidence receipt' },
 ];
-
-function uid() {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-}
-
-function generateRef(): string {
-  const year = new Date().getFullYear();
-  const n = Math.floor(1000 + Math.random() * 8999);
-  return `VP-${year}-${n}`;
-}
-
-function generateTrackingSecret(): string {
-  function seg() { return Math.random().toString(36).slice(2, 6).toUpperCase(); }
-  return `TRK-${seg()}-${seg()}-${seg()}`;
-}
-
-function delay(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
 
 export function SubmittingPage() {
   const { draft } = useDraft();
@@ -84,8 +65,8 @@ export function SubmittingPage() {
         name: e.sanitizedName ?? e.name,
         type: e.type,
         size: e.size,
-        metadataRemoved: e.type === 'image/jpeg' ? result.protection.findings.map((f) => f.field) : [],
-        protectedCopyStatus: 'pending_release',
+        metadataRemoved: e.type.startsWith('image/') ? result.protection.findings.map((f) => f.field) : [],
+        protectedCopyStatus: e.type === 'link' ? 'not_required' : 'pending_release',
         sealedOriginalStatus: 'sealed',
       }));
 
@@ -107,7 +88,7 @@ export function SubmittingPage() {
         originalAccessRequests: [],
         auditTrail: [
           {
-            id: `ae-${uid()}`,
+            id: `ae-${crypto.randomUUID()}`,
             type: 'report_accepted',
             detail: `Report accepted — ${caseReference}${isCritical ? ' [Critical priority]' : ''}`,
             occurredAt: now,
@@ -116,7 +97,7 @@ export function SubmittingPage() {
         ],
         publicUpdates: [
           {
-            id: `pu-${uid()}`,
+            id: `pu-${crypto.randomUUID()}`,
             status: 'received_securely',
             text: 'Your report has been received securely. A privacy review is underway.',
             addedAt: now,
@@ -138,7 +119,6 @@ export function SubmittingPage() {
       caseRecord.integrity = { proofStatus: receipt.proofStatus };
 
       dispatch({ type: 'SUBMIT_COMPLAINT', payload: { caseRecord, receipt, trackingSecret } });
-      await delay(300);
       navigate('/report/receipt', { replace: true });
     } catch (err) {
       setStages((prev) => prev.map((s) => s.state === 'active' ? { ...s, state: 'error' } : s));

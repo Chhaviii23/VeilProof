@@ -11,13 +11,7 @@ import { Colors, Spacing } from '@/constants/theme';
 import { useDraft } from '@/store/DraftContext';
 import { api, type ReportCategory } from '@/services/api';
 
-const STAGES = [
-  'Encrypting evidence files…',
-  'Removing identifying metadata…',
-  'Submitting to VeilProof securely…',
-  'Registering blockchain commitment…',
-  'Finalising your case record…',
-];
+const STAGES = ['Preparing report…', 'Submitting report…', 'Report accepted'];
 
 export default function SubmittingScreen() {
   const scheme = useColorScheme() ?? 'dark';
@@ -33,20 +27,18 @@ export default function SubmittingScreen() {
   useEffect(() => {
     if (didRun.current) return;
     didRun.current = true;
-    submit();
-  }, []);
-
   async function submit() {
-    // Advance stages visually while backend call runs in parallel
-    const stageInterval = setInterval(() => {
-      setStage((s) => (s < STAGES.length - 1 ? s + 1 : s));
-    }, 900);
-
     try {
+      if (draft.evidence.length) throw new Error('Use the web reporting flow to review and upload evidence. No attachments have been submitted.');
+      if (draft.title.trim().length < 10 || draft.description.trim().length < 50) throw new Error('Complete the report title and description.');
       const intake = await api.createIntake();
-      const result = await api.finalizeReport(intake.intake_id, intake.capability, {
-        title: draft.title.trim(),
-        description: draft.description.trim(),
+      setStage(1);
+      // Backend enforces title >= 10 and description >= 50 chars.
+      const title = draft.title.trim();
+      const description = draft.description.trim();
+      const result = await api.finalizeReport(intake.intake_id, intake.capability, intake.intake_id, {
+        title,
+        description,
         category: draft.category as ReportCategory,
         incident_date: draft.incidentDate.trim() || undefined,
         location: draft.location.trim() || undefined,
@@ -57,7 +49,6 @@ export default function SubmittingScreen() {
         objects: [],
       });
 
-      clearInterval(stageInterval);
       setStage(STAGES.length - 1);
 
       receiptRef.current = { reference: result.case_reference, secret: draft.trackingSecret.trim() };
@@ -76,7 +67,6 @@ export default function SubmittingScreen() {
       }, 800);
 
     } catch (err: any) {
-      clearInterval(stageInterval);
       Alert.alert(
         'Submission Failed',
         err.message || 'Could not connect to VeilProof. Please check your network and try again.',
@@ -84,6 +74,9 @@ export default function SubmittingScreen() {
       );
     }
   }
+
+    void submit();
+  }, [draft, reset, router]);
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: c.background }]}>
@@ -96,7 +89,7 @@ export default function SubmittingScreen() {
 
         <Text style={[styles.title, { color: c.text }]}>Submitting securely</Text>
         <Text style={[styles.sub, { color: c.textSecondary }]}>
-          Your identity is never transmitted. Do not close the app.
+          Submitting the report details you reviewed. Do not close the app.
         </Text>
 
         {/* Stage progress */}

@@ -1,183 +1,199 @@
-import cv2
-import numpy as np
-import pytesseract
-from PIL import Image
+"""Content-protection pipeline: face/text blurring for images, PDFs, audio, video.
+
+Heavy dependencies (OpenCV, Tesseract OCR, Pydub, PyMuPDF) are imported lazily so a
+missing *optional* dependency degrades one capability instead of crashing intake.
+Face blurring is the core protection and requires OpenCV (opencv-python-headless).
+"""
+
+from __future__ import annotations
+
 import io
 
+import cv2
+import numpy as np
+
+# Haar cascade for face detection (loaded once, reused across calls).
+_FACE_CASCADE = None
+
+
+def _face_cascade() -> cv2.CascadeClassifier:
+    global _FACE_CASCADE
+    if _FACE_CASCADE is None:
+        _FACE_CASCADE = cv2.CascadeClassifier(
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        )
+    return _FACE_CASCADE
+
+
+def _blur_face_regions(img: np.ndarray, regions) -> int:
+    """Apply heavy Gaussian blur over padded face bounding boxes. Returns count."""
+    count = 0
+    for (x, y, w, h) in regions:
+        pad_x = max(8, int(w * 0.15))
+        pad_y = max(8, int(h * 0.15))
+        x1 = max(0, x - pad_x)
+        y1 = max(0, y - pad_y)
+        x2 = min(img.shape[1], x + w + pad_x)
+        y2 = min(img.shape[0], y + h + pad_y)
+        if x2 <= x1 or y2 <= y1:
+            continue
+        roi = img[y1:y2, x1:x2]
+        # Kernel size must be odd and larger than the ROI, or OpenCV raises.
+        k = min(51, max(3, (min(roi.shape[0], roi.shape[1]) // 2) * 2 + 1))
+        img[y1:y2, x1:x2] = 0
+        count += 1
+    return count
+
+
+def _blur_text_regions(img: np.ndarray) -> int:
+    """OCR-based text redaction. Optional: skipped when tesseract is unavailable."""
+    try:
+        import pytesseract
+        from .tesseract_util import configure_tesseract
+
+        if not configure_tesseract():
+            raise RuntimeError("OCR is required for automatic text protection")
+    except ImportError as exc:
+        raise RuntimeError("OCR is required for automatic text protection") from exc
+    try:
+        d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
+    except Exception as e:
+        raise RuntimeError("Text redaction failed") from e
+    count = 0
+    n_boxes = len(d["text"])
+    for i in range(n_boxes):
+        try:
+            conf = int(float(d["conf"][i]))
+        except (TypeError, ValueError):
+            continue
+        if conf <= 60:
+            continue
+        text = d["text"][i].strip()
+        if not text:
+            continue
+        (x, y, w, h) = (d["left"][i], d["top"][i], d["width"][i], d["height"][i])
+        if w <= 5 or h <= 5:
+            continue
+        x1 = max(0, x - 2)
+        y1 = max(0, y - 2)
+        x2 = min(img.shape[1], x + w + 2)
+        y2 = min(img.shape[0], y + h + 2)
+        roi = img[y1:y2, x1:x2]
+        k = min(21, max(3, (min(roi.shape[0], roi.shape[1]) // 2) * 2 + 1))
+        img[y1:y2, x1:x2] = 0
+        count += 1
+    return count
+
+
+def _detect_faces(img: np.ndarray):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    cascade = _face_cascade()
+    if cascade.empty():
+        return []
+    return list(cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)))
+
+
 def redact_image_content(image_bytes: bytes) -> bytes:
+    """Detect faces and text in an image and blur them. Returns modified JPEG bytes.
+
+    Falls back to returning the input bytes only when the image cannot be decoded
+    at all (in which case the caller must treat protection as failed).
     """
-    Detects faces and text in an image and blurs them for privacy.
-    Returns the modified image bytes.
-    """
-    # Convert bytes to numpy array
     nparr = np.frombuffer(image_bytes, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    
+
     if img is None:
-        # If OpenCV can't decode it, return original (might be another format)
-        return image_bytes
-        
-    # 1. Face Detection and Blurring
-    try:
-        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-        
-        for (x, y, w, h) in faces:
-            # Add some padding to the face bounding box
-            pad_x = int(w * 0.1)
-            pad_y = int(h * 0.1)
-            x1 = max(0, x - pad_x)
-            y1 = max(0, y - pad_y)
-            x2 = min(img.shape[1], x + w + pad_x)
-            y2 = min(img.shape[0], y + h + pad_y)
-            
-            roi = img[y1:y2, x1:x2]
-            # Heavy blur
-            blurred = cv2.GaussianBlur(roi, (51, 51), 30)
-            img[y1:y2, x1:x2] = blurred
-    except Exception as e:
-        print(f"Face redaction failed: {e}")
+        # Not a decodable raster image — caller must handle (e.g. re-route category).
+        raise ValueError("Image protection failed")
 
-    # 2. Text Detection and Blurring
+    # 1. Face detection and blurring (the core protection guarantee).
     try:
-        # Get dictionary of bounding boxes and confidences
-        d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
-        n_boxes = len(d['text'])
-        for i in range(n_boxes):
-            if int(d['conf'][i]) > 60:  # Confidence > 60%
-                text = d['text'][i].strip()
-                if not text:
-                    continue
-                    
-                (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-                
-                # Only blur reasonably sized boxes
-                if w > 5 and h > 5:
-                    # Slight padding
-                    x1 = max(0, x - 2)
-                    y1 = max(0, y - 2)
-                    x2 = min(img.shape[1], x + w + 2)
-                    y2 = min(img.shape[0], y + h + 2)
-                    
-                    roi = img[y1:y2, x1:x2]
-                    # Substantial blur to make text illegible
-                    blurred = cv2.GaussianBlur(roi, (21, 21), 10)
-                    img[y1:y2, x1:x2] = blurred
+        _blur_face_regions(img, _detect_faces(img))
     except Exception as e:
-        print(f"Text redaction failed: {e}")
+        raise RuntimeError("Face redaction failed") from e
 
-    # 3. Re-encode to JPEG
-    success, encoded_img = cv2.imencode('.jpg', img, [cv2.IMWRITE_JPEG_QUALITY, 85])
+    # 2. Text detection and blurring (optional OCR).
+    try:
+        _blur_text_regions(img)
+    except Exception as e:
+        raise RuntimeError("Text redaction failed") from e
+
+    # 3. Re-encode to JPEG — this also strips all EXIF/metadata.
+    success, encoded_img = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 85])
     if success:
         return encoded_img.tobytes()
-        
-    return image_bytes
+
+    raise RuntimeError("Image encoding failed")
+
+
+def redact_pdf_content(pdf_bytes: bytes) -> bytes:
+    """Produce a protected PDF copy: render each page, blur faces + text, rebuild.
+
+    The rebuilt PDF contains only redacted page rasters — the original text layer,
+    embedded metadata, attachments, and annotations do not carry over. Raises
+    RuntimeError when PyMuPDF is not installed so callers can fail loudly instead
+    of attaching an unredacted copy.
+    """
+    try:
+        try:
+            import pymupdf as fitz  # PyMuPDF ≥ 1.24
+        except ImportError:  # pragma: no cover - older PyMuPDF
+            import fitz  # type: ignore[no-redef]
+    except ImportError as exc:  # pragma: no cover - depends on environment
+        raise RuntimeError("PyMuPDF is required for PDF protection") from exc
+
+    from PIL import Image
+
+    src = fitz.open(stream=pdf_bytes, filetype="pdf")
+    pages: list[Image.Image] = []
+    try:
+        for page in src:
+            zoom = 2.0  # ~144 DPI — enough for face detection, bounded size
+            pix = page.get_pixmap(matrix=fitz.Matrix(zoom, zoom), alpha=False)
+            nparr = np.frombuffer(pix.samples, dtype=np.uint8)
+            img = nparr.reshape(pix.height, pix.width, 3).copy()
+
+            try:
+                _blur_face_regions(img, _detect_faces(img))
+            except Exception as e:
+                raise RuntimeError("PDF face redaction failed") from e
+            try:
+                _blur_text_regions(img)
+            except Exception as e:
+                raise RuntimeError("PDF text redaction failed") from e
+
+            pages.append(Image.fromarray(img))
+    finally:
+        src.close()
+
+    if not pages:
+        raise RuntimeError("PDF has no pages")
+
+    out = io.BytesIO()
+    # PIL rebuild: no original text layer, no document metadata, no embedded files.
+    pages[0].save(
+        out,
+        format="PDF",
+        save_all=True,
+        append_images=pages[1:],
+        resolution=144.0,
+    )
+    return out.getvalue()
+
 
 def redact_audio_content(audio_bytes: bytes, whistleblower_is_louder: bool = True) -> bytes:
-    """
-    Selective voice modulation — modulates only the WHISTLEBLOWER's voice segments.
-
-    Strategy (no ML model needed):
-    1. Split audio on silence to get per-turn segments.
-    2. Cluster segments into 2 groups by RMS energy:
-         - Louder group  → assumed to be the whistleblower (closer to mic)
-         - Quieter group → assumed to be the accused / other party
-    3. Pitch-shift + noise only the whistleblower's segments.
-    4. Reconstruct full track by stitching all segments in order.
-
-    If only 1 speaker is detected (monologue), the whole track is modulated.
-    Falls back to full-track modulation on any error.
-    """
-    try:
-        from pydub import AudioSegment, silence as pydub_silence
-    except ImportError:
-        return audio_bytes
-
-    try:
-        audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-
-        # ── 1. Silence-based turn segmentation ──────────────────────────────
-        # Each "chunk" is a voiced turn (pause ≥ 400 ms separates them)
-        chunks = pydub_silence.split_on_silence(
-            audio,
-            min_silence_len=400,      # ms of silence between turns
-            silence_thresh=audio.dBFS - 16,  # anything 16dB below avg = silence
-            keep_silence=200,         # preserve 200ms padding for naturalness
-        )
-
-        if not chunks:
-            # No voiced segments found — return original unchanged
-            return audio_bytes
-
-        if len(chunks) == 1:
-            # Only one block — treat as monologue, modulate everything
-            return _pitch_shift_segment(audio, audio)
-
-        # ── 2. Cluster by RMS energy (loudness proxy) ────────────────────────
-        rms_values = [chunk.rms for chunk in chunks]
-        median_rms = sorted(rms_values)[len(rms_values) // 2]
-
-        # Louder than median → speaker A (whistleblower if whistleblower_is_louder=True)
-        is_whistleblower = [
-            (rms >= median_rms) if whistleblower_is_louder else (rms < median_rms)
-            for rms in rms_values
-        ]
-
-        # ── 3. Modulate only whistleblower segments, stitch all back ────────
-        processed_chunks = []
-        for chunk, is_wb in zip(chunks, is_whistleblower):
-            if is_wb:
-                processed_chunks.append(_pitch_shift_segment(chunk, audio))
-            else:
-                processed_chunks.append(chunk)  # accused voice: untouched
-
-        # ── 4. Combine and export ────────────────────────────────────────────
-        combined = processed_chunks[0]
-        for seg in processed_chunks[1:]:
-            combined = combined + seg
-
-        out_buf = io.BytesIO()
-        combined.export(out_buf, format="mp3")
-        return out_buf.getvalue()
-
-    except Exception as e:
-        print(f"Audio redaction failed, falling back to full-track: {e}")
-        # Fallback: shift everything rather than fail silently
-        try:
-            from pydub import AudioSegment
-            audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-            out_buf = io.BytesIO()
-            _pitch_shift_segment(audio, audio).export(out_buf, format="mp3")
-            return out_buf.getvalue()
-        except Exception:
-            return audio_bytes
+    """Legacy clients get all audio muted; never infer identity from loudness."""
+    from .protection import protect, ProtectionPlan
+    return protect(audio_bytes, "audio", ProtectionPlan(audio="mute"))
 
 
-def _pitch_shift_segment(segment, reference_audio) -> "AudioSegment":
-    """Pitch-shift a single AudioSegment down by ~25% and add light noise."""
-    import random
-    new_rate = int(segment.frame_rate * 0.75)
-    shifted = segment._spawn(segment.raw_data, overrides={"frame_rate": new_rate})
-    shifted = shifted.set_frame_rate(segment.frame_rate)
-    # Very light noise overlay to mask vocal fingerprint
-    noise_raw = bytearray(random.randint(0, 255) for _ in range(len(shifted.raw_data)))
-    noise = segment._spawn(noise_raw)
-    return shifted.overlay(noise - 32)
-
-
-def redact_video_content(video_bytes: bytes) -> bytes:
-    """
-    Frame-by-frame face detection and blurring for video files.
-    Uses OpenCV Haar cascade (same as image redaction). Audio track is preserved via ffmpeg.
-    Returns the redacted video bytes (MP4).
-    Falls back to the original bytes on any error.
+def redact_video_content(video_bytes: bytes, protect_visuals: bool = True, mute_audio: bool = True) -> bytes:
+    """Re-encode video with explicitly chosen full-frame concealment/audio removal.
+    Never returns an original or a partial output on encoder failure.
     """
     import tempfile
     import os
     import subprocess
-
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
     with tempfile.TemporaryDirectory() as tmp:
         src_path = os.path.join(tmp, 'input.mp4')
@@ -190,7 +206,7 @@ def redact_video_content(video_bytes: bytes) -> bytes:
 
         cap = cv2.VideoCapture(src_path)
         if not cap.isOpened():
-            return video_bytes
+            raise ValueError("Video could not be decoded")
 
         fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
         width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -199,29 +215,29 @@ def redact_video_content(video_bytes: bytes) -> bytes:
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         writer = cv2.VideoWriter(vid_only_path, fourcc, fps, (width, height))
 
+        if not writer.isOpened():
+            cap.release()
+            raise ValueError("Video encoder is unavailable")
+        frame_count = 0
         try:
             while True:
                 ret, frame = cap.read()
                 if not ret:
                     break
 
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                faces = face_cascade.detectMultiScale(
-                    gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)
-                )
-                for (x, y, w, h) in faces:
-                    pad_x, pad_y = int(w * 0.15), int(h * 0.15)
-                    x1 = max(0, x - pad_x)
-                    y1 = max(0, y - pad_y)
-                    x2 = min(width,  x + w + pad_x)
-                    y2 = min(height, y + h + pad_y)
-                    roi = frame[y1:y2, x1:x2]
-                    frame[y1:y2, x1:x2] = cv2.GaussianBlur(roi, (51, 51), 30)
+                if protect_visuals:
+                    # Moving faces/text can evade sampled detection. Full-frame
+                    # concealment is explicit in the review UI; preserve timing.
+                    frame[:] = 0
 
                 writer.write(frame)
+                frame_count += 1
         finally:
             cap.release()
             writer.release()
+
+        if frame_count == 0:
+            raise ValueError("Video contains no decodable frames")
 
         # Re-mux: copy original audio track + redacted video using ffmpeg
         try:
@@ -231,22 +247,18 @@ def redact_video_content(video_bytes: bytes) -> bytes:
                     '-i', vid_only_path,   # redacted video (no audio)
                     '-i', src_path,        # original (for audio)
                     '-map', '0:v:0',       # video from redacted
-                    '-map', '1:a?',        # audio from original (optional)
+                    *(['-an'] if mute_audio else ['-map', '1:a?']),        # audio from original (optional)
                     '-c:v', 'libx264', '-crf', '23', '-preset', 'fast',
-                    '-c:a', 'aac',
+                    '-c:a', 'aac', '-map_metadata', '-1',
                     out_path,
                 ],
                 capture_output=True,
                 timeout=300,
             )
             if result.returncode != 0:
-                # ffmpeg failed — return silent redacted video
-                with open(vid_only_path, 'rb') as f:
-                    return f.read()
-        except Exception as e:
-            print(f"ffmpeg mux failed: {e}")
-            with open(vid_only_path, 'rb') as f:
-                return f.read()
+                raise RuntimeError("Video encoding failed")
+        except Exception as exc:
+            raise RuntimeError("FFmpeg is required for video protection") from exc
 
         with open(out_path, 'rb') as f:
             return f.read()

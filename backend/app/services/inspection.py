@@ -8,6 +8,8 @@ no human original-preview endpoint.
 
 from __future__ import annotations
 
+import io
+
 from sqlalchemy.orm import Session
 
 from .. import models
@@ -18,7 +20,7 @@ from ..storage import get_storage
 MAGIC = {
     "image": (b"\xff\xd8\xff",),
     "document": (b"%PDF",),
-    "audio": (b"ID3", b"\xff\xfb", b"\xff\xf3", b"\xff\xf2"),
+    "audio": (b"ID3", b"\xff\xfb", b"\xff\xf3", b"\xff\xf2", b"RIFF", b"OggS", b"fLaC"),
     "video": (b"\x00\x00\x00", b"ftyp"),
 }
 
@@ -83,10 +85,17 @@ def _validate_type(obj: models.UploadObject, plaintext: bytes) -> dict:
             return {"ok": False, "reason": "reference_not_https"}
         return detail
     if category == "image":
-        from .jpeg import _load
+        from PIL import Image
 
         try:
-            _load(plaintext)
+            img = Image.open(io.BytesIO(plaintext))
+            img.load()
+            # Any format the pipeline can decode is acceptable; the protected
+            # derivative is re-encoded to JPEG regardless (PNG/webp included).
+            if img.format not in {"JPEG", "JPG", "MPO", "PNG", "WEBP", "BMP", "GIF"}:
+                return {"ok": False, "reason": "unsupported_image_format", "decode_ok": False}
+            if img.width * img.height > 80_000_000:
+                return {"ok": False, "reason": "image_too_large", "decode_ok": False}
             detail["decode_ok"] = True
         except Exception:
             return {"ok": False, "reason": "image_decode_failed", "decode_ok": False}
@@ -94,7 +103,7 @@ def _validate_type(obj: models.UploadObject, plaintext: bytes) -> dict:
     prefixes = MAGIC.get(category)
     if prefixes and not any(plaintext.startswith(p) for p in prefixes):
         # video magic is a container ftyp; accept if 'ftyp' appears early
-        if category == "video" and b"ftyp" in plaintext[:32]:
+        if category in {"audio", "video"} and b"ftyp" in plaintext[:32]:
             return detail
         return {"ok": False, "reason": "signature_mismatch", "mime_ok": False}
     return detail

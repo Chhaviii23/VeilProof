@@ -48,7 +48,7 @@ function formatDate(iso: string) {
   } catch { return iso; }
 }
 
-function TimelineItem({ update, c }: { update: TrackStatusResponse['public_updates'][0]; c: typeof Colors.dark }) {
+function TimelineItem({ update, c }: { update: TrackStatusResponse['public_updates'][0]; c: typeof Colors.dark | typeof Colors.light }) {
   return (
     <View style={[styles.timelineItem, { borderLeftColor: '#e8531a' }]}>
       <Text style={[styles.timelineDate, { color: c.textSecondary }]}>{formatDate(update.added_at)}</Text>

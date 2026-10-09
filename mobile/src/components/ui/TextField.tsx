@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 import { Colors, Spacing } from '@/constants/theme';
 
-interface Props extends Omit<TextInputProps, 'style'> {
+interface Props extends TextInputProps {
   label?: string;
   hint?: string;
   error?: string;
   containerStyle?: ViewStyle;
 }
 
-export function TextField({ label, hint, error, containerStyle, ...rest }: Props) {
+export function TextField({ label, hint, error, containerStyle, style, ...rest }: Props) {
   const scheme = useColorScheme() ?? 'dark';
   const c = Colors[scheme === 'unspecified' ? 'dark' : scheme];
 
@@ -32,6 +32,7 @@ export function TextField({ label, hint, error, containerStyle, ...rest }: Props
             color: c.text,
             borderColor: error ? '#ef4444' : 'transparent',
           },
+          style,
         ]}
         placeholderTextColor={c.textSecondary}
         {...rest}

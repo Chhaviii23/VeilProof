@@ -24,7 +24,7 @@ export function PrivacyQueuePage() {
   const { session } = useInvestigator();
 
   const awaitingAssignment = useMemo(
-    () => allCases.filter((c) => !c.assignedOfficerCode && c.status !== 'closed' && c.evidence.every((e) => e.protectedCopyStatus === 'released')),
+    () => allCases.filter((c) => !c.assignedOfficerCode && c.status !== 'closed' && c.evidence.every((e) => e.protectedCopyStatus === 'released' || e.protectedCopyStatus === 'not_required')),
     [allCases],
   );
   const pendingRelease = useMemo<EvidenceNeedingReview[]>(() => {

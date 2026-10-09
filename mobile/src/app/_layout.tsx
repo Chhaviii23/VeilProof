@@ -23,12 +23,7 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ title: 'Submit Report', headerLargeTitle: true }} />
         <Stack.Screen name="explore" options={{ title: 'Track Report', headerLargeTitle: true }} />
         <Stack.Screen name="verify" options={{ title: 'Verify Proof', headerLargeTitle: true }} />
-        {/* Submit sub-flow */}
-        <Stack.Screen name="submit/risk" options={{ title: 'Risk & Urgency' }} />
-        <Stack.Screen name="submit/evidence" options={{ title: 'Evidence' }} />
-        <Stack.Screen name="submit/review" options={{ title: 'Review Report' }} />
-        <Stack.Screen name="submit/submitting" options={{ title: 'Submitting', headerShown: false }} />
-        <Stack.Screen name="submit/receipt" options={{ title: 'Submitted', headerBackVisible: false }} />
+        <Stack.Screen name="submit" options={{ headerShown: false }} />
       </Stack>
     </DraftProvider>
   );

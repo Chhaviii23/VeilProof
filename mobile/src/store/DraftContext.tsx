@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useRef } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import type { ReportCategory } from '@/services/api';
 
 export interface EvidenceItem {

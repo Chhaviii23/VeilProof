@@ -33,6 +33,18 @@ class LocalCiphertextStorage:
         tmp.write_bytes(data)
         os.replace(tmp, path)
 
+    def replace(self, object_path: str, data: bytes) -> None:
+        """Overwrite an existing object.
+
+        Used only by the server-side protection pipeline (finalize), where the
+        plaintext content of a derivative object is re-redacted by the server
+        before it can ever be released. Intake uploads stay write-once.
+        """
+        path = self._path(object_path)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_bytes(data)
+        os.replace(tmp, path)
+
     def get(self, object_path: str) -> bytes:
         path = self._path(object_path)
         if not path.exists():

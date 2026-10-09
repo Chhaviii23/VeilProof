@@ -12,6 +12,12 @@ python-multipart==0.0.32
 python-dotenv==1.2.4
 httpx==0.28.1
 pytest==9.1.1
-opencv-python-headless
+numpy
+opencv-python-headless>=4.8,<5
 pytesseract
 pydub
+audioop-lts; python_version >= "3.13"
+PyMuPDF
+
+spacy==3.8.16
+en-core-web-md @ https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl

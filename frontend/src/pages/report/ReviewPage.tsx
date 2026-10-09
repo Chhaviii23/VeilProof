@@ -32,13 +32,19 @@ export function ReviewPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const hasErrors =
-    !draft.title.trim() ||
+    draft.title.trim().length < 10 ||
     !draft.category ||
     !draft.description.trim() ||
     draft.description.trim().length < 50;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (draft.evidence.some(e => e.type !== 'link' && (!e.protectedBlob || !e.protectionReceipt)) ||
+        (draft.evidence.some(e => e.file) && !draft.identityProtectionApplied)) {
+      toast('error', 'Generate and review protected copies before submitting.');
+      navigate('/report/identity-protection');
+      return;
+    }
     if (!draft.acknowledged) {
       toast('error', 'Please acknowledge the demo disclaimer before submitting.');
       return;
@@ -117,15 +123,15 @@ export function ReviewPage() {
                 {draft.evidence.map((item) => (
                   <div key={item.id} className="border border-rule rounded-[8px] p-3 bg-canvas">
                     <EvidenceRow item={item} />
-                    {draft.identityProtectionApplied && (
+                    {draft.identityProtectionApplied && item.protectedBlob && (
                       <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-ink-muted border-t border-rule pt-2">
                         <span className="flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-warning inline-block" />
-                          Original: Encrypted and sealed
+                          Original: Preserved; encrypted on submission
                         </span>
                         <span className="flex items-center gap-1 text-success">
                           <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
-                          Protected copy: Ready for investigation
+                          Protected copy: Ready for privacy review
                         </span>
                         <span className="flex items-center gap-1 text-success">
                           <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />

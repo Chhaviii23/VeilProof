@@ -94,3 +94,21 @@ def test_upload_without_capability_rejected(client):
         json={"kind": "original", "category": "image", "expected_size": 10},
     )
     assert r.status_code == 401
+
+
+def test_upload_at_plaintext_limit_allows_gcm_tag(client, monkeypatch):
+    from app.config import get_settings
+    from tests.helpers import _upload_object
+
+    monkeypatch.setattr(get_settings(), "max_upload_bytes", 1024)
+    policy = client.get(f"{API}/public/upload-policy").json()
+    assert policy["max_file_bytes"] == 1024
+    intake = client.post(f"{API}/intakes").json()
+    broker = client.get(f"{API}/public/broker-key").json()
+    data = b"https://example.test/".ljust(1024, b"x")
+    _upload_object(client, intake["intake_id"], intake["capability"], broker,
+                   broker["operator_id"], "original", "reference", data)
+    over = client.post(f"{API}/intakes/{intake['intake_id']}/objects",
+                       headers={"X-Intake-Capability": intake["capability"]},
+                       json={"kind": "original", "category": "reference", "expected_size": 1025})
+    assert over.status_code == 413

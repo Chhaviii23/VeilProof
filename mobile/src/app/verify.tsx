@@ -114,7 +114,7 @@ export default function VerifyScreen() {
           <View style={[styles.card, { backgroundColor: c.backgroundElement }]}>
             <Text style={[styles.cardTitle, { color: c.text }]}>Verify by case reference</Text>
             <Text style={[styles.cardDesc, { color: c.textSecondary }]}>
-              We'll fetch the proof package automatically using your credentials.
+              We will fetch the proof package automatically using your credentials.
             </Text>
             <TextField
               label="Case Reference"
@@ -227,7 +227,7 @@ export default function VerifyScreen() {
   );
 }
 
-function CheckRow({ label, pass, c }: { label: string; pass: boolean; c: typeof Colors.dark }) {
+function CheckRow({ label, pass, c }: { label: string; pass: boolean; c: typeof Colors.dark | typeof Colors.light }) {
   return (
     <View style={styles.checkRow}>
       <Text style={{ fontSize: 16 }}>{pass ? '✅' : '❌'}</Text>

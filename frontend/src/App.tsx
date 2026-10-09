@@ -29,25 +29,25 @@ import { SubmittingPage } from './pages/report/SubmittingPage';
 import { ReceiptPage } from './pages/report/ReceiptPage';
 
 // Case Investigator pages
-import { SignInPage } from './pages/investigator/SignInPage';
-import { CasesPage } from './pages/investigator/CasesPage';
-import { CaseDetailPage } from './pages/investigator/CaseDetailPage';
-import { ApprovalsPage } from './pages/investigator/ApprovalsPage';
-import { EvidenceViewerPage } from './pages/investigator/EvidenceViewerPage';
-import { AuditPage } from './pages/investigator/AuditPage';
-import { ApprovalQueuePage } from './pages/investigator/ApprovalQueuePage';
-import { AccountPage } from './pages/investigator/AccountPage';
+const SignInPage = React.lazy(() => import('./pages/investigator/SignInPage').then(m => ({ default: m.SignInPage })));
+const CasesPage = React.lazy(() => import('./pages/investigator/CasesPage').then(m => ({ default: m.CasesPage })));
+const CaseDetailPage = React.lazy(() => import('./pages/investigator/CaseDetailPage').then(m => ({ default: m.CaseDetailPage })));
+const ApprovalsPage = React.lazy(() => import('./pages/investigator/ApprovalsPage').then(m => ({ default: m.ApprovalsPage })));
+const EvidenceViewerPage = React.lazy(() => import('./pages/investigator/EvidenceViewerPage').then(m => ({ default: m.EvidenceViewerPage })));
+const AuditPage = React.lazy(() => import('./pages/investigator/AuditPage').then(m => ({ default: m.AuditPage })));
+const ApprovalQueuePage = React.lazy(() => import('./pages/investigator/ApprovalQueuePage').then(m => ({ default: m.ApprovalQueuePage })));
+const AccountPage = React.lazy(() => import('./pages/investigator/AccountPage').then(m => ({ default: m.AccountPage })));
 
 // Privacy Officer pages
-import { PrivacyQueuePage } from './pages/privacy-officer/PrivacyQueuePage';
-import { CasePrivacyReviewPage } from './pages/privacy-officer/CasePrivacyReviewPage';
+const PrivacyQueuePage = React.lazy(() => import('./pages/privacy-officer/PrivacyQueuePage').then(m => ({ default: m.PrivacyQueuePage })));
+const CasePrivacyReviewPage = React.lazy(() => import('./pages/privacy-officer/CasePrivacyReviewPage').then(m => ({ default: m.CasePrivacyReviewPage })));
 
 // Oversight Officer pages
-import { OversightApprovalsPage } from './pages/oversight/OversightApprovalsPage';
-import { OversightClosuresPage } from './pages/oversight/OversightClosuresPage';
+const OversightApprovalsPage = React.lazy(() => import('./pages/oversight/OversightApprovalsPage').then(m => ({ default: m.OversightApprovalsPage })));
+const OversightClosuresPage = React.lazy(() => import('./pages/oversight/OversightClosuresPage').then(m => ({ default: m.OversightClosuresPage })));
 
 // Utility
-import { DemoPage } from './pages/DemoPage';
+const DemoPage = React.lazy(() => import('./pages/DemoPage').then(m => ({ default: m.DemoPage })));
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Wizard steps config
@@ -255,7 +255,7 @@ export default function App() {
       <AppProvider>
         <StaffDataSyncer />
         <ToastContainer />
-        <AppRoutes />
+        <React.Suspense fallback={<main className="p-8 text-ink-2" role="status">Loading…</main>}><AppRoutes /></React.Suspense>
       </AppProvider>
     </BrowserRouter>
   );
