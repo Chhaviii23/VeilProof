@@ -121,6 +121,12 @@ export const api = {
     request<Json>('POST', `/staff${path}`, { body, ...bearer(token) }),
   protectedContent: (token: string, versionId: string) =>
     request<ArrayBuffer>('GET', `/staff/evidence/${versionId}/protected`, bearer(token)),
+  activateGrant: (token: string, grantId: string) =>
+    request<{ handle: string; started_at: string | null; expires_at: string | null; mode: string; evidence_id: string }>('POST', `/staff/grants/${grantId}/activate`, bearer(token)),
+  revokeGrant: (token: string, grantId: string) =>
+    request<Json>('POST', `/staff/grants/${grantId}/revoke`, bearer(token)),
+  viewerContent: (token: string, handle: string) =>
+    request<ArrayBuffer>('POST', '/staff/viewer/content', { body: { handle }, ...bearer(token) }),
   notifications: (token: string) => request<unknown[]>('GET', '/staff/notifications', bearer(token)),
 };
 

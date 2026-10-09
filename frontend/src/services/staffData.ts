@@ -37,6 +37,7 @@ function adaptEvidence(e: any): EvidenceRecord {
     sealedOriginalStatus: e.sealedOriginalStatus ?? 'sealed',
     originalAccessRequestId: e.originalAccessRequestId ?? undefined,
     protectionNote: e.protectionNote ?? undefined,
+    versions: e.versions ?? [],
   };
 }
 
@@ -66,6 +67,7 @@ function adaptOAR(r: any): OriginalAccessRequest {
     status: r.status,
     accessGrantedAt: r.accessGrantedAt ?? undefined,
     accessExpiresAt: r.accessExpiresAt ?? undefined,
+    grantId: r.grantId ?? undefined,
   };
 }
 

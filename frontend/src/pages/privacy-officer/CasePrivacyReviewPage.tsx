@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { ConfirmationDialog } from '../../components/ui/ConfirmationDialog';
 import { useApp, useCase, useInvestigator } from '../../store/AppContext';
+import { api } from '../../services/api';
 import { ANTI_CORRUPTION_OFFICERS } from '../../services/fixtures';
 import { ACCESS_MODE_LABELS, URGENCY_LABELS, RISK_FACTOR_LABELS, CRITICAL_RISK_FACTORS } from '../../types';
 import type { CaseRecord, EvidenceRecord, OriginalAccessRequest, AntiCorruptionOfficer } from '../../types';
@@ -96,12 +97,24 @@ function ReleasePanel({ c, officerId, officerName }: { c: CaseRecord; officerId:
   const pending = c.evidence.filter((e) => e.protectedCopyStatus !== 'released').length;
   const locked = !!c.assignedOfficerCode || c.status === 'closed';
 
+  const { session } = useInvestigator();
+
   async function releaseAll() {
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 400));
-    dispatch({ type: 'RELEASE_ALL_PROTECTED_COPIES', payload: { caseId: c.id, officerId, officerName } });
-    toast('success', 'Protected copies released. Originals remain sealed.');
-    setLoading(false);
+    try {
+      if (session?.token) {
+        const pendingEv = c.evidence.filter((e) => e.protectedCopyStatus !== 'released');
+        for (const ev of pendingEv) {
+          await api.staffAction(session.token, `/cases/${c.id}/releases`, { evidence_id: ev.id, version_id: null });
+        }
+      }
+      dispatch({ type: 'RELEASE_ALL_PROTECTED_COPIES', payload: { caseId: c.id, officerId, officerName } });
+      toast('success', 'Protected copies released. Originals remain sealed.');
+    } catch (err: any) {
+      toast('error', `Failed to release: ${err.message || 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
   }
 
   function returnForCorrection() {
@@ -167,12 +180,21 @@ function AccessRequestCard({ c, ev, req, officerId, officerName }: { c: CaseReco
   const investigatorCode = c.assignedOfficerCode;
   const officer = ANTI_CORRUPTION_OFFICERS.find((o) => o.code === investigatorCode);
 
+  const { session } = useInvestigator();
+
   async function decide(decision: 'approved' | 'rejected' | 'clarification_requested') {
     setLoading(decision);
-    await new Promise((r) => setTimeout(r, 400));
-    dispatch({ type: 'PRIVACY_REVIEW_DECISION', payload: { caseId: c.id, requestId: req.id, decision, officerId, officerName, notes: notes.trim() || undefined } });
-    toast(decision === 'rejected' ? 'info' : 'success', decision === 'approved' ? 'Recommended. Sent to the Oversight Officer for final approval.' : decision === 'rejected' ? 'Access request rejected.' : 'Clarification requested from the Anti-Corruption Officer.');
-    setLoading(null);
+    try {
+      if (session?.token) {
+        await api.staffAction(session.token, `/cases/${c.id}/access-requests/${req.id}/privacy-decisions`, { decision, notes: notes.trim() || null });
+      }
+      dispatch({ type: 'PRIVACY_REVIEW_DECISION', payload: { caseId: c.id, requestId: req.id, decision, officerId, officerName, notes: notes.trim() || undefined } });
+      toast(decision === 'rejected' ? 'info' : 'success', decision === 'approved' ? 'Recommended. Sent to the Oversight Officer for final approval.' : decision === 'rejected' ? 'Access request rejected.' : 'Clarification requested from the Anti-Corruption Officer.');
+    } catch (err: any) {
+      toast('error', `Failed to save decision: ${err.message || 'Unknown error'}`);
+    } finally {
+      setLoading(null);
+    }
   }
 
   const needsNotes = !notes.trim();
@@ -276,14 +298,23 @@ function OfficerAssignmentPanel({ c, officerId, officerName }: { c: CaseRecord; 
     return list.sort((a, b) => expertiseScore(b, c) - expertiseScore(a, c));
   }, [sort, c]);
 
+  const { session } = useInvestigator();
+
   async function confirmAssign() {
     if (!pick) return;
     setAssigning(true);
-    await new Promise((r) => setTimeout(r, 500));
-    dispatch({ type: 'ASSIGN_CASE_OFFICER', payload: { caseId: c.id, officerCode: pick.code, officerName: pick.name, assignedById: officerId, assignedByName: officerName } });
-    toast('success', `Case assigned to ${pick.code}. They have been notified.`);
-    setAssigning(false);
-    setPick(null);
+    try {
+      if (session?.token) {
+        await api.staffAction(session.token, `/cases/${c.id}/assignments`, { officer_code: pick.code });
+      }
+      dispatch({ type: 'ASSIGN_CASE_OFFICER', payload: { caseId: c.id, officerCode: pick.code, officerName: pick.name, assignedById: officerId, assignedByName: officerName } });
+      toast('success', `Case assigned to ${pick.code}. They have been notified.`);
+    } catch (err: any) {
+      toast('error', `Failed to assign case: ${err.message || 'Unknown error'}`);
+    } finally {
+      setAssigning(false);
+      setPick(null);
+    }
   }
 
   const availabilityColor = { Available: 'text-success bg-success-bg', Moderate: 'text-warning bg-warning-bg', 'High workload': 'text-error bg-error-bg' };

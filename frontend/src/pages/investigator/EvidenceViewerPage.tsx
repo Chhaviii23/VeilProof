@@ -3,6 +3,97 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ErrorState } from '../../components/ui/ErrorState';
 import { Button } from '../../components/ui/Button';
 import { useCase, useApp, useInvestigator } from '../../store/AppContext';
+import { api } from '../../services/api';
+import type { EvidenceRecord, OriginalAccessRequest, InvestigatorSession } from '../../types';
+
+function EvidenceContentViewer({
+  caseId,
+  ev,
+  oar,
+  isOriginalMode,
+  session
+}: {
+  caseId: string;
+  ev: EvidenceRecord;
+  oar?: OriginalAccessRequest;
+  isOriginalMode: boolean;
+  session: InvestigatorSession | null;
+}) {
+  const [contentUrl, setContentUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!session?.token) return;
+    
+    let active = true;
+    let url = '';
+    
+    async function loadContent() {
+      try {
+        let buffer: ArrayBuffer;
+        if (isOriginalMode && oar?.grantId) {
+          const res = await api.activateGrant(session!.token!, oar.grantId);
+          buffer = await api.viewerContent(session!.token!, res.handle);
+        } else if (!isOriginalMode) {
+          const v = ev.versions?.find((x) => x.kind === 'derivative');
+          if (!v) throw new Error('No protected version found');
+          buffer = await api.protectedContent(session!.token!, v.id);
+        } else {
+          throw new Error('Cannot view original without a grant');
+        }
+        
+        if (!active) return;
+        
+        const blob = new Blob([buffer], { type: ev.type });
+        url = URL.createObjectURL(blob);
+        setContentUrl(url);
+      } catch (err: any) {
+        if (active) setError(err.message || 'Failed to load evidence');
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    
+    loadContent();
+    
+    return () => {
+      active = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [session, isOriginalMode, ev, oar]);
+
+  if (loading) return <div className="p-5 text-ink-muted flex justify-center items-center h-[200px]">Loading actual file content from secure vault...</div>;
+  if (error) return <div className="p-5 text-error flex justify-center items-center h-[200px]">{error}</div>;
+  if (!contentUrl) return null;
+  
+  const type = ev.type || '';
+  if (type.startsWith('image/')) {
+    return (
+      <div className="flex justify-center p-5">
+        <img src={contentUrl} className="max-w-full h-auto max-h-[70vh] rounded-[8px] border border-rule object-contain" alt="Evidence" />
+      </div>
+    );
+  } else if (type.startsWith('video/')) {
+    return (
+      <div className="flex justify-center p-5">
+        <video src={contentUrl} controls className="max-w-full rounded-[8px] border border-rule" />
+      </div>
+    );
+  } else if (type.startsWith('audio/')) {
+    return (
+      <div className="p-5">
+        <audio src={contentUrl} controls className="w-full" />
+      </div>
+    );
+  } else {
+    return (
+      <div className="p-0">
+        <iframe src={contentUrl} className="w-full h-[600px] border-0 bg-white" title="Evidence" />
+      </div>
+    );
+  }
+}
 
 function useCountdown(expiresAt: string | undefined): number {
   const [remaining, setRemaining] = useState(() =>
@@ -101,8 +192,6 @@ export function EvidenceViewerPage() {
       );
     }
 
-    const previewText = `Protected copy — fictional demo content only.\n\nFile: ${ev.name}\nMetadata removed: ${ev.metadataRemoved.join(', ')}\n\nThis is a simulated document preview. No real file has been uploaded or accessed.\nAll identifying metadata has been removed from this copy.\n\n[Fictional document content for demonstration purposes only.]`;
-
     return (
       <div className="flex flex-col gap-6 max-w-[720px]">
         <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
@@ -139,20 +228,11 @@ export function EvidenceViewerPage() {
           Metadata stripped: {ev.metadataRemoved.join(', ')}
         </div>
 
-        <div className="p-3 bg-ember-soft rounded-[8px] text-[13px] text-ember">
-          Demo — fictional bundled evidence. No real file has been uploaded or accessed.
-        </div>
-
         <div className="border border-rule rounded-[12px] overflow-hidden bg-surface">
           <div className="px-5 py-3 border-b border-rule bg-surface-2 flex items-center gap-2">
-            <p className="text-[13px] font-medium text-ink-2">Document preview</p>
-            <span className="text-[11px] text-ink-muted italic">Simulated — fictional content</span>
+            <p className="text-[13px] font-medium text-ink-2">Protected Document</p>
           </div>
-          <div className="p-5">
-            <pre className="text-[13px] font-mono text-ink-1 leading-relaxed whitespace-pre-wrap break-words">
-              {previewText}
-            </pre>
-          </div>
+          <EvidenceContentViewer caseId={caseId!} ev={ev} isOriginalMode={false} session={session} />
         </div>
 
         <div className="flex gap-3">
@@ -217,8 +297,6 @@ export function EvidenceViewerPage() {
 
   const isLow = remainingMs < 5 * 60 * 1000;
 
-  const previewText = `Sealed original — fictional demo content only.\n\nFile: ${ev.name}\nOriginal metadata preserved for investigation purposes.\n\n[Fictional original document content for demonstration purposes only.]\n\nApproved by: ${oar.privacyDecidedByName} (Privacy), ${oar.oversightDecidedByName} (Oversight)\nAccess purpose: ${oar.purpose}`;
-
   return (
     <div className="flex flex-col gap-6 max-w-[720px]">
       <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
@@ -264,20 +342,11 @@ export function EvidenceViewerPage() {
         </div>
       </div>
 
-      <div className="p-3 bg-ember-soft rounded-[8px] text-[13px] text-ember">
-        Demo — fictional bundled evidence. No real file has been uploaded or accessed. This simulates sealed original access.
-      </div>
-
       <div className="border border-rule rounded-[12px] overflow-hidden bg-surface">
         <div className="px-5 py-3 border-b border-rule bg-surface-2 flex items-center gap-2">
-          <p className="text-[13px] font-medium text-ink-2">Sealed original preview</p>
-          <span className="text-[11px] text-ink-muted italic">Simulated — fictional content</span>
+          <p className="text-[13px] font-medium text-ink-2">Sealed Original</p>
         </div>
-        <div className="p-5">
-          <pre className="text-[13px] font-mono text-ink-1 leading-relaxed whitespace-pre-wrap break-words">
-            {previewText}
-          </pre>
-        </div>
+        <EvidenceContentViewer caseId={caseId!} ev={ev} oar={oar} isOriginalMode={true} session={session} />
       </div>
 
       <div className="flex gap-3">

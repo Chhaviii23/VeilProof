@@ -114,6 +114,14 @@ export interface EvidenceRecord {
     | 'ended';
   originalAccessRequestId?: string;
   protectionNote?: string;
+  versions?: {
+    id: string;
+    kind: string;
+    version_number: number;
+    provenance: string;
+    inspection_state: string;
+    metadata_removed: string[];
+  }[];
 }
 
 export const RISK_FACTOR_LABELS: Record<string, string> = {
@@ -192,6 +200,7 @@ export interface OriginalAccessRequest {
   status: OriginalAccessStatus;
   accessGrantedAt?: string;
   accessExpiresAt?: string;
+  grantId?: string;
 }
 
 export interface PublicUpdate {

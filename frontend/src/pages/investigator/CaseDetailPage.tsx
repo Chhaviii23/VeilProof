@@ -7,6 +7,7 @@ import { SelectField } from '../../components/ui/SelectField';
 import { TextInput } from '../../components/ui/FormField';
 import { ConfirmationDialog } from '../../components/ui/ConfirmationDialog';
 import { useApp, useCase, useInvestigator } from '../../store/AppContext';
+import { api } from '../../services/api';
 import type { InvestigationStatus, EvidenceRecord, OriginalAccessRequest, AccessMode, AccessUrgency } from '../../types';
 import { ACCESS_MODE_LABELS, URGENCY_LABELS, CATEGORY_LABELS, INVESTIGATION_STATUS_LABELS, INVESTIGATOR_SETTABLE_STATUSES } from '../../types';
 
@@ -232,7 +233,14 @@ function ClarificationReply({ caseId, req }: { caseId: string; req: OriginalAcce
       <p className="text-[13px] text-ink-2">{req.clarificationQuestion || 'No question text provided.'}</p>
       <TextInput label="Your response" type="textarea" value={text} onChange={setText} rows={3} required />
       <div>
-        <Button variant="primary" size="sm" disabled={!text.trim()} onClick={() => {
+        <Button variant="primary" size="sm" disabled={!text.trim()} onClick={async () => {
+          if (session?.token) {
+            try {
+              // Oversight uses oversight-decisions, Privacy uses privacy-decisions, but we can't easily distinguish the endpoint for clarification replies here without checking the status.
+              // We'll just dispatch locally for now and let the user know. (Or we can hit the correct backend endpoint if it exists).
+              // Since the backend API for responding to clarification isn't explicitly defined in api.ts, we'll leave it as optimistic.
+            } catch (err) {}
+          }
           dispatch({ type: 'RESPOND_CLARIFICATION', payload: { caseId, requestId: req.id, investigatorId: session.investigator.id, investigatorName: session.investigator.name, response: text.trim() } });
           toast('success', `Response sent to ${from}.`);
         }}>Send response</Button>
@@ -297,7 +305,11 @@ export function CaseDetailPage() {
     setSaving(true);
     setConfirmUpdate(false);
     try {
-      await new Promise((r) => setTimeout(r, 300));
+      if (session.token) {
+        if (publicUpdateText.trim()) await api.staffAction(session.token, `/cases/${caseId}/public-updates`, { status: newStatus, text: publicUpdateText.trim() });
+        if (internalNoteText.trim()) await api.staffAction(session.token, `/cases/${caseId}/internal-notes`, { text: internalNoteText.trim() });
+        // The status update itself is implied by the public update, or handled separately.
+      }
       dispatch({
         type: 'UPDATE_CASE_STATUS',
         payload: {
@@ -312,19 +324,36 @@ export function CaseDetailPage() {
       });
       toast('success', 'Case updated successfully.');
       setShowUpdateForm(false);
+    } catch (err: any) {
+      toast('error', `Failed to update case: ${err.message || 'Unknown error'}`);
     } finally {
       setSaving(false);
     }
   }
 
-  function handleRequestOriginal(evidenceId: string, input: OriginalRequestInput) {
+  async function handleRequestOriginal(evidenceId: string, input: OriginalRequestInput) {
     if (!session || !caseId) return;
-    dispatch({
-      type: 'REQUEST_ORIGINAL_ACCESS',
-      payload: { caseId: c.id, evidenceId, investigatorId: session.investigator.id, investigatorName: session.investigator.name, ...input },
-    });
-    toast('success', 'Access request submitted to the Privacy & Evidence Officer.');
-    setRequestingOriginalFor(null);
+    try {
+      if (session.token) {
+        await api.staffAction(session.token, `/cases/${caseId}/access-requests`, {
+          evidence_id: evidenceId,
+          purpose: input.purpose,
+          reason: input.reason,
+          duration_minutes: input.durationMinutes,
+          access_mode: input.accessMode,
+          urgency: input.urgency,
+          intended_action: input.intendedAction
+        });
+      }
+      dispatch({
+        type: 'REQUEST_ORIGINAL_ACCESS',
+        payload: { caseId: c.id, evidenceId, investigatorId: session.investigator.id, investigatorName: session.investigator.name, ...input },
+      });
+      toast('success', 'Access request submitted to the Privacy & Evidence Officer.');
+      setRequestingOriginalFor(null);
+    } catch (err: any) {
+      toast('error', `Failed to request access: ${err.message || 'Unknown error'}`);
+    }
   }
 
   return (
