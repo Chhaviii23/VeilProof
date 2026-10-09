@@ -1,180 +1,266 @@
-import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
-import { Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  useColorScheme,
+  SafeAreaView,
+  Platform,
+  StatusBar,
+} from 'react-native';
+import { Colors, Spacing } from '@/constants/theme';
+import { Button } from '@/components/ui/Button';
+import { TextField } from '@/components/ui/TextField';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { api, TrackStatusResponse } from '@/services/api';
 
-import { ExternalLink } from '@/components/external-link';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Collapsible } from '@/components/ui/collapsible';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+const STATUS_LABELS: Record<string, string> = {
+  received_securely: 'Received Securely',
+  privacy_review: 'Privacy Review',
+  assigned_for_investigation: 'Assigned for Investigation',
+  under_investigation: 'Under Investigation',
+  additional_review_required: 'Additional Review Required',
+  resolution_prepared: 'Resolution Prepared',
+  closed: 'Closed',
+};
 
-export default function TabTwoScreen() {
-  const safeAreaInsets = useSafeAreaInsets();
-  const insets = {
-    ...safeAreaInsets,
-    bottom: safeAreaInsets.bottom + BottomTabInset + Spacing.three,
-  };
-  const theme = useTheme();
+const STATUS_TYPE: Record<string, 'success' | 'warning' | 'info' | 'neutral' | 'error'> = {
+  received_securely: 'info',
+  privacy_review: 'warning',
+  assigned_for_investigation: 'info',
+  under_investigation: 'info',
+  additional_review_required: 'warning',
+  resolution_prepared: 'success',
+  closed: 'neutral',
+};
 
-  const contentPlatformStyle = Platform.select({
-    android: {
-      paddingTop: insets.top,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-      paddingBottom: insets.bottom,
-    },
-    web: {
-      paddingTop: Spacing.six,
-      paddingBottom: Spacing.four,
-    },
-  });
+const PROOF_TYPE: Record<string, 'success' | 'warning' | 'error' | 'neutral'> = {
+  confirmed: 'success',
+  pending: 'warning',
+  failed: 'error',
+};
+
+function formatDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  } catch { return iso; }
+}
+
+function TimelineItem({ update, c }: { update: TrackStatusResponse['public_updates'][0]; c: typeof Colors.dark }) {
+  return (
+    <View style={[styles.timelineItem, { borderLeftColor: '#e8531a' }]}>
+      <Text style={[styles.timelineDate, { color: c.textSecondary }]}>{formatDate(update.added_at)}</Text>
+      <StatusBadge
+        label="Status"
+        value={STATUS_LABELS[update.status] ?? update.status}
+        type={STATUS_TYPE[update.status] ?? 'neutral'}
+      />
+      {update.text && (
+        <Text style={[styles.timelineText, { color: c.text }]}>{update.text}</Text>
+      )}
+    </View>
+  );
+}
+
+export default function TrackScreen() {
+  const scheme = useColorScheme() ?? 'dark';
+  const c = Colors[scheme === 'unspecified' ? 'dark' : scheme];
+
+  const [reference, setReference] = useState('');
+  const [secret, setSecret] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<TrackStatusResponse | null>(null);
+  const [sessionToken, setSessionToken] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  async function handleTrack() {
+    const e: Record<string, string> = {};
+    if (!reference.trim()) e.reference = 'Enter your case reference';
+    if (secret.trim().length < 8) e.secret = 'Enter your tracking secret';
+    setErrors(e);
+    if (Object.keys(e).length > 0) return;
+
+    setLoading(true);
+    setStatus(null);
+    try {
+      const session = await api.trackSession(reference.trim().toUpperCase(), secret.trim());
+      setSessionToken(session.session_token);
+      const data = await api.trackStatus(session.session_token);
+      setStatus(data);
+    } catch (err: any) {
+      Alert.alert('Not Found', err.message || 'Could not find your case. Check your reference and secret.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleRefresh() {
+    if (!sessionToken) return;
+    setLoading(true);
+    try {
+      const data = await api.trackStatus(sessionToken);
+      setStatus(data);
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Could not refresh status.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <ScrollView
-      style={[styles.scrollView, { backgroundColor: theme.background }]}
-      contentInset={insets}
-      contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}>
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="subtitle">Explore</ThemedText>
-          <ThemedText style={styles.centerText} themeColor="textSecondary">
-            This starter app includes example{'\n'}code to help you get started.
-          </ThemedText>
+    <SafeAreaView style={[styles.safe, { backgroundColor: c.background }]}>
+      <StatusBar barStyle={scheme === 'dark' ? 'light-content' : 'dark-content'} />
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={[styles.logo, { color: '#e8531a' }]}>VeilProof</Text>
+          <Text style={[styles.pageTitle, { color: c.text }]}>Track Your Report</Text>
+          <Text style={[styles.pageSub, { color: c.textSecondary }]}>
+            Enter your case reference and tracking secret to check the status.
+          </Text>
+        </View>
 
-          <ExternalLink href="https://docs.expo.dev" asChild>
-            <Pressable style={({ pressed }) => pressed && styles.pressed}>
-              <ThemedView type="backgroundElement" style={styles.linkButton}>
-                <ThemedText type="link">Expo documentation</ThemedText>
-                <SymbolView
-                  tintColor={theme.text}
-                  name={{ ios: 'arrow.up.right.square', android: 'link', web: 'link' }}
-                  size={12}
+        {/* Lookup form */}
+        <View style={[styles.card, { backgroundColor: c.backgroundElement }]}>
+          <TextField
+            label="Case Reference"
+            value={reference}
+            onChangeText={(t) => { setReference(t); setErrors((e) => ({ ...e, reference: '' })); }}
+            placeholder="e.g. VP-2026-XXXX"
+            autoCapitalize="characters"
+            autoCorrect={false}
+            error={errors.reference}
+          />
+          <TextField
+            label="Tracking Secret"
+            value={secret}
+            onChangeText={(t) => { setSecret(t); setErrors((e) => ({ ...e, secret: '' })); }}
+            placeholder="Your tracking passphrase"
+            secureTextEntry={false}
+            autoCorrect={false}
+            autoCapitalize="none"
+            error={errors.secret}
+            containerStyle={{ marginTop: Spacing.two }}
+          />
+          <Button
+            label={status ? 'Check Again' : 'Track Report'}
+            onPress={handleTrack}
+            loading={loading}
+            style={{ marginTop: Spacing.three }}
+          />
+        </View>
+
+        {/* Results */}
+        {status && (
+          <View style={{ gap: Spacing.three }}>
+            {/* Status overview */}
+            <View style={[styles.card, { backgroundColor: c.backgroundElement }]}>
+              <View style={styles.cardHeader}>
+                <Text style={[styles.cardTitle, { color: c.text }]}>Case Status</Text>
+                <Button label="Refresh" onPress={handleRefresh} loading={loading} variant="secondary" style={{ paddingVertical: 6, paddingHorizontal: Spacing.two, minHeight: 0 }} />
+              </View>
+
+              <Text style={[styles.caseRef, { color: '#e8531a', fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }) }]}>
+                {status.case_reference}
+              </Text>
+
+              <View style={{ gap: Spacing.one, marginTop: Spacing.two }}>
+                <StatusBadge
+                  label="Status"
+                  value={STATUS_LABELS[status.status] ?? status.status}
+                  type={STATUS_TYPE[status.status] ?? 'neutral'}
                 />
-              </ThemedView>
-            </Pressable>
-          </ExternalLink>
-        </ThemedView>
+                <StatusBadge
+                  label="Priority"
+                  value={status.priority.charAt(0).toUpperCase() + status.priority.slice(1)}
+                  type={status.priority === 'critical' ? 'error' : 'neutral'}
+                />
+              </View>
 
-        <ThemedView style={styles.sectionsWrapper}>
-          <Collapsible title="File-based routing">
-            <ThemedText type="small">
-              This app has two screens: <ThemedText type="code">src/app/index.tsx</ThemedText> and{' '}
-              <ThemedText type="code">src/app/explore.tsx</ThemedText>
-            </ThemedText>
-            <ThemedText type="small">
-              The layout file in <ThemedText type="code">src/app/_layout.tsx</ThemedText> sets up
-              the tab navigator.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/router/introduction">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
+              <Text style={[styles.lastUpdated, { color: c.textSecondary }]}>
+                Last updated: {formatDate(status.updated_at)}
+              </Text>
+            </View>
 
-          <Collapsible title="Android, iOS, and web support">
-            <ThemedView type="backgroundElement" style={styles.collapsibleContent}>
-              <ThemedText type="small">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <ThemedText type="smallBold">w</ThemedText> in the terminal running this
-                project.
-              </ThemedText>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={styles.imageTutorial}
+            {/* Evidence protection */}
+            <View style={[styles.card, { backgroundColor: c.backgroundElement }]}>
+              <Text style={[styles.cardTitle, { color: c.text }]}>Evidence Protection</Text>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: c.textSecondary }]}>Files protected</Text>
+                <Text style={[styles.infoValue, { color: c.text }]}>{status.protection_summary.evidence_count}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: c.textSecondary }]}>Metadata fields stripped</Text>
+                <Text style={[styles.infoValue, { color: c.text }]}>{status.protection_summary.metadata_fields_removed}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: c.textSecondary }]}>Provenance</Text>
+                <Text style={[styles.infoValue, { color: '#4ade80' }]}>{status.protection_summary.provenance}</Text>
+              </View>
+            </View>
+
+            {/* Blockchain proof */}
+            <View style={[styles.card, { backgroundColor: c.backgroundElement }]}>
+              <Text style={[styles.cardTitle, { color: c.text }]}>Blockchain Proof</Text>
+              <StatusBadge
+                label="Proof"
+                value={status.proof_summary.proof_status.charAt(0).toUpperCase() + status.proof_summary.proof_status.slice(1)}
+                type={PROOF_TYPE[status.proof_summary.proof_status] ?? 'neutral'}
               />
-            </ThemedView>
-          </Collapsible>
+              {status.proof_summary.tx_ref && (
+                <View style={{ gap: 4, marginTop: Spacing.two }}>
+                  <Text style={[styles.infoLabel, { color: c.textSecondary }]}>Transaction</Text>
+                  <Text style={[styles.mono, { color: c.text }]} numberOfLines={1}>{status.proof_summary.tx_ref}</Text>
+                </View>
+              )}
+              {status.proof_summary.network && (
+                <View style={styles.infoRow}>
+                  <Text style={[styles.infoLabel, { color: c.textSecondary }]}>Network</Text>
+                  <Text style={[styles.infoValue, { color: c.text }]}>{status.proof_summary.network}</Text>
+                </View>
+              )}
+            </View>
 
-          <Collapsible title="Images">
-            <ThemedText type="small">
-              For static images, you can use the <ThemedText type="code">@2x</ThemedText> and{' '}
-              <ThemedText type="code">@3x</ThemedText> suffixes to provide files for different
-              screen densities.
-            </ThemedText>
-            <Image source={require('@/assets/images/react-logo.png')} style={styles.imageReact} />
-            <ExternalLink href="https://reactnative.dev/docs/images">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Light and dark mode components">
-            <ThemedText type="small">
-              This template has light and dark mode support. The{' '}
-              <ThemedText type="code">useColorScheme()</ThemedText> hook lets you inspect what the
-              user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-            </ThemedText>
-            <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-              <ThemedText type="linkPrimary">Learn more</ThemedText>
-            </ExternalLink>
-          </Collapsible>
-
-          <Collapsible title="Animations">
-            <ThemedText type="small">
-              This template includes an example of an animated component. The{' '}
-              <ThemedText type="code">src/components/ui/collapsible.tsx</ThemedText> component uses
-              the powerful <ThemedText type="code">react-native-reanimated</ThemedText> library to
-              animate opening this hint.
-            </ThemedText>
-          </Collapsible>
-        </ThemedView>
-        {Platform.OS === 'web' && <WebBadge />}
-      </ThemedView>
-    </ScrollView>
+            {/* Timeline */}
+            {status.public_updates.length > 0 && (
+              <View style={[styles.card, { backgroundColor: c.backgroundElement }]}>
+                <Text style={[styles.cardTitle, { color: c.text }]}>Case Timeline</Text>
+                {[...status.public_updates].reverse().map((u) => (
+                  <TimelineItem key={u.id} update={u} c={c} />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
-    flex: 1,
+  safe: { flex: 1 },
+  container: { padding: Spacing.three, gap: Spacing.three, paddingBottom: Spacing.six },
+  header: { alignItems: 'center', paddingVertical: Spacing.three, gap: 6 },
+  logo: { fontSize: 20, fontWeight: '800' },
+  pageTitle: { fontSize: 22, fontWeight: '700' },
+  pageSub: { fontSize: 14, textAlign: 'center', lineHeight: 20 },
+  card: { borderRadius: 12, padding: Spacing.three, gap: Spacing.two },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  cardTitle: { fontSize: 16, fontWeight: '700' },
+  caseRef: { fontSize: 22, fontWeight: '700', letterSpacing: 1 },
+  lastUpdated: { fontSize: 12, marginTop: 4 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  infoLabel: { fontSize: 13 },
+  infoValue: { fontSize: 13, fontWeight: '600' },
+  mono: { fontSize: 12, fontFamily: Platform.select({ ios: 'Courier New', android: 'monospace', default: 'monospace' }) },
+  timelineItem: {
+    borderLeftWidth: 2,
+    paddingLeft: Spacing.two,
+    gap: 6,
+    paddingVertical: Spacing.one,
   },
-  contentContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  container: {
-    maxWidth: MaxContentWidth,
-    flexGrow: 1,
-  },
-  titleContainer: {
-    gap: Spacing.three,
-    alignItems: 'center',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.six,
-  },
-  centerText: {
-    textAlign: 'center',
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  linkButton: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.four,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.five,
-    justifyContent: 'center',
-    gap: Spacing.one,
-    alignItems: 'center',
-  },
-  sectionsWrapper: {
-    gap: Spacing.five,
-    paddingHorizontal: Spacing.four,
-    paddingTop: Spacing.three,
-  },
-  collapsibleContent: {
-    alignItems: 'center',
-  },
-  imageTutorial: {
-    width: '100%',
-    aspectRatio: 296 / 171,
-    borderRadius: Spacing.three,
-    marginTop: Spacing.two,
-  },
-  imageReact: {
-    width: 100,
-    height: 100,
-    alignSelf: 'center',
-  },
+  timelineDate: { fontSize: 12 },
+  timelineText: { fontSize: 13, lineHeight: 20 },
 });

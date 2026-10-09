@@ -199,6 +199,10 @@ def finalize(
         if binding.derivative_object_id:
             derivative = _get_session_object(db, session, binding.derivative_object_id)
             _require_attachable(derivative)
+        elif original.category in ("image", "audio"):
+            # Auto-generate a redacted derivative
+            derivative = _auto_generate_derivative(db, session, original)
+            
         prepared.append((original, derivative, binding))
 
     priority = "critical" if any(f in CRITICAL_FACTORS for f in req.risk_factors) else "standard"
@@ -357,3 +361,65 @@ def intake_state(db: Session, session: models.IntakeSession) -> IntakeStateRespo
         expires_at=iso(session.expires_at),
         result=result,
     )
+
+
+def _auto_generate_derivative(db: Session, session: models.IntakeSession, original: models.UploadObject) -> models.UploadObject | None:
+    from ..security.crypto import open_envelope, sha256_hex, seal, new_dek, new_nonce, wrap_dek, make_envelope, KIND_DERIVATIVE
+    from ..storage import get_storage
+    from .redaction import redact_image_content
+    
+    storage = get_storage()
+    try:
+        ciphertext = storage.get(original.storage_path)
+        plaintext = open_envelope(original.envelope, ciphertext)
+    except Exception as e:
+        print(f"Failed to decrypt original for redaction: {e}")
+        return None
+        
+    if original.category == "audio":
+        from .redaction import redact_audio_content
+        redacted = redact_audio_content(plaintext)
+        removed_metadata = ["voice_characteristics", "metadata"]
+    else:
+        from .redaction import redact_image_content
+        redacted = redact_image_content(plaintext)
+        removed_metadata = ["faces", "text", "exif", "metadata"]
+    
+    obj = models.UploadObject(
+        intake_session_id=session.id,
+        kind="derivative",
+        category=original.category,
+        storage_path=original.storage_path + "_deriv",
+        state="inspected",
+        expires_at=session.expires_at,
+    )
+    db.add(obj)
+    db.flush()
+    
+    dek = new_dek()
+    nonce = new_nonce()
+    from ..security.crypto import build_aad
+    aad = build_aad(session.operator_id, obj.id, obj.planned_version_id, KIND_DERIVATIVE, len(redacted))
+    new_ciphertext = seal(redacted, dek, nonce, aad)
+    wrapped_dek = wrap_dek(dek)
+    
+    obj.envelope = make_envelope(
+        key_id=get_settings().key_broker_public_key_id,
+        nonce=nonce,
+        wrapped_dek=wrapped_dek,
+        operator_id=session.operator_id,
+        object_id=obj.id,
+        version_id=obj.planned_version_id,
+        kind=KIND_DERIVATIVE,
+        plaintext_length=len(redacted),
+        ciphertext=new_ciphertext,
+    )
+    obj.ciphertext_digest = sha256_hex(new_ciphertext)
+    obj.plaintext_sha256 = sha256_hex(redacted)
+    obj.plaintext_length = len(redacted)
+    obj.provenance = "automated_redaction"
+    obj.metadata_removed = removed_metadata
+    
+    storage.put(obj.storage_path, new_ciphertext)
+    return obj
+

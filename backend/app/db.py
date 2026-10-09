@@ -16,11 +16,14 @@ from .config import get_settings
 _settings = get_settings()
 
 _connect_args: dict = {}
-if _settings.database_url.startswith("sqlite"):
+_db_url = _settings.database_url
+if _db_url.startswith("sqlite"):
     _connect_args = {"check_same_thread": False}
+elif _db_url.startswith("postgresql://"):
+    _db_url = _db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 
 engine = create_engine(
-    _settings.database_url,
+    _db_url,
     connect_args=_connect_args,
     pool_pre_ping=True,
     future=True,
