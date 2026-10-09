@@ -3,47 +3,45 @@ import { useNavigate } from 'react-router-dom';
 import { TextInput } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
 import { useApp } from '../../store/AppContext';
+import { trackComplaint } from '../../services/reporter';
 
 export function TrackPage() {
   const { state, dispatch, toast } = useApp();
   const [caseRef, setCaseRef] = useState('');
   const [secret, setSecret] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const hasReceipt = !!state.receipt;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const ref = caseRef.trim();
     const sec = secret.trim();
     if (!ref || !sec) { setError('Both fields are required.'); return; }
-
-    const expectedSecret = state.trackingSecrets[ref];
-    if (!expectedSecret || expectedSecret !== sec) {
-      setError('The case reference and tracking secret do not match. Please check and try again.');
-      return;
-    }
-
-    const found = state.cases.find((c) => c.reference === ref);
-    if (!found) {
-      setError('The case reference and tracking secret do not match. Please check and try again.');
-      return;
-    }
-
     setError('');
-    dispatch({
-      type: 'SET_RECEIPT',
-      payload: {
-        caseReference: ref,
-        trackingSecret: sec,
-        submittedAt: found.receivedAt,
-        attachmentCount: found.evidence.length,
-        proofStatus: 'confirmed',
-        proofTransactionRef: `DEMO-PROOF-${ref.replace('VP-', '')}`,
-      },
-    });
-    navigate('/track/status');
+    setLoading(true);
+    try {
+      // Server-side reference + secret authentication (no client-side secret map).
+      await trackComplaint(ref, sec);
+      const found = state.cases.find((c) => c.reference === ref);
+      dispatch({
+        type: 'SET_RECEIPT',
+        payload: {
+          caseReference: ref,
+          trackingSecret: sec,
+          submittedAt: found?.receivedAt ?? new Date().toISOString(),
+          attachmentCount: found?.evidence.length ?? 0,
+          proofStatus: 'pending',
+        },
+      });
+      navigate('/track/status');
+    } catch {
+      setError('The case reference and tracking secret do not match. Please check and try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   function loadDemoReceipt() {
@@ -115,7 +113,7 @@ export function TrackPage() {
           </p>
         )}
 
-        <Button type="submit" variant="primary" fullWidth>
+        <Button type="submit" variant="primary" fullWidth loading={loading}>
           View status
         </Button>
 

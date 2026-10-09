@@ -71,7 +71,10 @@ type Action =
   | { type: 'RESET_DEMO' }
   | { type: 'ADD_TOAST'; payload: ToastMessage }
   | { type: 'REMOVE_TOAST'; payload: string }
-  | { type: 'UPDATE_DEMO_SETTINGS'; payload: Partial<DemoSettings> };
+  | { type: 'UPDATE_DEMO_SETTINGS'; payload: Partial<DemoSettings> }
+  // Backend sync actions (P08B)
+  | { type: 'SYNC_STAFF_CASES'; payload: CaseRecord[] }
+  | { type: 'SYNC_STAFF_NOTIFICATIONS'; payload: AppNotification[] };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -470,6 +473,25 @@ function reducer(state: AppState, action: Action): AppState {
     case 'ADD_TOAST': return { ...state, toasts: [...state.toasts, action.payload] };
     case 'REMOVE_TOAST': return { ...state, toasts: state.toasts.filter((t) => t.id !== action.payload) };
     case 'UPDATE_DEMO_SETTINGS': return { ...state, demoSettings: { ...state.demoSettings, ...action.payload } };
+
+    // ── Backend sync (P08B) ────────────────────────────────────────────────────
+    case 'SYNC_STAFF_CASES': {
+      // Replace any case whose id matches a backend case; keep local-only cases
+      // (e.g. just-submitted reporter cases not yet in the backend list).
+      const backendIds = new Set(action.payload.map((c) => c.id));
+      const localOnly = state.cases.filter((c) => !backendIds.has(c.id));
+      return { ...state, cases: [...action.payload, ...localOnly] };
+    }
+    case 'SYNC_STAFF_NOTIFICATIONS': {
+      // Merge: preserve local read-state for notifications that already exist
+      const localReadMap = new Map(state.notifications.map((n) => [n.id, n.read]));
+      const merged = action.payload.map((n) => ({
+        ...n,
+        read: localReadMap.has(n.id) ? (localReadMap.get(n.id) ?? n.read) : n.read,
+      }));
+      return { ...state, notifications: merged };
+    }
+
     default: return state;
   }
 }

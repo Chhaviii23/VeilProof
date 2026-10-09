@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
 import { useDraft, useApp } from '../../store/AppContext';
-import type { CaseRecord, EvidenceRecord } from '../../types';
-import { CRITICAL_RISK_FACTORS } from '../../types';
+import type { CaseRecord, EvidenceRecord, SubmissionReceipt } from '../../types';
+import { submitReport } from '../../services/reporter';
 
 interface Stage {
   id: string;
@@ -13,9 +13,9 @@ interface Stage {
 
 const STAGES: Omit<Stage, 'state'>[] = [
   { id: 'prepare', label: 'Preparing report' },
-  { id: 'encrypt', label: 'Simulating encryption' },
-  { id: 'upload', label: 'Simulating upload' },
-  { id: 'proof', label: 'Recording demo proof' },
+  { id: 'encrypt', label: 'Protecting metadata locally' },
+  { id: 'upload', label: 'Encrypting and uploading' },
+  { id: 'proof', label: 'Recording evidence receipt' },
 ];
 
 function uid() {
@@ -64,31 +64,30 @@ export function SubmittingPage() {
     setStages(STAGES.map((s, i) => ({ ...s, state: i === 0 ? 'active' : 'pending' })));
 
     try {
-      await delay(600);
-      advanceStage(0, 'done');
-      await delay(500);
-      advanceStage(1, 'done');
-      await delay(500);
-      advanceStage(2, 'done');
-      await delay(400);
+      // Real submission: local JPEG protection + AES-256-GCM encryption + upload + finalize.
+      const result = await submitReport(draft, (stage) => {
+        if (stage === 'prepare') return;
+        if (stage === 'protect' || stage === 'encrypt') { advanceStage(0, 'done'); advanceStage(1, 'active'); return; }
+        if (stage === 'upload') { advanceStage(1, 'done'); advanceStage(2, 'active'); return; }
+        if (stage === 'finalize') { advanceStage(2, 'done'); advanceStage(3, 'active'); }
+      });
+      advanceStage(3, 'done');
 
-      const now = new Date().toISOString();
-      const caseReference = generateRef();
-      const trackingSecret = generateTrackingSecret();
-      const caseId = `case-${uid()}`;
+      const now = result.acceptedAt;
+      const caseReference = result.caseReference;
+      const caseId = result.caseId;
+      const isCritical = result.priority === 'critical';
+      const trackingSecret = result.trackingSecret;
 
       const evidence: EvidenceRecord[] = draft.evidence.map((e) => ({
         id: e.id,
         name: e.sanitizedName ?? e.name,
         type: e.type,
         size: e.size,
-        metadataRemoved: e.findings.filter((f) => f.risk !== 'low').map((f) => f.field),
+        metadataRemoved: e.type === 'image/jpeg' ? result.protection.findings.map((f) => f.field) : [],
         protectedCopyStatus: 'pending_release',
         sealedOriginalStatus: 'sealed',
       }));
-
-      const isCritical = draft.riskFactors.some((f) => CRITICAL_RISK_FACTORS.has(f));
-      const priority: CaseRecord['priority'] = isCritical ? 'critical' : 'standard';
 
       const caseRecord: CaseRecord = {
         id: caseId,
@@ -102,7 +101,7 @@ export function SubmittingPage() {
         receivedAt: now,
         lastUpdated: now,
         status: 'privacy_review',
-        priority,
+        priority: isCritical ? 'critical' : 'standard',
         riskFactors: draft.riskFactors,
         evidence,
         originalAccessRequests: [],
@@ -110,15 +109,8 @@ export function SubmittingPage() {
           {
             id: `ae-${uid()}`,
             type: 'report_accepted',
-            detail: `Report received — ${caseReference}${isCritical ? ' [Critical priority]' : ''}`,
+            detail: `Report accepted — ${caseReference}${isCritical ? ' [Critical priority]' : ''}`,
             occurredAt: now,
-            caseId,
-          },
-          {
-            id: `ae-${uid()}`,
-            type: 'privacy_protection_completed',
-            detail: `Evidence sealed. ${evidence.length} file(s) protected.`,
-            occurredAt: new Date(Date.now() + 800).toISOString(),
             caseId,
           },
         ],
@@ -135,28 +127,17 @@ export function SubmittingPage() {
         protectionSummary: draft.identityProtectionResult,
       };
 
-      function hex(len: number) {
-        return Array.from({ length: len }, () => Math.floor(Math.random() * 16).toString(16)).join('');
-      }
-      const txHash = `0x${hex(64)}`;
-      const blockTs = new Date(Date.now() + 2000).toISOString();
-
-      const receipt = {
+      // Proof is real but asynchronous; report the server's actual status (never a fake hash).
+      const receipt: SubmissionReceipt = {
         caseReference,
         trackingSecret,
         submittedAt: now,
-        attachmentCount: draft.evidence.length,
-        proofStatus: 'confirmed' as const,
-        proofTransactionRef: txHash,
-        blockchainNetwork: 'Polygon Amoy Testnet',
-        blockTimestamp: blockTs,
-        contractAddress: `0x${hex(40)}`,
-        evidenceCommitment: `0x${hex(64)}`,
+        attachmentCount: result.attachmentCount,
+        proofStatus: result.proofStatus as SubmissionReceipt['proofStatus'],
       };
+      caseRecord.integrity = { proofStatus: receipt.proofStatus };
 
-      caseRecord.integrity = { proofStatus: receipt.proofStatus, transactionRef: txHash, network: receipt.blockchainNetwork };
       dispatch({ type: 'SUBMIT_COMPLAINT', payload: { caseRecord, receipt, trackingSecret } });
-      advanceStage(3, 'done');
       await delay(300);
       navigate('/report/receipt', { replace: true });
     } catch (err) {
@@ -215,9 +196,7 @@ export function SubmittingPage() {
             }`}>
               {stage.label}
             </p>
-            {(stage.id === 'encrypt' || stage.id === 'upload') && (
-              <span className="text-[11px] text-ink-muted ml-auto italic">Simulated</span>
-            )}
+
           </div>
         ))}
       </div>

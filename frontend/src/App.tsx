@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation, useParams } from 'react-router-dom';
 import { AppProvider, useInvestigator, useDraft } from './store/AppContext';
 import { ToastContainer } from './components/ui/Toast';
+import { useStaffDataSync } from './services/staffData';
 
 // Layout components
 import { AppHeader } from './components/layout/AppHeader';
@@ -247,10 +248,17 @@ function AppRoutes() {
   );
 }
 
+/** Mounts backend polling inside the AppProvider tree. Renders nothing. */
+function StaffDataSyncer() {
+  useStaffDataSync();
+  return null;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
+        <StaffDataSyncer />
         <ToastContainer />
         <AppRoutes />
       </AppProvider>

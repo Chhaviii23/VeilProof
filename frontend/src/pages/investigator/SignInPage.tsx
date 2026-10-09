@@ -3,7 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { TextInput } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
 import { useInvestigator } from '../../store/AppContext';
-import { DEMO_INVESTIGATORS, DEMO_CREDENTIALS } from '../../services/fixtures';
+import { DEMO_CREDENTIALS } from '../../services/fixtures';
+import { api } from '../../services/api';
+import type { InvestigatorAccount } from '../../types';
 import { VeilProofLogo } from '../../components/layout/AppHeader';
 
 export function SignInPage() {
@@ -21,15 +23,18 @@ export function SignInPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 300));
-    const cred = DEMO_CREDENTIALS.find((c) => c.username === username.trim() && c.password === password);
-    if (!cred) { setError('Sign in failed. Check your username and password.'); setLoading(false); return; }
-    const inv = DEMO_INVESTIGATORS.find((i) => i.id === cred.investigatorId);
-    if (!inv) { setError('Account not found.'); setLoading(false); return; }
-    setSession({ investigator: inv, signedInAt: new Date().toISOString() });
-    const destByRole: Record<string, string> = { 'case-investigator': '/investigator/cases', 'privacy-officer': '/privacy-officer/queue', 'oversight-officer': '/oversight/approvals' };
-    navigate(destByRole[inv.roleType] ?? '/investigator/cases', { replace: true });
-    setLoading(false);
+    try {
+      // Real server-side authentication: the token carries the verified identity.
+      const res = await api.staffLogin(username.trim(), password);
+      const inv = res.investigator as InvestigatorAccount;
+      setSession({ investigator: inv, signedInAt: new Date().toISOString(), token: res.token });
+      const destByRole: Record<string, string> = { 'case-investigator': '/investigator/cases', 'privacy-officer': '/privacy-officer/queue', 'oversight-officer': '/oversight/approvals' };
+      navigate(destByRole[inv.roleType] ?? '/investigator/cases', { replace: true });
+    } catch {
+      setError('Sign in failed. Check your username and password.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   function loadDemo(cred: typeof DEMO_CREDENTIALS[0]) { setUsername(cred.username); setPassword(cred.password); setError(''); }

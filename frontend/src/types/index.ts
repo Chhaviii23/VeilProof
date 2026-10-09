@@ -83,6 +83,8 @@ export interface EvidenceItem {
   findings: MetadataFinding[];
   sanitizedName?: string;
   isDemo?: boolean;
+  // In-memory only: the user's selected file, used for local protection/encryption. Never sent raw.
+  file?: File;
   // Link-type fields
   url?: string;
   linkTitle?: string;
@@ -323,6 +325,8 @@ export interface InvestigatorAccount {
 export interface InvestigatorSession {
   investigator: InvestigatorAccount;
   signedInAt: string;
+  // Server session token (in-memory only; not persisted to disk).
+  token?: string;
 }
 
 export interface DemoSettings {

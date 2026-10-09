@@ -196,6 +196,8 @@ function EvidenceCard({ config, item, onAdd, onRemove }: EvidenceCardProps) {
       type: file.type,
       scanState: 'idle',
       findings: [],
+      // Retain the local File so the reporter adapter can protect/encrypt it. In-memory only.
+      file,
     });
   }
 

@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - HOST=0.0.0.0
+      - DATABASE_URL=sqlite:///storage/veilproof_demo.db
+      - STAFF_CORS_ORIGINS=https://veilproof.demo.com
+      - STAFF_SESSION_SECRET=${STAFF_SESSION_SECRET}
+      - KEY_BROKER_KEY=${KEY_BROKER_KEY}
+    volumes:
+      - storage_volume:/app/storage
+
+volumes:
+  storage_volume:
