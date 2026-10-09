@@ -91,6 +91,8 @@ export interface EvidenceItem {
   linkProof?: string;
   linkDateAccessed?: string;
   durationSecs?: number;
+  // Audio-specific: true if whistleblower is the louder/dominant speaker (closer to mic)
+  whistleblowerIsLouder?: boolean;
 }
 
 export interface EvidenceRecord {

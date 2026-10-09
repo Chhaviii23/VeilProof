@@ -110,9 +110,59 @@ export async function submitReport(
         category: 'reference',
         display_label: item.linkTitle ?? item.name,
       });
-    } else {
-      // PDF/audio/video are not protected locally in this profile; they are recorded as
-      // unavailable rather than uploaded as if they were sanitized.
+    } else if (
+      (item.type === 'audio/mpeg' || item.type.startsWith('audio/')) && item.file
+    ) {
+      // Audio: upload original only. Backend auto-generates redacted derivative via voice modulation.
+      onStage?.('protect');
+      const audioBytes = new Uint8Array(await item.file.arrayBuffer());
+      onStage?.('encrypt');
+      // Pass speaker preference via metadata_removed field so backend can route correctly
+      const speakerMeta = item.whistleblowerIsLouder === false
+        ? ['whistleblower_is_quieter']
+        : ['whistleblower_is_louder'];
+      const originalId = await uploadOne(
+        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'audio', audioBytes, speakerMeta,
+      );
+      bindings.push({
+        original_object_id: originalId,
+        derivative_object_id: null, // backend generates this
+        category: 'audio',
+        display_label: item.sanitizedName ?? item.name,
+      });
+      onStage?.('upload');
+    } else if (
+      (item.type === 'video/mp4' || item.type.startsWith('video/')) && item.file
+    ) {
+      // Video: upload original only. Backend auto-generates redacted derivative with face blurring.
+      onStage?.('protect');
+      const videoBytes = new Uint8Array(await item.file.arrayBuffer());
+      onStage?.('encrypt');
+      const originalId = await uploadOne(
+        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'video', videoBytes, [],
+      );
+      bindings.push({
+        original_object_id: originalId,
+        derivative_object_id: null,
+        category: 'video',
+        display_label: item.sanitizedName ?? item.name,
+      });
+      onStage?.('upload');
+    } else if (item.type === 'application/pdf' && item.file) {
+      // PDF: upload original only (no local protection; backend records as-is).
+      onStage?.('encrypt');
+      const pdfBytes = new Uint8Array(await item.file.arrayBuffer());
+      const originalId = await uploadOne(
+        intake.intake_id, intake.capability, broker, KIND_ORIGINAL, 'document', pdfBytes, [],
+      );
+      bindings.push({
+        original_object_id: originalId,
+        derivative_object_id: null,
+        category: 'document',
+        display_label: item.sanitizedName ?? item.name,
+      });
+      onStage?.('upload');
+    } else if (!item.file && item.type !== 'link') {
       skipped.push(item.name);
     }
   }

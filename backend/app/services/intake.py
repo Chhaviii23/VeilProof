@@ -199,7 +199,7 @@ def finalize(
         if binding.derivative_object_id:
             derivative = _get_session_object(db, session, binding.derivative_object_id)
             _require_attachable(derivative)
-        elif original.category in ("image", "audio"):
+        elif original.category in ("image", "audio", "video"):
             # Auto-generate a redacted derivative
             derivative = _auto_generate_derivative(db, session, original)
             
@@ -378,8 +378,15 @@ def _auto_generate_derivative(db: Session, session: models.IntakeSession, origin
         
     if original.category == "audio":
         from .redaction import redact_audio_content
-        redacted = redact_audio_content(plaintext)
+        is_louder = True
+        if original.metadata_removed and "whistleblower_is_quieter" in original.metadata_removed:
+            is_louder = False
+        redacted = redact_audio_content(plaintext, whistleblower_is_louder=is_louder)
         removed_metadata = ["voice_characteristics", "metadata"]
+    elif original.category == "video":
+        from .redaction import redact_video_content
+        redacted = redact_video_content(plaintext)
+        removed_metadata = ["faces", "metadata"]
     else:
         from .redaction import redact_image_content
         redacted = redact_image_content(plaintext)

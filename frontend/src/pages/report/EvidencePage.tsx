@@ -171,9 +171,10 @@ interface EvidenceCardProps {
   item: EvidenceItem | undefined;
   onAdd: (item: EvidenceItem) => void;
   onRemove: () => void;
+  onUpdate: (id: string, patch: Partial<EvidenceItem>) => void;
 }
 
-function EvidenceCard({ config, item, onAdd, onRemove }: EvidenceCardProps) {
+function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardProps) {
   const { toast } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showLinkForm, setShowLinkForm] = useState(false);
@@ -254,6 +255,41 @@ function EvidenceCard({ config, item, onAdd, onRemove }: EvidenceCardProps) {
             </button>
           </div>
         </div>
+
+        {/* Audio speaker toggle */}
+        {config.key === 'audio' && (
+          <div className="px-4 pb-3 border-t border-rule pt-3">
+            <p className="text-[12px] font-semibold text-ink-1 mb-2">🎙️ Your voice in this recording</p>
+            <p className="text-[11px] text-ink-muted mb-2 leading-relaxed">
+              We will only anonymize your voice — the other speaker stays unchanged as evidence.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => onUpdate(item.id, { whistleblowerIsLouder: true })}
+                className={`flex-1 text-[12px] font-medium rounded-[8px] px-3 py-2 border transition-colors ${
+                  item.whistleblowerIsLouder !== false
+                    ? 'bg-ember-soft border-ember text-ember'
+                    : 'bg-canvas border-rule text-ink-2 hover:border-ember hover:text-ember'
+                }`}
+              >
+                🔊 Louder speaker (closer to mic)
+              </button>
+              <button
+                type="button"
+                onClick={() => onUpdate(item.id, { whistleblowerIsLouder: false })}
+                className={`flex-1 text-[12px] font-medium rounded-[8px] px-3 py-2 border transition-colors ${
+                  item.whistleblowerIsLouder === false
+                    ? 'bg-ember-soft border-ember text-ember'
+                    : 'bg-canvas border-rule text-ink-2 hover:border-ember hover:text-ember'
+                }`}
+              >
+                🔉 Quieter speaker (farther away)
+              </button>
+            </div>
+          </div>
+        )}
+
         {config.key !== 'link' && (
           <input
             ref={fileInputRef}
@@ -358,7 +394,7 @@ function EvidenceCard({ config, item, onAdd, onRemove }: EvidenceCardProps) {
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export function EvidencePage() {
-  const { draft, addEvidence, removeEvidence, updateDraft } = useDraft();
+  const { draft, addEvidence, removeEvidence, updateEvidence, updateDraft } = useDraft();
   const navigate = useNavigate();
 
   function getItem(key: EvidenceTypeConfig['key']): EvidenceItem | undefined {
@@ -440,6 +476,7 @@ export function EvidencePage() {
             item={getItem(config.key)}
             onAdd={handleAdd}
             onRemove={() => handleRemove(config.key)}
+            onUpdate={updateEvidence}
           />
         ))}
       </div>
