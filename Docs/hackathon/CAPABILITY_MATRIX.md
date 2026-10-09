@@ -25,8 +25,9 @@ Legend: **ACTUAL** = implemented and tested; **FIXTURE** = controlled-fictional 
 | Audit hash chain + outbox worker | ACTUAL | Linked chain tested |
 | Commitment v1 (193-byte) | ACTUAL | Golden vector |
 | Local commitment registry | ACTUAL | Append-only table; **not** a blockchain |
-| Independent verifier | ACTUAL | Local anchor check; offline = local consistency |
-| Amoy / EVM anchoring | BLOCKED | Needs RPC URL + funded signer + authorization |
+| Contract compile (local) | ACTUAL | `solc 0.8.24`, evm target paris; `CommitmentRegistry.sol` compiles clean |
+| Hardhat local deploy | ACTUAL | Deployed to chainId 31337 (ephemeral); repeatable offline |
+| Amoy / EVM anchoring | BLOCKED | Contract ready; needs `RPC_URL` + funded signer + `RELAYER_KEY_FILE` |
 | PostgreSQL persistence | BLOCKED | No server/Docker; SQLite adapter used |
 | Supabase storage/auth | BLOCKED | Not configured |
 | RLS / DB privilege isolation | DEFERRED | SQLite has no RLS |
@@ -34,5 +35,8 @@ Legend: **ACTUAL** = implemented and tested; **FIXTURE** = controlled-fictional 
 | Name/face/voice masking | FIXTURE only | No real implementation |
 | Forensic analysis mode | UNAVAILABLE | Request rejected (422) |
 | Production KMS / Tor / threshold | DEFERRED | Explicitly out of scope |
+| Custom access durations | DEFERRED | Bounded 1-480 min only |
+| Complex real-time delivery | DEFERRED | Polling used instead of WebSockets |
+| Full-text search | DEFERRED | Not implemented |
 | Frontend layout/route changes | n/a | Preserved (build baseline unchanged shape) |
-| Staff data pages on backend | PARTIAL | Auth + reporter flows wired; staff list/queue pages remain fixture-backed (see FRONTEND_BINDINGS.md) |
+| Staff data pages on backend | ACTUAL | All staff pages (CasesPage, PrivacyQueuePage, etc.) hydrated from backend via 5s polling; mutations post to API (see FRONTEND_BINDINGS.md) |

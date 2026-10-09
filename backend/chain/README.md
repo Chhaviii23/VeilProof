@@ -6,9 +6,8 @@ Minimal, non-upgradeable, append-only registry. Stores only an opaque 32-byte co
 ## Status
 
 - **Contract source**: present.
-- **Local deployment**: NOT RUN in this environment (Hardhat toolchain not installed; no node
-  EVM used). The backend's default `PROOF_BACKEND=local_registry` provides a real, durable,
-  append-only commitment table labelled *local registry, not a blockchain*.
+- **Local compilation**: PASS (`solc 0.8.24`, evm target: paris). `npx hardhat compile` succeeds.
+- **Local Hardhat deployment**: PASS — `npx hardhat run scripts/deploy.js --network hardhat` deploys to `0x5FbDB2315678afecb367f032d93F642f64180aa3` on chainId 31337 (ephemeral in-process node). Deploy is repeatable offline.
 - **Amoy**: **BLOCKED** — requires `RPC_URL` and a funded relayer (`RELAYER_KEY_FILE`) plus an
   authorized deployment. No address or transaction hash is fabricated anywhere in this repo.
 

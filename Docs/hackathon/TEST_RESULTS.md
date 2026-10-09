@@ -16,6 +16,8 @@ All backend tests use an isolated temp SQLite DB + temp secrets/storage (never t
 | 7 | `cd backend && .venv/Scripts/python.exe scripts/gen_fixture_jpeg.py` | PASS — writes a valid fictional JPEG with EXIF |
 | 8 | `cd backend && .venv/Scripts/python.exe e2e_api_test.py` | PASS — simulated end-to-end user-to-staff flow via API (no-evidence case) completes successfully |
 | 9 | `r02_check.py` (R02 health check) | PASS — **14 steps**: intake → finalize → priv.officer login → cases visible → privacy queue → assign ACO-04 → investigator login → case visible → detail → internal note → public update → tracking status (`under_investigation`) |
+| 10 | `cd backend/chain && npx hardhat compile` | PASS — `CommitmentRegistry.sol` compiles with `solc 0.8.24`, evm target paris |
+| 11 | `cd backend/chain && npx hardhat run scripts/deploy.js --network hardhat` | PASS — contract deploys to `0x5FbDB2315678afecb367f032d93F642f64180aa3` on chainId 31337 (ephemeral local node) |
 
 ## Coverage by area (backend pytest, 46 tests)
 

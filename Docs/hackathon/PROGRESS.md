@@ -11,7 +11,7 @@
 | 4 | P04A, P04B, P04C | DONE |
 | 5 | P05A, P05B, P05C | DONE |
 | 6 | P06A, P06B | DONE |
-| 7 | P07A, P07B, P07C | DONE (local registry); Amoy BLOCKED |
+| 7 | P07A, P07B, P07C | DONE (local registry + Hardhat compile + local deploy); Amoy BLOCKED |
 | 8 | P08A, P08B | DONE — all staff data pages hydrated from backend; 5s polling; mutations post to API |
 | 9 | P09A, P09B | DONE (backend API/unit + API E2E walkthrough); UI test skipped due to subagent capacity |
 | 10 | P10A, P10B | DONE (P10A + P10B prep); Deployment BLOCKED (no hosting/auth) |
@@ -47,7 +47,7 @@ P06A, P06B, P07A, P07B (local), P07C (local), P08A, P08B, P09A, P09B, P10A, P11A
 
 ## Next step
 - ALL PROMPTS COMPLETED.
-- P07B/P07C Amoy anchoring remains BLOCKED (no Amoy RPC/contract).
+- P07B/C: Hardhat compile + local deploy DONE (chainId 31337). Amoy anchoring BLOCKED (no RPC/signer/contract).
 - P10B prep complete (Dockerfile, docker-compose.yml, DEPLOYMENT.md).
 - P10B execution remains BLOCKED (no hosting configured).
 - Hackathon delivery is ready for evaluation.
