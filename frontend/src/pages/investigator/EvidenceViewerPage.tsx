@@ -63,21 +63,21 @@ function EvidenceContentViewer({
     };
   }, [session, isOriginalMode, ev, oar]);
 
-  if (loading) return <div className="p-5 text-ink-muted flex justify-center items-center h-[200px]">Loading actual file content from secure vault...</div>;
-  if (error) return <div className="p-5 text-error flex justify-center items-center h-[200px]">{error}</div>;
+  if (loading) return <div className="p-5 text-ink-muted flex justify-center items-center h-50">Loading actual file content from secure vault...</div>;
+  if (error) return <div className="p-5 text-error flex justify-center items-center h-50">{error}</div>;
   if (!contentUrl) return null;
   
   const type = ev.type || '';
   if (type.startsWith('image/')) {
     return (
       <div className="flex justify-center p-5">
-        <img src={contentUrl} className="max-w-full h-auto max-h-[70vh] rounded-[8px] border border-rule object-contain" alt="Evidence" />
+        <img src={contentUrl} className="max-w-full h-auto max-h-[70vh] rounded-md border border-rule object-contain" alt="Evidence" />
       </div>
     );
   } else if (type.startsWith('video/')) {
     return (
       <div className="flex justify-center p-5">
-        <video src={contentUrl} controls className="max-w-full rounded-[8px] border border-rule" />
+        <video src={contentUrl} controls className="max-w-full rounded-md border border-rule" />
       </div>
     );
   } else if (type.startsWith('audio/')) {
@@ -89,7 +89,7 @@ function EvidenceContentViewer({
   } else {
     return (
       <div className="p-0">
-        <iframe src={contentUrl} className="w-full h-[600px] border-0 bg-white" title="Evidence" />
+        <iframe src={contentUrl} className="w-full h-150 border-0 bg-white" title="Evidence" />
       </div>
     );
   }
@@ -173,7 +173,7 @@ export function EvidenceViewerPage() {
   if (!isOriginalMode) {
     if (ev.protectedCopyStatus !== 'released') {
       return (
-        <div className="flex flex-col gap-6 max-w-[600px]">
+        <div className="flex flex-col gap-6 max-w-150">
           <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
             <Link to="/investigator/cases" className="hover:text-ink-1">Cases</Link>
             <span>/</span>
@@ -193,7 +193,7 @@ export function EvidenceViewerPage() {
     }
 
     return (
-      <div className="flex flex-col gap-6 max-w-[720px]">
+      <div className="flex flex-col gap-6 max-w-180">
         <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
           <Link to="/investigator/cases" className="hover:text-ink-1">Cases</Link>
           <span>/</span>
@@ -220,7 +220,7 @@ export function EvidenceViewerPage() {
           </div>
         </div>
 
-        <div className="p-3 bg-success-bg rounded-[8px] text-[13px] text-success flex items-center gap-2">
+        <div className="p-3 bg-success-bg rounded-md text-[13px] text-success flex items-center gap-2">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
             <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.2" />
             <path d="M4 7l2 2 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -250,7 +250,7 @@ export function EvidenceViewerPage() {
   // Sealed original mode
   if (!oar || ev.sealedOriginalStatus !== 'access_granted') {
     return (
-      <div className="flex flex-col gap-6 max-w-[600px]">
+      <div className="flex flex-col gap-6 max-w-150">
         <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
           <Link to="/investigator/cases" className="hover:text-ink-1">Cases</Link>
           <span>/</span>
@@ -298,7 +298,7 @@ export function EvidenceViewerPage() {
   const isLow = remainingMs < 5 * 60 * 1000;
 
   return (
-    <div className="flex flex-col gap-6 max-w-[720px]">
+    <div className="flex flex-col gap-6 max-w-180">
       <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
         <Link to="/investigator/cases" className="hover:text-ink-1">Cases</Link>
         <span>/</span>

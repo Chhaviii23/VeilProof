@@ -78,7 +78,7 @@ function ProtectedCopyCard({ ev }: { ev: EvidenceRecord }) {
             <p className="text-[13px] text-ink-muted italic">No identity-related metadata found.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
-              {ev.metadataRemoved.map((field) => <span key={field} className="px-2 py-1 bg-success-bg text-success text-[12px] rounded-[4px]">{field} — removed</span>)}
+              {ev.metadataRemoved.map((field) => <span key={field} className="px-2 py-1 bg-success-bg text-success text-[12px] rounded-sm">{field} — removed</span>)}
             </div>
           )}
         </div>
@@ -224,7 +224,7 @@ function AccessRequestCard({ c, ev, req, officerId, officerName }: { c: CaseReco
           <div className="md:col-span-2"><p className="text-ink-muted mb-0.5">Investigation purpose</p><p className="text-ink-1">{req.purpose}</p></div>
           <div className="md:col-span-2"><p className="text-ink-muted mb-0.5">Why the protected copy is insufficient</p><p className="text-ink-1">{req.reason}</p></div>
           {req.intendedAction && <div className="md:col-span-2"><p className="text-ink-muted mb-0.5">Intended investigative action</p><p className="text-ink-1">{req.intendedAction}</p></div>}
-          {req.clarificationResponse && <div className="md:col-span-2 p-3 bg-info-bg rounded-[8px]"><p className="text-ink-muted mb-0.5">Clarification provided by investigator</p><p className="text-ink-1">{req.clarificationResponse}</p></div>}
+          {req.clarificationResponse && <div className="md:col-span-2 p-3 bg-info-bg rounded-md"><p className="text-ink-muted mb-0.5">Clarification provided by investigator</p><p className="text-ink-1">{req.clarificationResponse}</p></div>}
         </div>
 
         {reviewing && (
@@ -233,8 +233,8 @@ function AccessRequestCard({ c, ev, req, officerId, officerName }: { c: CaseReco
               <p className="text-[13px] font-medium text-ink-1 mb-2">Mandatory checklist</p>
               <div className="flex flex-col gap-1">
                 {CHECKLIST.map((label, i) => (
-                  <label key={label} className="flex items-center gap-3 min-h-[36px] text-[13px] text-ink-1 cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 accent-[#B94725]" checked={checks[i]} onChange={() => setChecks((p) => p.map((v, j) => j === i ? !v : v))} />
+                  <label key={label} className="flex items-center gap-3 min-h-9 text-[13px] text-ink-1 cursor-pointer">
+                    <input type="checkbox" className="w-4 h-4 accent-ember" checked={checks[i]} onChange={() => setChecks((p) => p.map((v, j) => j === i ? !v : v))} />
                     {label}
                   </label>
                 ))}
@@ -392,7 +392,7 @@ export function CasePrivacyReviewPage() {
   const allReleased = caseRecord.evidence.length === 0 || caseRecord.evidence.every((e) => e.protectedCopyStatus === 'released');
 
   return (
-    <div className="flex flex-col gap-6 max-w-[760px]">
+    <div className="flex flex-col gap-6 max-w-190">
       <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
         <Link to="/privacy-officer/queue" className="hover:text-ink-1">Dashboard</Link>
         <span>/</span>
@@ -402,7 +402,7 @@ export function CasePrivacyReviewPage() {
         <h1 className="text-[22px] font-semibold text-ink-1">{caseRecord.title}</h1>
         <p className="text-[13px] text-ink-muted mt-1">Privacy review — {caseRecord.reference} · {caseRecord.evidence.length} protected item{caseRecord.evidence.length === 1 ? '' : 's'}</p>
       </div>
-      <div className="p-3 bg-info-bg rounded-[8px] text-[13px] text-info">
+      <div className="p-3 bg-info-bg rounded-md text-[13px] text-info">
         You release protected copies and assign the investigating officer. You recommend original-evidence requests; the Oversight Officer gives final approval.
       </div>
 

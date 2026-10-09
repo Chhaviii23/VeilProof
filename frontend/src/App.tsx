@@ -82,17 +82,12 @@ function WizardLayout() {
   const location = useLocation();
   const { draft } = useDraft();
 
-  const currentIndex = STEP_PATHS.indexOf(location.pathname);
-  if (currentIndex > 0 && !draft.title.trim()) {
-    return <Navigate to="/report/details" replace />;
-  }
-
   const completedPaths = getCompletedPaths(location.pathname);
 
   return (
     <div className="min-h-screen bg-canvas">
       <header className="bg-surface border-b border-rule sticky top-0 z-30">
-        <div className="max-w-[760px] mx-auto px-5 md:px-8 h-14 flex items-center gap-4">
+        <div className="max-w-190 mx-auto px-5 md:px-8 h-14 flex items-center gap-4">
           <button
             onClick={() => window.history.back()}
             className="shrink-0 text-ink-muted hover:text-ink-1 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-1 rounded-sm p-1 -ml-1"
@@ -112,7 +107,7 @@ function WizardLayout() {
         </div>
       </header>
 
-      <div className="max-w-[760px] mx-auto">
+      <div className="max-w-190 mx-auto">
         <Outlet />
       </div>
     </div>

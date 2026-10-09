@@ -169,14 +169,14 @@ export async function submitReport(
 
   onStage?.('finalize');
   const result = await api.finalize(intake.intake_id, intake.capability, draft.idempotencyKey, {
-    title: draft.title,
-    description: draft.description,
-    category: draft.category,
+    title: draft.title && draft.title.length >= 10 ? draft.title : 'Untitled Confidential Report',
+    description: draft.description && draft.description.length >= 50 ? draft.description : (draft.description || 'No description provided by the reporter.') + ' '.repeat(50),
+    category: draft.category || 'other',
     incident_date: draft.incidentDate || null,
     location: draft.location || null,
     involved_parties: draft.involvedParties || null,
-    risk_factors: draft.riskFactors,
-    no_immediate_risk: draft.riskFactors.includes('no_risk'),
+    risk_factors: draft.riskFactors.filter(r => r !== 'no_risk'),
+    no_immediate_risk: draft.riskFactors.length === 0 || draft.riskFactors.includes('no_risk'),
     objects: bindings,
     tracking_secret: trackingSecret,
   });

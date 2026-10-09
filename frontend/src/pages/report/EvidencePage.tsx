@@ -267,7 +267,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               <button
                 type="button"
                 onClick={() => onUpdate(item.id, { whistleblowerIsLouder: true })}
-                className={`flex-1 text-[12px] font-medium rounded-[8px] px-3 py-2 border transition-colors ${
+                className={`flex-1 text-[12px] font-medium rounded-md px-3 py-2 border transition-colors ${
                   item.whistleblowerIsLouder !== false
                     ? 'bg-ember-soft border-ember text-ember'
                     : 'bg-canvas border-rule text-ink-2 hover:border-ember hover:text-ember'
@@ -278,7 +278,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               <button
                 type="button"
                 onClick={() => onUpdate(item.id, { whistleblowerIsLouder: false })}
-                className={`flex-1 text-[12px] font-medium rounded-[8px] px-3 py-2 border transition-colors ${
+                className={`flex-1 text-[12px] font-medium rounded-md px-3 py-2 border transition-colors ${
                   item.whistleblowerIsLouder === false
                     ? 'bg-ember-soft border-ember text-ember'
                     : 'bg-canvas border-rule text-ink-2 hover:border-ember hover:text-ember'
@@ -328,7 +328,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               <button
                 type="button"
                 onClick={() => setShowLinkForm(true)}
-                className="text-[13px] font-medium text-ember border border-ember/30 bg-ember-soft rounded-[8px] px-3 py-2 hover:bg-ember/15 transition-colors"
+                className="text-[13px] font-medium text-ember border border-ember/30 bg-ember-soft rounded-md px-3 py-2 hover:bg-ember/15 transition-colors"
               >
                 Add reference link
               </button>
@@ -336,7 +336,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
                 <button
                   type="button"
                   onClick={loadDemo}
-                  className="text-[12px] text-ink-2 border border-rule rounded-[8px] px-3 py-2 bg-canvas hover:border-ink-muted transition-colors"
+                  className="text-[12px] text-ink-2 border border-rule rounded-md px-3 py-2 bg-canvas hover:border-ink-muted transition-colors"
                 >
                   Use demo link
                 </button>
@@ -352,7 +352,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-              className="border-2 border-dashed border-rule hover:border-rule-strong rounded-[8px] p-5 flex flex-col items-center gap-2 cursor-pointer transition-colors mb-3"
+              className="border-2 border-dashed border-rule hover:border-rule-strong rounded-md p-5 flex flex-col items-center gap-2 cursor-pointer transition-colors mb-3"
             >
               <p className="text-[13px] text-ink-2">Drop file or <span className="text-ember underline">choose file</span></p>
             </div>
@@ -360,7 +360,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-[13px] font-medium text-ember border border-ember/30 bg-ember-soft rounded-[8px] px-3 py-2 hover:bg-ember/15 transition-colors"
+                className="text-[13px] font-medium text-ember border border-ember/30 bg-ember-soft rounded-md px-3 py-2 hover:bg-ember/15 transition-colors"
               >
                 Upload {config.label.toLowerCase()}
               </button>
@@ -368,7 +368,7 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
                 <button
                   type="button"
                   onClick={loadDemo}
-                  className="text-[12px] text-ink-2 border border-rule rounded-[8px] px-3 py-2 bg-canvas hover:border-ink-muted transition-colors"
+                  className="text-[12px] text-ink-2 border border-rule rounded-md px-3 py-2 bg-canvas hover:border-ink-muted transition-colors"
                 >
                   Use demo file
                 </button>
@@ -436,7 +436,7 @@ export function EvidencePage() {
   const allAdded = totalAdded === EvidenceTypes.length;
 
   return (
-    <main className="max-w-[720px] mx-auto px-5 md:px-8 py-8 pb-24 md:pb-8">
+    <main className="max-w-180 mx-auto px-5 md:px-8 py-8 pb-24 md:pb-8">
       <div className="flex items-start justify-between gap-4 mb-2">
         <div>
           <h1 className="text-[24px] font-semibold text-ink-1">Attach evidence</h1>
@@ -445,7 +445,7 @@ export function EvidencePage() {
         <button
           type="button"
           onClick={loadAllDemo}
-          className="shrink-0 text-[12px] text-ink-2 border border-rule rounded-[8px] px-3 py-2 bg-canvas hover:border-ember hover:text-ember transition-colors"
+          className="shrink-0 text-[12px] text-ink-2 border border-rule rounded-md px-3 py-2 bg-canvas hover:border-ember hover:text-ember transition-colors"
         >
           Preload video + link
         </button>

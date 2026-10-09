@@ -115,7 +115,7 @@ def create_app() -> FastAPI:
             db.close()
         logger.info("migrations at v%s; seed cases_created=%s", version, summary.get("cases_created"))
 
-    from .routers import health, intake, meta, staff, tracking, verify
+    from .routers import health, intake, meta, staff, tracking, verify, analysis
 
     api = "/api/v1"
     app.include_router(health.router)
@@ -125,6 +125,7 @@ def create_app() -> FastAPI:
     app.include_router(tracking.router, prefix=api)
     app.include_router(verify.router, prefix=api)
     app.include_router(staff.router, prefix=api)
+    app.include_router(analysis.router, prefix=api)
     return app
 
 

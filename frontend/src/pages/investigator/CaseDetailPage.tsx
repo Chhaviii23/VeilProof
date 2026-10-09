@@ -67,7 +67,7 @@ function EvidencePanel({ caseId, ev, oar, onRequestOriginal, sessionRole }: Evid
       ev.sealedOriginalStatus === 'ended');
 
   return (
-    <div className="border border-rule rounded-[8px] p-4 bg-surface">
+    <div className="border border-rule rounded-md p-4 bg-surface">
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
           <p className="text-[14px] font-medium text-ink-1">{ev.name}</p>
@@ -357,7 +357,7 @@ export function CaseDetailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-[800px]">
+    <div className="flex flex-col gap-6 max-w-200">
       <nav className="flex items-center gap-2 text-[13px] text-ink-muted">
         <Link to="/investigator/cases" className="hover:text-ink-1 transition-colors">Cases</Link>
         <span>/</span>
