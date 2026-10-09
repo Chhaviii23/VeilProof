@@ -1,0 +1,10 @@
+{
+  "description": "VeilProof streamlines the verification process for businesses, ensuring secure and efficient end-to-end identity authentication for enhanced trust and compliance.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
