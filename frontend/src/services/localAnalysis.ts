@@ -99,21 +99,29 @@ const API_BASE = `${window.location.hostname === 'localhost' || window.location.
   : '/api/v1'}/analysis`;
 
 const RETRYABLE_STATUS = new Set([502, 503, 504]);
+const API_ROOT = API_BASE.slice(0, API_BASE.lastIndexOf('/analysis'));
 
 async function fetchWithWakeRetry(url: string, init: RequestInit): Promise<Response> {
   let lastError: unknown;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
     try {
       const response = await fetch(url, init);
-      if (!RETRYABLE_STATUS.has(response.status) || attempt === 2) return response;
-      await new Promise(resolve => setTimeout(resolve, 1500 * (attempt + 1)));
+      if (!RETRYABLE_STATUS.has(response.status) || attempt === 4) return response;
+      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
     } catch (error) {
       lastError = error;
-      if (attempt === 2) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1500 * (attempt + 1)));
+      if (attempt === 4) throw error;
+      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
     }
   }
   throw lastError instanceof Error ? lastError : new Error('Request failed');
+}
+
+async function wakeBackend(): Promise<void> {
+  // Render free instances can return 502 while booting. Wake the service
+  // before sending the multipart upload so the upload is not the wake request.
+  const response = await fetchWithWakeRetry(`${API_ROOT}/health`, { method: 'GET' });
+  if (!response.ok) throw new Error(`Backend unavailable: HTTP ${response.status}`);
 }
 
 /**
@@ -147,6 +155,7 @@ export async function scanFile(file: File): Promise<AnalysisManifest> {
   form.append('file', file);
   form.append('category', category);
 
+  await wakeBackend();
   const resp = await fetchWithWakeRetry(`${API_BASE}/scan`, {
     method: 'POST',
     body: form,
