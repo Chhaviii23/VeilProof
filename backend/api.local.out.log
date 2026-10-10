@@ -178,3 +178,37 @@ INFO:     127.0.0.1:52082 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
 INFO:     127.0.0.1:52080 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
 INFO:     127.0.0.1:63380 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
 INFO:     127.0.0.1:63379 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61999 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61997 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63998 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63997 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61845 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61843 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52815 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52813 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53409 - "GET /api/v1/staff/evidence/ev-1791592481431-gs8h/protected HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50356 - "GET /api/v1/staff/evidence/ev-1791592481431-gs8h/protected HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64720 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64718 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55390 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55389 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65039 - "GET /api/v1/staff/notifications HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65038 - "GET /api/v1/staff/cases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55829 - "GET /api/v1/public/upload-policy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64345 - "GET /api/v1/public/upload-policy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59819 - "POST /api/v1/analysis/scan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59129 - "POST /api/v1/analysis/sanitize HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51965 - "POST /api/v1/analysis/scan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54079 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:51259 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:63953 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:60264 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:63439 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:57826 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:65250 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:55266 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:56009 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:57857 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:57468 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:57809 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
+INFO:     127.0.0.1:52286 - "POST /api/v1/analysis/sanitize HTTP/1.1" 400 Bad Request
