@@ -88,7 +88,13 @@ export function inferCategory(file: File): string {
   return 'unknown';
 }
 
-const API_BASE = `${import.meta.env.VITE_API_BASE_URL ?? '/api/v1'}/analysis`;
+// Keep localhost on the Vite proxy, but make the deployed build self-sufficient
+// if Vercel's public environment variable is missing or was not included in a
+// deployment. This value is public API routing only; it contains no secret.
+const DEFAULT_API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? '/api/v1'
+  : 'https://veilproof-api.onrender.com/api/v1';
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_BASE}/analysis`;
 
 /**
  * Send a file to the backend for local identity-clue analysis.

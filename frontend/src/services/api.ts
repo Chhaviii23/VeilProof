@@ -1,6 +1,9 @@
 // Headless API client for the VeilProof backend.
 // Base URL comes from VITE_API_BASE_URL (public, non-secret). Never place credentials in URLs.
-const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api/v1';
+const DEFAULT_API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? '/api/v1'
+  : 'https://veilproof-api.onrender.com/api/v1';
+const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? DEFAULT_API_BASE;
 export interface ApiErrorShape {
   code: string;
   safe_message: string;
