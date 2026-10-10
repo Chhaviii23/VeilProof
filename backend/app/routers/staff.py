@@ -352,9 +352,22 @@ def protected_content(
     db: Session = Depends(get_db),
 ):
     version = db.get(models.EvidenceVersion, version_id)
+    # Accept an evidence-item id as well as a derivative-version id. This
+    # keeps deep links stable when the UI is refreshed between case and
+    # version reads, and avoids the misleading “protected copy not found”.
+    if version is None:
+        item = db.get(models.EvidenceItem, version_id)
+        if item is not None:
+            version = db.scalars(
+                select(models.EvidenceVersion)
+                .where(models.EvidenceVersion.item_id == item.id, models.EvidenceVersion.kind == "derivative")
+                .order_by(models.EvidenceVersion.version_number.desc())
+            ).first()
     if version is None or version.kind != "derivative":
         raise NotFoundError("protected copy not found")
     item = db.get(models.EvidenceItem, version.item_id)
+    if item is None:
+        raise NotFoundError("evidence item not found")
     complaint = db.get(models.Complaint, item.complaint_id)
     acl.require_case_view(db, membership, complaint.id)
     if membership.role == "investigator":
@@ -367,6 +380,8 @@ def protected_content(
         if rel is None:
             raise ForbiddenError("protected copy not released")
     obj = db.get(models.UploadObject, version.object_id)
+    if obj is None:
+        raise NotFoundError("protected copy storage object not found")
     from ..security.crypto import CryptoError, open_envelope
     from ..storage import get_storage
 

@@ -12,17 +12,10 @@ import io
 import cv2
 import numpy as np
 
-# Haar cascade for face detection (loaded once, reused across calls).
-_FACE_CASCADE = None
-
-
-def _face_cascade() -> cv2.CascadeClassifier:
-    global _FACE_CASCADE
-    if _FACE_CASCADE is None:
-        _FACE_CASCADE = cv2.CascadeClassifier(
-            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-        )
-    return _FACE_CASCADE
+def _face_regions(img: np.ndarray):
+    """Use the landmark-validated detector shared by analysis and protection."""
+    from .identity_detection import face_regions
+    return [(x, y, w, h) for x, y, w, h, _ in face_regions(img)]
 
 
 def _blur_face_regions(img: np.ndarray, regions) -> int:
@@ -40,13 +33,22 @@ def _blur_face_regions(img: np.ndarray, regions) -> int:
         roi = img[y1:y2, x1:x2]
         # Kernel size must be odd and larger than the ROI, or OpenCV raises.
         k = min(51, max(3, (min(roi.shape[0], roi.shape[1]) // 2) * 2 + 1))
-        img[y1:y2, x1:x2] = 0
+        # Blur the face/head region instead of painting a solid colour. The
+        # protected image should contain only a privacy transform of a real
+        # facial region, never a detected colour block or solid figure.
+        img[y1:y2, x1:x2] = cv2.GaussianBlur(roi, (k, k), 0)
         count += 1
     return count
 
 
 def _blur_text_regions(img: np.ndarray) -> int:
-    """OCR-based text redaction. Optional: skipped when tesseract is unavailable."""
+    """OCR-based redaction of detected person names only.
+
+    OCR is grouped into lines and passed through the same conservative
+    person-span detector used by analysis, so a whole sentence is never
+    treated as a name. Explicitly selected terms are handled separately by
+    ``ProtectionPlan``.
+    """
     try:
         import pytesseract
         from .tesseract_util import configure_tesseract
@@ -59,38 +61,43 @@ def _blur_text_regions(img: np.ndarray) -> int:
         d = pytesseract.image_to_data(img, output_type=pytesseract.Output.DICT)
     except Exception as e:
         raise RuntimeError("Text redaction failed") from e
+    from .identity_detection import person_spans
     count = 0
-    n_boxes = len(d["text"])
-    for i in range(n_boxes):
+    lines: dict[tuple[int, int, int], list[int]] = {}
+    for i, raw in enumerate(d["text"]):
         try:
-            conf = int(float(d["conf"][i]))
+            conf = float(d["conf"][i])
         except (TypeError, ValueError):
             continue
-        if conf <= 60:
-            continue
-        text = d["text"][i].strip()
-        if not text:
-            continue
-        (x, y, w, h) = (d["left"][i], d["top"][i], d["width"][i], d["height"][i])
-        if w <= 5 or h <= 5:
-            continue
-        x1 = max(0, x - 2)
-        y1 = max(0, y - 2)
-        x2 = min(img.shape[1], x + w + 2)
-        y2 = min(img.shape[0], y + h + 2)
-        roi = img[y1:y2, x1:x2]
-        k = min(21, max(3, (min(roi.shape[0], roi.shape[1]) // 2) * 2 + 1))
-        img[y1:y2, x1:x2] = 0
-        count += 1
+        if conf > 60 and str(raw).strip():
+            key = (d["block_num"][i], d["par_num"][i], d["line_num"][i])
+            lines.setdefault(key, []).append(i)
+    for idxs in lines.values():
+        line = " ".join(str(d["text"][i]).strip() for i in idxs)
+        offsets: list[tuple[int, int, int]] = []
+        cursor = 0
+        for i in idxs:
+            word = str(d["text"][i]).strip()
+            offsets.append((cursor, cursor + len(word), i))
+            cursor += len(word) + 1
+        for start, end in person_spans(line):
+            for a, b, i in offsets:
+                if a >= end or b <= start:
+                    continue
+                x, y, w, h = (int(d["left"][i]), int(d["top"][i]), int(d["width"][i]), int(d["height"][i]))
+                if w <= 5 or h <= 5:
+                    continue
+                x1, y1 = max(0, x - 2), max(0, y - 2)
+                x2, y2 = min(img.shape[1], x + w + 2), min(img.shape[0], y + h + 2)
+                roi = img[y1:y2, x1:x2]
+                k = min(21, max(3, (min(roi.shape[0], roi.shape[1]) // 2) * 2 + 1))
+                img[y1:y2, x1:x2] = cv2.GaussianBlur(roi, (k, k), 0)
+                count += 1
     return count
 
 
 def _detect_faces(img: np.ndarray):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cascade = _face_cascade()
-    if cascade.empty():
-        return []
-    return list(cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30)))
+    return _face_regions(img)
 
 
 def redact_image_content(image_bytes: bytes) -> bytes:
@@ -194,6 +201,7 @@ def redact_video_content(video_bytes: bytes, protect_visuals: bool = True, mute_
     import tempfile
     import os
     import subprocess
+    from .media_util import ffmpeg_command
 
     with tempfile.TemporaryDirectory() as tmp:
         src_path = os.path.join(tmp, 'input.mp4')
@@ -243,7 +251,7 @@ def redact_video_content(video_bytes: bytes, protect_visuals: bool = True, mute_
         try:
             result = subprocess.run(
                 [
-                    'ffmpeg', '-y',
+                    ffmpeg_command('ffmpeg'), '-y',
                     '-i', vid_only_path,   # redacted video (no audio)
                     '-i', src_path,        # original (for audio)
                     '-map', '0:v:0',       # video from redacted

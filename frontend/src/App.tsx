@@ -132,6 +132,13 @@ function StaffGuard() {
 
 function StaffLayout() {
   const { session } = useInvestigator();
+  const sync = useStaffDataSync();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  async function refreshWorkspace() {
+    setRefreshing(true);
+    try { await sync(); } finally { setRefreshing(false); }
+  }
 
   return (
     <div className="min-h-screen bg-canvas flex">
@@ -143,6 +150,15 @@ function StaffLayout() {
             <span className="text-[16px] font-semibold text-ink-1">VeilProof</span>
             <div className="ml-auto flex items-center gap-2">
               <NotificationBell />
+              <button
+                type="button"
+                onClick={refreshWorkspace}
+                disabled={refreshing}
+                className="text-[12px] text-ember hover:underline disabled:opacity-50"
+                aria-label="Refresh updates"
+              >
+                {refreshing ? '…' : 'Refresh'}
+              </button>
               {session && <span className="text-[13px] text-ink-muted">{session.investigator.name}</span>}
             </div>
           </div>
@@ -152,6 +168,15 @@ function StaffLayout() {
           <p className="text-[15px] font-semibold text-ink-1">{session?.investigator.role ?? 'Staff workspace'}</p>
           <div className="flex items-center gap-3">
             <NotificationBell />
+            <button
+              type="button"
+              onClick={refreshWorkspace}
+              disabled={refreshing}
+              className="text-[12px] text-ember hover:underline disabled:opacity-50"
+              title="Load the latest case, approval, and notification state"
+            >
+              {refreshing ? 'Refreshing…' : 'Refresh updates'}
+            </button>
             {session && <span className="text-[13px] text-ink-muted">{session.investigator.name} · {session.investigator.organization}</span>}
           </div>
         </header>
@@ -243,17 +268,10 @@ function AppRoutes() {
   );
 }
 
-/** Mounts backend polling inside the AppProvider tree. Renders nothing. */
-function StaffDataSyncer() {
-  useStaffDataSync();
-  return null;
-}
-
 export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
-        <StaffDataSyncer />
         <ToastContainer />
         <React.Suspense fallback={<main className="p-8 text-ink-2" role="status">Loading…</main>}><AppRoutes /></React.Suspense>
       </AppProvider>

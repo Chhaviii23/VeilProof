@@ -37,8 +37,10 @@ function EvidenceContentViewer({
           buffer = await api.viewerContent(session!.token!, res.handle);
         } else if (!isOriginalMode) {
           const v = ev.versions?.find((x) => x.kind === 'derivative');
-          if (!v) throw new Error('No protected version found');
-          buffer = await api.protectedContent(session!.token!, v.id);
+          // Prefer the immutable derivative version, but let the API resolve
+          // the evidence-item id too. This makes a refreshed/deep-linked case
+          // view resilient to a stale version list.
+          buffer = await api.protectedContent(session!.token!, v?.id ?? ev.id);
         } else {
           throw new Error('Cannot view original without a grant');
         }

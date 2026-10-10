@@ -122,6 +122,9 @@ def protect(data: bytes, category: str, plan: ProtectionPlan) -> bytes:
             return dst.tobytes(garbage=4, deflate=True)
     if category == "audio":
         from pydub import AudioSegment
+        from .media_util import ffmpeg_command
+        AudioSegment.converter = ffmpeg_command("ffmpeg")
+        AudioSegment.ffprobe = ffmpeg_command("ffprobe")
         audio = AudioSegment.from_file(io.BytesIO(data))
         if not len(audio):
             raise ValueError("Empty recording")

@@ -181,14 +181,23 @@ def _run_ocr_local(img_bgr: "np.ndarray", source_file: str, include_raw: bool = 
         if conf < 55:
             continue
         from .identity_detection import person_spans
-        spans = [(0, len(line_text))] if include_raw else person_spans(line_text)
+        if include_raw:
+            spans = [(0, len(line_text), "raw")]
+        else:
+            # Keep the conservative person detector for names, while still
+            # reporting other narrowly matched PII (phone/email/ID) without
+            # turning an entire OCR sentence into one candidate.
+            spans = [(start, end, "name_pattern") for start, end in person_spans(line_text)]
+            spans.extend((match.start(), match.end(), "email") for match in _EMAIL_RE.finditer(line_text))
+            spans.extend((match.start(), match.end(), "phone") for match in _PHONE_RE.finditer(line_text))
+            spans.extend((match.start(), match.end(), "id_pattern") for match in _ID_RE.finditer(line_text))
         offsets = []
         cursor = 0
         for i in idxs:
             word = str(data["text"][i]).strip()
             offsets.append((cursor, cursor + len(word), i))
             cursor += len(word) + 1
-        for start, end in spans:
+        for start, end, category in spans:
             selected = [i for a, b, i in offsets if a < end and b > start]
             if not selected:
                 continue
@@ -198,7 +207,7 @@ def _run_ocr_local(img_bgr: "np.ndarray", source_file: str, include_raw: bool = 
             y2 = max(int(data["top"][i]) + int(data["height"][i]) for i in selected)
             candidates.append(TextCandidate(
                 id=f"text-{uuid.uuid4().hex[:8]}", text=line_text[start:end],
-                category="raw" if include_raw else "name_pattern",
+                category=category,
                 bbox=BoundingBox(x1, y1, x2-x1, y2-y1),
                 confidence_pct=conf, source_file=source_file,
             ))

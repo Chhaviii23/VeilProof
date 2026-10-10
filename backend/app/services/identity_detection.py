@@ -14,19 +14,83 @@ def _names_model():
 
 
 def person_spans(text: str) -> list[tuple[int, int]]:
-    """Return character offsets, never the surrounding sentence or job title."""
-    spans = []
-    for entity in _names_model()(text).ents:
-        if entity.label_ != "PERSON":
-            continue
-        start, end = entity.start_char, entity.end_char
-        prefix = re.match(r"(?i)(?:mr|mrs|ms|dr|prof|shri|smt)\.?\s+", text[start:end])
+    """Return only name/surname spans, never the surrounding sentence.
+
+    NER models occasionally return a person entity containing a title, job
+    description, or the rest of an OCR line. Trim every model result to the
+    contiguous name-like words and use the same conservative rule as a
+    fallback when the optional spaCy model is unavailable.
+    """
+    token_re = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿ]+(?:['’-][A-Za-zÀ-ÖØ-öø-ÿ]+)*")
+    stopwords = {
+        "the", "a", "an", "and", "or", "of", "for", "to", "from", "with",
+        "officer", "director", "engineer", "manager", "department", "report",
+        "this", "that", "was", "were", "is", "are", "said", "identified",
+    }
+
+    def trim(start: int, end: int) -> tuple[int, int] | None:
+        raw = text[start:end]
+        prefix = re.match(r"(?i)(?:mr|mrs|ms|dr|prof|shri|smt)\.?\s+", raw)
         if prefix:
             start += prefix.end()
-        words = re.findall(r"[^\W\d_]+(?:['’-][^\W\d_]+)*", text[start:end])
-        if 1 <= len(words) <= 5 and not any(c.isdigit() for c in text[start:end]):
-            spans.append((start, end))
-    return spans
+            raw = text[start:end]
+        tokens = list(token_re.finditer(raw))
+        if not tokens:
+            return None
+        # Pick a contiguous run of title-cased words. This deliberately
+        # rejects sentence fragments and all-lowercase prose.
+        runs: list[list[re.Match[str]]] = []
+        run: list[re.Match[str]] = []
+        previous_end = None
+        for token in tokens:
+            # OCR/PDF lines are independent candidates. Do not join a name
+            # with the first capitalized word on the next line, or across
+            # punctuation such as commas and colons.
+            if previous_end is not None and re.search(r"[^ \t]", raw[previous_end:token.start()]):
+                if run:
+                    runs.append(run)
+                    run = []
+            word = token.group(0)
+            looks_like_name = (
+                word[:1].isupper() and word[1:] == word[1:].lower()
+                and word.casefold() not in stopwords
+            )
+            if looks_like_name:
+                run.append(token)
+            elif run:
+                runs.append(run)
+                run = []
+            previous_end = token.end()
+        if run:
+            runs.append(run)
+        # Prefer a two-word first/last-name pair; allow a middle name, but do
+        # not return one ordinary capitalized sentence word by itself.
+        candidates = [r for r in runs if 2 <= len(r) <= 4]
+        if not candidates:
+            return None
+        chosen = max(candidates, key=lambda r: (len(r), -r[0].start()))
+        return start + chosen[0].start(), start + chosen[-1].end()
+
+    spans: list[tuple[int, int]] = []
+    try:
+        entities = _names_model()(text).ents
+    except Exception:
+        entities = ()
+    for entity in entities:
+        if entity.label_ == "PERSON":
+            span = trim(entity.start_char, entity.end_char)
+            if span:
+                spans.append(span)
+    # OCR-friendly fallback for names such as “Arsh Chakraborty”. Run it even
+    # when NER found another name: a malformed entity must not hide valid
+    # names elsewhere in the same paragraph.
+    for match in re.finditer(
+        r"\b[A-Z][a-zÀ-ÖØ-öø-ÿ]+(?:\s+[A-Z][a-zÀ-ÖØ-öø-ÿ]+){1,3}\b", text
+    ):
+        span = trim(match.start(), match.end())
+        if span:
+            spans.append(span)
+    return sorted(set(spans))
 
 
 def face_regions(image: np.ndarray) -> list[tuple[int, int, int, int, float]]:
