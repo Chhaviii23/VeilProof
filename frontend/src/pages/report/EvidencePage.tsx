@@ -335,12 +335,14 @@ function EvidenceCard({ config, item, onAdd, onRemove, onUpdate }: EvidenceCardP
 export function EvidencePage() {
   const { draft, addEvidence, removeEvidence, updateEvidence, updateDraft } = useDraft();
   const navigate = useNavigate();
-  const [uploadLimit, setUploadLimit] = useState<number | null>(null);
-  const [policyError, setPolicyError] = useState('');
+  // Keep the upload controls usable while a free Render instance is waking.
+  // The backend enforces the same limit; this value is only a UI hint.
+  const DEFAULT_UPLOAD_LIMIT = 10 * 1024 * 1024;
+  const [uploadLimit, setUploadLimit] = useState<number>(DEFAULT_UPLOAD_LIMIT);
   useEffect(() => {
     let active = true;
     api.uploadPolicy().then(p => { if (active) setUploadLimit(p.max_file_bytes); })
-      .catch(() => { if (active) setPolicyError('Upload settings are unavailable. Check the API connection and reload this page.'); });
+      .catch(() => { /* Use the safe local default while the API wakes. */ });
     return () => { active = false; };
   }, []);
 
@@ -394,9 +396,7 @@ export function EvidencePage() {
       </div>
 
       <div className="flex flex-col gap-4 mb-6">
-        {policyError && <p role="alert" className="text-error text-sm">{policyError}</p>}
-        {!uploadLimit && !policyError && <p role="status">Loading upload settings…</p>}
-        {uploadLimit !== null && EvidenceTypes.map((config) => (
+        {EvidenceTypes.map((config) => (
           <EvidenceCard
             key={config.key}
             config={{ ...config, maxBytes: uploadLimit ?? 0, description: config.description.replace(/up to [0-9]+ MB/, `up to ${formatSize(uploadLimit ?? 0)}`) }}
