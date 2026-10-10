@@ -87,7 +87,7 @@ export const api = {
   finalize: (id: string, capability: string, idempotencyKey: string, body: Json) =>
     request<{
       case_id: string; case_reference: string; accepted_at: string; attachment_count: number;
-      proof_status: string; priority: string;
+      proof_status: string; priority: string; evidence_ids?: string[];
     }>('POST', `/intakes/${id}/finalize`, {
       body,
       headers: { 'X-Intake-Capability': capability, 'Idempotency-Key': idempotencyKey },

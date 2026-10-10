@@ -60,8 +60,8 @@ export function SubmittingPage() {
       const isCritical = result.priority === 'critical';
       const trackingSecret = result.trackingSecret;
 
-      const evidence: EvidenceRecord[] = draft.evidence.map((e) => ({
-        id: e.id,
+      const evidence: EvidenceRecord[] = draft.evidence.map((e, index) => ({
+        id: result.evidenceIds[index] ?? e.id,
         name: e.sanitizedName ?? e.name,
         type: e.type,
         size: e.size,

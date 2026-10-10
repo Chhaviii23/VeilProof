@@ -100,6 +100,7 @@ class FinalizeResponse(BaseModel):
     proof_status: str
     priority: str
     intake_capability: str
+    evidence_ids: list[str] = Field(default_factory=list)
 
 
 class IntakeStateResponse(BaseModel):

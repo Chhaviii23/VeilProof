@@ -24,6 +24,7 @@ export interface SubmitResult {
   priority: string;
   trackingSecret: string;
   intakeCapability: string;
+  evidenceIds: string[];
   protection: { metadataFieldsRemoved: number; findings: MetadataFinding[]; skipped: string[] };
 }
 
@@ -98,7 +99,7 @@ export async function submitReport(
       const derivativeId = await uploadOne(intake.intake_id, intake.capability, broker,
         KIND_DERIVATIVE, category, new Uint8Array(await item.protectedBlob.arrayBuffer()), ['metadata']);
       bindings.push({ original_object_id: originalId, derivative_object_id: derivativeId,
-        category, display_label: `Evidence ${bindings.length + 1}`,
+        category, display_label: item.sanitizedName ?? item.name,
         protection_receipt: item.protectionReceipt });
       onStage?.('upload');
     } else if (item.type === 'link' && item.url) {
@@ -139,6 +140,7 @@ export async function submitReport(
       priority: result.priority,
       trackingSecret,
       intakeCapability: intake.capability,
+      evidenceIds: result.evidence_ids ?? [],
       protection: { metadataFieldsRemoved: removedCount, findings, skipped },
     };
   };

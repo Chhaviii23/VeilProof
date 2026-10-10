@@ -477,10 +477,13 @@ function reducer(state: AppState, action: Action): AppState {
 
     // ── Backend sync (P08B) ────────────────────────────────────────────────────
     case 'SYNC_STAFF_CASES': {
-      // Replace any case whose id matches a backend case; keep local-only cases
-      // (e.g. just-submitted reporter cases not yet in the backend list).
+      // Replace any case whose id or stable reference matches a backend case;
+      // keep genuinely local-only cases (for example a just-submitted draft).
       const backendIds = new Set(action.payload.map((c) => c.id));
-      const localOnly = state.cases.filter((c) => !backendIds.has(c.id));
+      const backendRefs = new Set(action.payload.map((c) => c.reference));
+      const localOnly = state.cases.filter(
+        (c) => !backendIds.has(c.id) && !backendRefs.has(c.reference),
+      );
       return { ...state, cases: [...action.payload, ...localOnly] };
     }
     case 'SYNC_STAFF_NOTIFICATIONS': {

@@ -254,6 +254,7 @@ def finalize(
     )
 
     attachment_count = 0
+    committed_evidence_ids: list[str] = []
     for original, derivative, binding in prepared:
         item = models.EvidenceItem(
             complaint_id=complaint.id,
@@ -264,6 +265,7 @@ def finalize(
         )
         db.add(item)
         db.flush()
+        committed_evidence_ids.append(item.id)
         _version_from_object(db, item.id, original, "original", None, 1)
         if derivative is not None:
             _version_from_object(db, item.id, derivative, "derivative", None, 1)
@@ -327,6 +329,7 @@ def finalize(
         proof_status="pending",
         priority=priority,
         intake_capability="",
+        evidence_ids=committed_evidence_ids,
     )
     session.state = "finalized"
     session.last_idempotency_key = idempotency_key

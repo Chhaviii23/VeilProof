@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from ..errors import ForbiddenError as Forbidden
 from ..errors import UnauthorizedError as Unauthorized
-from ..models import Assignment, StaffMembership
+from ..models import Assignment, Complaint, StaffMembership
 
 
 def require_role(membership: StaffMembership, *roles: str) -> None:
@@ -32,7 +32,12 @@ def can_view_case(db: Session, membership: StaffMembership, complaint_id: str) -
         return True
     if membership.role == "investigator":
         assignment = active_assignment(db, complaint_id)
-        return bool(assignment and assignment.investigator_principal_id == membership.human_principal_id)
+        if assignment and assignment.investigator_principal_id == membership.human_principal_id:
+            return True
+        # Seeded/demo cases are assigned by stable officer code instead of an
+        # Assignment row; keep the same deny-by-default boundary for them.
+        complaint = db.get(Complaint, complaint_id)
+        return bool(membership.officer_code and complaint and complaint.assigned_officer_code == membership.officer_code)
     return False
 
 

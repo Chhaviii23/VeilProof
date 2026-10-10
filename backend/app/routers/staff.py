@@ -123,7 +123,15 @@ def list_cases(membership: models.StaffMembership = Depends(current_membership),
             )
         ).all()
         case_ids = {a.complaint_id for a in assignments}
-        complaints = [c for c in db.scalars(select(models.Complaint)).all() if c.id in case_ids]
+        # Seeded/demo cases use the stable officer code directly; live cases
+        # use Assignment rows. Support both so the case list and evidence
+        # viewer address the same backend records.
+        complaints = [
+            c for c in db.scalars(select(models.Complaint)).all()
+            if c.id in case_ids or (
+                membership.officer_code and c.assigned_officer_code == membership.officer_code
+            )
+        ]
     else:
         complaints = list(db.scalars(select(models.Complaint)).all())
     complaints.sort(key=lambda c: (c.priority != "critical", c.accepted_at))
@@ -363,13 +371,22 @@ def protected_content(
                 .where(models.EvidenceVersion.item_id == item.id, models.EvidenceVersion.kind == "derivative")
                 .order_by(models.EvidenceVersion.version_number.desc())
             ).first()
-    if version is None or version.kind != "derivative":
-        raise NotFoundError("protected copy not found")
-    item = db.get(models.EvidenceItem, version.item_id)
+    item = db.get(models.EvidenceItem, version.item_id) if version is not None else db.get(models.EvidenceItem, version_id)
     if item is None:
         raise NotFoundError("evidence item not found")
     complaint = db.get(models.Complaint, item.complaint_id)
     acl.require_case_view(db, membership, complaint.id)
+    if version is None and item.seeded_meta:
+        if item.seeded_meta.get("protectedCopyStatus") != "released":
+            raise ForbiddenError("protected copy not released")
+        from ..services.seed_preview import preview_bytes
+        return Response(
+            content=preview_bytes(item.display_label, item.category, protected=True),
+            media_type=item.seeded_meta.get("type", "application/pdf"),
+            headers={"Cache-Control": "no-store"},
+        )
+    if version is None or version.kind != "derivative":
+        raise NotFoundError("protected copy not found")
     if membership.role == "investigator":
         rel = db.scalars(
             select(models.ProtectedRelease).where(
