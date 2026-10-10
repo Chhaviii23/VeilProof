@@ -98,6 +98,24 @@ const API_BASE = `${window.location.hostname === 'localhost' || window.location.
   ? (import.meta.env.VITE_API_BASE_URL ?? '/api/v1')
   : '/api/v1'}/analysis`;
 
+const RETRYABLE_STATUS = new Set([502, 503, 504]);
+
+async function fetchWithWakeRetry(url: string, init: RequestInit): Promise<Response> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response = await fetch(url, init);
+      if (!RETRYABLE_STATUS.has(response.status) || attempt === 2) return response;
+      await new Promise(resolve => setTimeout(resolve, 1500 * (attempt + 1)));
+    } catch (error) {
+      lastError = error;
+      if (attempt === 2) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1500 * (attempt + 1)));
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error('Request failed');
+}
+
 /**
  * Send a file to the backend for local identity-clue analysis.
  *
@@ -129,7 +147,7 @@ export async function scanFile(file: File): Promise<AnalysisManifest> {
   form.append('file', file);
   form.append('category', category);
 
-  const resp = await fetch(`${API_BASE}/scan`, {
+  const resp = await fetchWithWakeRetry(`${API_BASE}/scan`, {
     method: 'POST',
     body: form,
   });
@@ -172,7 +190,7 @@ export async function sanitizeFile(file: File, plan: ProtectionPlan): Promise<{ 
   form.append('category', category);
   form.append('plan', JSON.stringify(plan));
 
-  const resp = await fetch(`${API_BASE}/sanitize`, {
+  const resp = await fetchWithWakeRetry(`${API_BASE}/sanitize`, {
     method: 'POST',
     body: form,
   });
