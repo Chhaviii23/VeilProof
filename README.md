@@ -1,7 +1,4 @@
-<p align="center">
-  <img src="assets/readme/veilproof-banner.svg" alt="VeilProof — Speak safely. Let the evidence be heard." width="100%" />
-</p>
-
+# VEILPROOF
 <p align="center">
   <strong>An India-focused whistleblower reporting and evidence workflow.</strong><br />
   Help evidence reach an accountable investigation while reducing unnecessary exposure of its source.
@@ -23,9 +20,9 @@ The three deployment links are reserved for the actual application. Replace each
 
 | Experience | Link to add | What it shows |
 | --- | --- | --- |
-| **Demo video** | `VIDEO_URL_HERE` | A short walkthrough of the reporter and investigation journeys |
-| **Frontend on Vercel** | `VERCEL_URL_HERE` | The VeilProof application |
-| **Backend on Render** | `RENDER_URL_HERE` | The API base URL or a safe health endpoint |
+| **Demo video** | [Demo link](https://drive.google.com/file/d/16366t3i8XIcaDrgfEXCer1FOkdE3iZ8X/view?usp=drive_link) | A short walkthrough of the reporter and investigation journeys |
+| **Frontend on Vercel** | [Vercel link](https://veilproof.vercel.app) | The VeilProof application |
+| **Backend on Render** | [Render link](https://dashboard.render.com/project/prj-db4ppaqjnfac7383miog) | The API base URL or a safe health endpoint |
 | **Interactive story pitch** | [Explore the VeilProof story](https://veilproof-evidence-story.woodsywood5.chatgpt.site/) | A separate, illustrative five-minute presentation |
 
 > The story pitch illustrates the concept. It does not submit a real report or grant access to real evidence.
@@ -70,17 +67,14 @@ flowchart LR
 
 ## Product screenshots
 
-Each panel below is **a labelled screenshot slot**, not an application capture. Replace the matching image reference with a real screenshot after verifying that the screen works. Keep all example cases fictional and remove secrets before capture.
+<img width="1691" height="924" alt="Screenshot 2026-10-10 093911" src="https://github.com/user-attachments/assets/f3a766da-371e-47b5-bad9-4b55b7acc5bc" />
+<img width="1687" height="809" alt="Screenshot 2026-10-10 094006" src="https://github.com/user-attachments/assets/17a24e86-654e-4419-a214-3e3ad9f6ada4" />
+<img width="1340" height="769" alt="Screenshot 2026-10-10 094027" src="https://github.com/user-attachments/assets/bc044804-fc3b-4ab7-9797-8aa013ec98ef" />
+<img width="1235" height="814" alt="Screenshot 2026-10-10 094056" src="https://github.com/user-attachments/assets/edaf5d73-1168-4c7b-b7e9-7fc47b234dd7" />
+<img width="1082" height="618" alt="Screenshot 2026-10-10 094111" src="https://github.com/user-attachments/assets/b64ebd3c-c412-4e08-beb0-ee3b5f4c2433" />
+<img width="1023" height="597" alt="Screenshot 2026-10-10 094122" src="https://github.com/user-attachments/assets/96024876-7693-4e86-92b7-a0a35a3d1876" />
 
-| 01 · Reporter intake | 02 · Identity review |
-| --- | --- |
-| ![Screenshot slot for reporter intake](assets/readme/screenshot-slot.svg)<br />`docs/screenshots/01-reporter-intake.png` | ![Screenshot slot for identity review](assets/readme/screenshot-slot.svg)<br />`docs/screenshots/02-identity-review.png` |
-| **03 · Protected copy and sealed original** | **04 · Privacy review and assignment** |
-| ![Screenshot slot for separated evidence versions](assets/readme/screenshot-slot.svg)<br />`docs/screenshots/03-evidence-versions.png` | ![Screenshot slot for privacy review](assets/readme/screenshot-slot.svg)<br />`docs/screenshots/04-privacy-workspace.png` |
-| **05 · Original-access decision** | **06 · Receipt and private tracking** |
-| ![Screenshot slot for original access decision](assets/readme/screenshot-slot.svg)<br />`docs/screenshots/05-original-access.png` | ![Screenshot slot for receipt and tracking](assets/readme/screenshot-slot.svg)<br />`docs/screenshots/06-receipt-tracking.png` |
 
-To add screenshots: place your six images at the paths shown, then replace each `assets/readme/screenshot-slot.svg` reference in the relevant table cell with its screenshot path. The alt text is already written for each screen.
 
 ## Technical direction
 
@@ -103,13 +97,22 @@ File metadata removal and visible-content protection require different processin
 The imported application source is not included in this documentation workspace, so installation commands cannot be verified here. Once this README is placed in the application repository, fill in its actual paths and commands before telling contributors to run them:
 
 ```text
-Frontend directory:  <FRONTEND_DIRECTORY>
-Install command:     <VERIFIED_FRONTEND_INSTALL_COMMAND>
-Start command:       <VERIFIED_FRONTEND_START_COMMAND>
+Frontend directory:  frontend
+Install command:     npm ci
+Start command:       npm run dev -- --host 0.0.0.0 --port 8443
 
-Backend directory:   <BACKEND_DIRECTORY>
-Install command:     <VERIFIED_BACKEND_INSTALL_COMMAND>
-Start command:       <VERIFIED_BACKEND_START_COMMAND>
+Backend directory:   backend
+Install command:     pip install -r requirements.txt
+Start command:       python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+Root directory:      backend
+Build command:       pip install -r requirements.txt gunicorn uvicorn[standard]
+Start command:       gunicorn app.main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --timeout 120
+
+Root directory:      frontend
+Install command:     npm ci
+Build command:       npm run build
+Output directory:    dist
 ```
 
 Keep the backend’s service credentials, encryption keys, signing keys, and tracking-secret verifier out of frontend bundles and repository history. Add an `.env.example` containing **names only** when the actual configuration is finalized.
