@@ -190,7 +190,7 @@ function RequestOriginalForm({ evidenceName, onSubmit, onCancel }: RequestOrigin
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitted(true);
-    if (!purpose.trim() || !reason.trim() || !action.trim() || !durationValid) return;
+    if (purpose.trim().length < 10 || reason.trim().length < 10 || action.trim().length < 3 || !durationValid) return;
     onSubmit({ purpose: purpose.trim(), reason: reason.trim(), durationMinutes: minutes, accessMode: mode, urgency, intendedAction: action.trim() });
   }
 
@@ -204,8 +204,8 @@ function RequestOriginalForm({ evidenceName, onSubmit, onCancel }: RequestOrigin
         </div>
         {demo && <Button type="button" variant="tertiary" size="sm" onClick={fillDemo}>Use demo request</Button>}
       </div>
-      <TextInput label="Investigation purpose" value={purpose} onChange={setPurpose} placeholder="e.g. Verify whether the recording has been edited" required error={submitted && !purpose.trim() ? 'Required' : undefined} />
-      <TextInput label="Why is the protected copy insufficient?" type="textarea" value={reason} onChange={setReason} rows={3} required error={submitted && !reason.trim() ? 'Required' : undefined} />
+      <TextInput label="Investigation purpose" value={purpose} onChange={setPurpose} placeholder="e.g. Verify whether the recording has been edited" required error={submitted && purpose.trim().length < 10 ? 'Enter at least 10 characters' : undefined} />
+      <TextInput label="Why is the protected copy insufficient?" type="textarea" value={reason} onChange={setReason} rows={3} required error={submitted && reason.trim().length < 10 ? 'Enter at least 10 characters' : undefined} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SelectField label="Requested access duration" value={duration} onChange={setDuration} options={[
           { value: '15', label: '15 minutes' }, { value: '30', label: '30 minutes' }, { value: '60', label: '1 hour' }, { value: 'custom', label: 'Custom duration' },
@@ -214,7 +214,7 @@ function RequestOriginalForm({ evidenceName, onSubmit, onCancel }: RequestOrigin
         <SelectField label="Access mode" value={mode} onChange={(v) => setMode(v as AccessMode)} options={(Object.keys(ACCESS_MODE_LABELS) as AccessMode[]).map((v) => ({ value: v, label: ACCESS_MODE_LABELS[v] }))} />
         <SelectField label="Urgency" value={urgency} onChange={(v) => setUrgency(v as AccessUrgency)} options={(Object.keys(URGENCY_LABELS) as AccessUrgency[]).map((v) => ({ value: v, label: URGENCY_LABELS[v] }))} />
       </div>
-      <TextInput label="Intended investigative action" value={action} onChange={setAction} placeholder="e.g. Audio manipulation verification" required error={submitted && !action.trim() ? 'Required' : undefined} />
+      <TextInput label="Intended investigative action" value={action} onChange={setAction} placeholder="e.g. Audio manipulation verification" required error={submitted && action.trim().length < 3 ? 'Enter at least 3 characters' : undefined} />
       <div className="flex gap-3">
         <Button type="submit" variant="primary" size="sm">Submit to Privacy Officer</Button>
         <Button type="button" variant="secondary" size="sm" onClick={onCancel}>Cancel</Button>

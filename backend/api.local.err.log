@@ -1,219 +1,1255 @@
-INFO:     Started server process [28628]
+INFO:     Started server process [1480]
 INFO:     Waiting for application startup.
-2026-10-10 06:00:53,613 INFO migrations at v2; seed cases_created=0
+2026-10-10 06:19:55,102 INFO migrations at v2; seed cases_created=0
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-2026-10-10 06:01:20,686 INFO GET /api/v1/public/upload-policy -> 200
-2026-10-10 06:01:20,701 INFO GET /api/v1/public/upload-policy -> 200
-2026-10-10 06:01:39,549 INFO POST /api/v1/analysis/scan -> 200
-2026-10-10 06:01:46,654 INFO POST /api/v1/analysis/scan -> 200
-2026-10-10 06:02:18,768 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:03:01,600 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:03:08,702 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:03:25,708 INFO GET /api/v1/public/broker-key -> 200
-2026-10-10 06:03:25,735 INFO POST /api/v1/intakes -> 200
-2026-10-10 06:03:25,768 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects -> 200
-2026-10-10 06:03:25,816 INFO PUT /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/9a8e46c5-bfde-488d-aa69-72aca4012704/content -> 200
-2026-10-10 06:03:26,406 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/9a8e46c5-bfde-488d-aa69-72aca4012704/complete -> 200
-2026-10-10 06:03:26,424 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects -> 200
-2026-10-10 06:03:26,459 INFO PUT /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/5cfbd450-09d6-4f12-a75e-e44086e95ac7/content -> 200
-2026-10-10 06:03:26,502 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/5cfbd450-09d6-4f12-a75e-e44086e95ac7/complete -> 200
-2026-10-10 06:03:26,536 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects -> 200
-2026-10-10 06:03:26,667 INFO PUT /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/4290227a-0f31-4fc5-b1d5-6ef1423c7afb/content -> 200
-2026-10-10 06:03:27,076 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/4290227a-0f31-4fc5-b1d5-6ef1423c7afb/complete -> 200
-2026-10-10 06:03:27,108 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects -> 200
-2026-10-10 06:03:27,262 INFO PUT /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/dc0e73a9-9fec-416d-82f0-9883f834d906/content -> 200
-2026-10-10 06:03:27,633 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/objects/dc0e73a9-9fec-416d-82f0-9883f834d906/complete -> 200
-2026-10-10 06:03:27,700 INFO POST /api/v1/intakes/8de96006-1618-4065-98ac-544b6d34378c/finalize -> 200
-2026-10-10 06:04:36,571 INFO GET /api/v1/public/upload-policy -> 200
-2026-10-10 06:04:36,578 INFO GET /api/v1/public/upload-policy -> 200
-2026-10-10 06:04:54,235 INFO POST /api/v1/analysis/scan -> 200
-2026-10-10 06:05:21,062 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:06:10,245 INFO POST /api/v1/analysis/scan -> 400
-2026-10-10 06:06:16,304 INFO POST /api/v1/analysis/scan -> 400
-2026-10-10 06:06:25,600 INFO POST /api/v1/analysis/scan -> 200
-2026-10-10 06:06:44,458 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:06:46,810 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:06:58,137 INFO GET /api/v1/public/broker-key -> 200
-2026-10-10 06:06:58,150 INFO POST /api/v1/intakes -> 200
-2026-10-10 06:06:58,159 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects -> 200
-2026-10-10 06:06:58,169 INFO PUT /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/9e906e14-39f6-4832-8a30-b833017bb28e/content -> 200
-2026-10-10 06:06:58,197 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/9e906e14-39f6-4832-8a30-b833017bb28e/complete -> 200
-2026-10-10 06:06:58,204 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects -> 200
-2026-10-10 06:06:58,214 INFO PUT /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/1b5acc53-38d3-47ef-a2e7-9999a8b35a96/content -> 200
-2026-10-10 06:06:58,237 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/1b5acc53-38d3-47ef-a2e7-9999a8b35a96/complete -> 200
-2026-10-10 06:06:58,262 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects -> 200
-2026-10-10 06:06:58,306 INFO PUT /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/ece42227-6378-48ce-97b0-e6c7146fa9eb/content -> 200
-2026-10-10 06:06:58,423 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/ece42227-6378-48ce-97b0-e6c7146fa9eb/complete -> 200
-2026-10-10 06:06:58,434 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects -> 200
-2026-10-10 06:06:58,485 INFO PUT /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/e9718155-5937-405f-a554-9cabac3cd631/content -> 200
-2026-10-10 06:06:58,624 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/objects/e9718155-5937-405f-a554-9cabac3cd631/complete -> 200
-2026-10-10 06:06:58,639 INFO POST /api/v1/intakes/3b415665-505c-4494-8e94-e5d5d46389d8/finalize -> 200
-2026-10-10 06:07:34,921 INFO POST /api/v1/staff/sessions -> 422
-2026-10-10 06:07:38,092 INFO POST /api/v1/staff/sessions -> 200
-2026-10-10 06:07:38,137 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:07:38,147 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:07:38,151 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:07:38,161 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:07:43,151 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:07:43,158 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:07:44,446 INFO GET /api/v1/staff/evidence/ev-1791592481431-gs8h/protected -> 404
-2026-10-10 06:07:44,459 INFO GET /api/v1/staff/evidence/ev-1791592481431-gs8h/protected -> 404
-2026-10-10 06:07:48,135 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:07:48,139 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:07:53,147 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:07:53,153 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:07:58,145 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:07:58,150 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:03,159 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:03,165 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:08,151 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:08,158 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:13,142 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:13,148 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:18,150 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:18,156 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:23,150 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:23,156 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:28,148 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:28,154 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:33,140 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:33,147 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:38,140 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:38,146 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:43,149 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:43,155 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:48,143 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:48,152 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:53,150 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:53,155 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:08:58,138 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:08:58,145 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:03,138 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:03,147 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:08,147 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:08,152 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:13,142 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:13,147 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:18,146 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:18,152 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:23,144 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:23,148 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:28,139 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:28,144 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:33,150 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:33,152 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:38,135 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:38,138 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:43,147 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:43,153 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:48,147 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:48,152 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:53,140 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:09:53,146 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:57,413 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:09:57,418 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:02,427 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:02,433 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:07,422 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:07,428 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:12,427 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:12,432 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:17,430 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:17,434 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:19,958 INFO POST /api/v1/staff/sessions -> 200
-2026-10-10 06:10:19,966 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:22,426 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:22,431 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:27,428 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:27,435 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:32,419 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:32,423 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:37,418 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:37,422 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:42,427 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:42,435 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:47,415 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:47,421 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:52,423 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:52,428 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:10:57,417 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:10:57,423 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:02,430 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:02,433 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:07,419 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:07,424 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:12,424 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:12,429 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:17,429 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:17,436 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:22,434 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:22,437 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:27,426 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:27,432 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:32,431 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:32,434 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:37,423 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:37,430 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:42,426 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:42,434 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:47,419 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:47,424 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:52,424 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:52,430 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:11:57,431 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:11:57,438 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:02,424 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:02,431 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:07,432 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:07,445 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:12,431 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:12,439 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:17,415 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:17,422 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:22,416 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:22,445 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:27,415 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:27,420 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:32,424 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:32,432 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:37,422 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:37,428 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:42,415 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:42,420 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:47,420 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:47,429 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:52,430 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:52,434 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:12:57,428 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:12:57,434 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:13:02,422 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:13:02,426 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:13:07,419 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:13:07,424 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:13:12,049 INFO GET /api/v1/staff/evidence/ev-1791592481431-gs8h/protected -> 404
-2026-10-10 06:13:12,059 INFO GET /api/v1/staff/evidence/ev-1791592481431-gs8h/protected -> 404
-2026-10-10 06:13:12,417 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:13:12,423 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:13:17,427 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:13:17,432 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:13:22,419 INFO GET /api/v1/staff/notifications -> 200
-2026-10-10 06:13:22,452 INFO GET /api/v1/staff/cases -> 200
-2026-10-10 06:13:45,777 INFO GET /api/v1/public/upload-policy -> 200
-2026-10-10 06:13:45,783 INFO GET /api/v1/public/upload-policy -> 200
-2026-10-10 06:14:06,053 INFO POST /api/v1/analysis/scan -> 200
-2026-10-10 06:14:36,880 INFO POST /api/v1/analysis/sanitize -> 200
-2026-10-10 06:14:49,666 INFO POST /api/v1/analysis/scan -> 200
-2026-10-10 06:15:17,222 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:19,177 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:20,538 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:28,196 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:29,041 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:29,820 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:30,934 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:31,780 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:33,105 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:34,339 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:35,204 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:45,187 INFO POST /api/v1/analysis/sanitize -> 400
-2026-10-10 06:15:46,543 INFO POST /api/v1/analysis/sanitize -> 400
+2026-10-10 06:19:56,783 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:20:04,732 INFO GET /api/v1/public/broker-key -> 200
+2026-10-10 06:20:04,746 INFO POST /api/v1/intakes -> 200
+2026-10-10 06:20:04,757 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects -> 200
+2026-10-10 06:20:04,768 INFO PUT /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/5c18611a-f0c1-4586-ab34-8b2337f296bd/content -> 200
+2026-10-10 06:20:04,879 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/5c18611a-f0c1-4586-ab34-8b2337f296bd/complete -> 200
+2026-10-10 06:20:04,886 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects -> 200
+2026-10-10 06:20:04,895 INFO PUT /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/ab630450-aa1b-4682-b767-758c7518778b/content -> 200
+2026-10-10 06:20:04,936 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/ab630450-aa1b-4682-b767-758c7518778b/complete -> 200
+2026-10-10 06:20:04,953 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects -> 200
+2026-10-10 06:20:05,018 INFO PUT /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/181d8281-45dc-45a3-a16c-82b035aab127/content -> 200
+2026-10-10 06:20:05,141 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/181d8281-45dc-45a3-a16c-82b035aab127/complete -> 200
+2026-10-10 06:20:05,151 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects -> 200
+2026-10-10 06:20:05,205 INFO PUT /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/bded203c-bcf5-47ca-8fd5-079936e14cbd/content -> 200
+2026-10-10 06:20:05,362 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/objects/bded203c-bcf5-47ca-8fd5-079936e14cbd/complete -> 200
+2026-10-10 06:20:05,383 INFO POST /api/v1/intakes/d1d5c4b8-dba8-44dd-b745-759b37ff54db/finalize -> 200
+2026-10-10 06:20:39,136 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:20:39,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:20:39,192 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:20:39,198 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:20:39,208 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:20:44,202 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:20:44,205 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:20:47,593 INFO GET /api/v1/staff/evidence/a0540cb9-2cec-46c0-94bd-e259c8d08cc9/protected -> 403
+2026-10-10 06:20:47,599 INFO GET /api/v1/staff/evidence/a0540cb9-2cec-46c0-94bd-e259c8d08cc9/protected -> 403
+2026-10-10 06:20:49,192 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:20:49,198 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:20:54,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:20:54,188 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:20:59,204 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:20:59,210 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:04,198 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:04,204 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:09,202 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:09,207 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:14,184 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:14,189 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:19,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:19,189 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:24,196 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:24,205 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:29,190 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:29,200 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:34,186 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:34,193 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:34,313 INFO GET /api/v1/staff/evidence/54801c62-3eda-4be7-b1cc-c67be250628f/protected -> 403
+2026-10-10 06:21:34,325 INFO GET /api/v1/staff/evidence/54801c62-3eda-4be7-b1cc-c67be250628f/protected -> 403
+2026-10-10 06:21:39,185 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:39,192 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:44,190 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:44,195 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:49,193 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:49,198 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:54,200 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:54,213 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:21:59,194 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:21:59,225 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:22:04,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:22:04,189 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:22:05,126 INFO GET /api/v1/staff/evidence/a0540cb9-2cec-46c0-94bd-e259c8d08cc9/protected -> 403
+2026-10-10 06:22:05,139 INFO GET /api/v1/staff/evidence/a0540cb9-2cec-46c0-94bd-e259c8d08cc9/protected -> 403
+2026-10-10 06:22:09,194 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:22:09,200 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:22:27,381 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:22:27,386 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:22:42,727 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:23:07,117 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:23:50,763 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:24:07,968 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:25:11,281 INFO GET /api/v1/public/broker-key -> 200
+2026-10-10 06:25:11,293 INFO POST /api/v1/intakes -> 200
+2026-10-10 06:25:11,301 INFO POST /api/v1/intakes/ec6166ac-1576-485f-834d-b108302624d5/objects -> 200
+2026-10-10 06:25:11,310 INFO PUT /api/v1/intakes/ec6166ac-1576-485f-834d-b108302624d5/objects/6f607eb9-7f08-401f-9bce-ea723a3eab49/content -> 200
+2026-10-10 06:25:11,337 INFO POST /api/v1/intakes/ec6166ac-1576-485f-834d-b108302624d5/objects/6f607eb9-7f08-401f-9bce-ea723a3eab49/complete -> 200
+2026-10-10 06:25:11,344 INFO POST /api/v1/intakes/ec6166ac-1576-485f-834d-b108302624d5/objects -> 200
+2026-10-10 06:25:17,687 INFO GET /api/v1/public/broker-key -> 200
+2026-10-10 06:25:17,706 INFO POST /api/v1/intakes -> 200
+2026-10-10 06:25:17,730 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects -> 200
+2026-10-10 06:25:17,751 INFO PUT /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/02865c01-47e6-44f1-8ae6-4b6e20b65d10/content -> 200
+2026-10-10 06:25:17,781 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/02865c01-47e6-44f1-8ae6-4b6e20b65d10/complete -> 200
+2026-10-10 06:25:17,789 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects -> 200
+2026-10-10 06:25:17,803 INFO PUT /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/d6a80dba-dcbb-4972-bb0c-32a62af6a708/content -> 200
+2026-10-10 06:25:17,828 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/d6a80dba-dcbb-4972-bb0c-32a62af6a708/complete -> 200
+2026-10-10 06:25:17,843 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects -> 200
+2026-10-10 06:25:17,893 INFO PUT /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/8a1e9cd5-b720-45bf-9510-1310f4244682/content -> 200
+2026-10-10 06:25:18,012 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/8a1e9cd5-b720-45bf-9510-1310f4244682/complete -> 200
+2026-10-10 06:25:18,022 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects -> 200
+2026-10-10 06:25:18,077 INFO PUT /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/cdbb584f-a091-454f-b143-42699673cf1a/content -> 200
+2026-10-10 06:25:18,222 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/objects/cdbb584f-a091-454f-b143-42699673cf1a/complete -> 200
+2026-10-10 06:25:18,237 INFO POST /api/v1/intakes/067721ab-ae77-4cfa-b109-5027a9275c22/finalize -> 200
+2026-10-10 06:27:17,772 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:27:17,821 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:17,830 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:17,831 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:17,839 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:22,837 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:22,842 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:27,829 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:27,839 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:32,703 INFO GET /api/v1/staff/evidence/a6590e53-9e7c-4fae-97fd-97de84c81d39/protected -> 403
+2026-10-10 06:27:32,709 INFO GET /api/v1/staff/evidence/a6590e53-9e7c-4fae-97fd-97de84c81d39/protected -> 403
+2026-10-10 06:27:32,850 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:32,856 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:37,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:37,850 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:42,839 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:42,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:42,895 INFO GET /api/v1/staff/evidence/5aada67f-376b-484a-b9d8-f9a2a1935647/protected -> 403
+2026-10-10 06:27:42,902 INFO GET /api/v1/staff/evidence/5aada67f-376b-484a-b9d8-f9a2a1935647/protected -> 403
+2026-10-10 06:27:47,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:47,840 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:52,839 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:52,845 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:27:57,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:27:57,840 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:02,355 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:28:02,825 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:02,831 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:07,840 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:07,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:07,932 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:28:12,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:12,846 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:15,385 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:28:17,832 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:17,837 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:22,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:22,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:27,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:27,844 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:32,849 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:32,855 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:37,837 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:37,845 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:42,856 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:42,868 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:47,850 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:47,857 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:52,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:52,852 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:28:57,851 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:28:57,859 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:02,837 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:02,845 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:07,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:07,850 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:12,848 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:12,853 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:17,847 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:17,854 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:22,842 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:22,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:27,847 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:27,853 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:32,845 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:32,855 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:37,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:37,841 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:42,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:42,854 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:47,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:47,846 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:52,826 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:52,832 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:29:57,833 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:29:57,839 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:02,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:02,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:07,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:07,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:12,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:12,841 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:17,839 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:17,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:22,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:22,848 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:27,831 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:27,838 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:32,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:32,850 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:37,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:37,853 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:42,837 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:42,844 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:47,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:47,842 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:52,841 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:52,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:30:57,861 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:30:57,866 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:02,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:02,840 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:07,831 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:07,836 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:12,845 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:12,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:17,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:17,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:22,841 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:22,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:27,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:27,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:32,845 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:32,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:37,827 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:37,834 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:42,841 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:42,848 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:47,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:47,850 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:52,829 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:52,834 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:31:57,841 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:31:57,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:02,839 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:02,845 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:02,916 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:32:07,840 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:07,846 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:12,837 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:12,841 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:17,839 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:17,846 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:22,852 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:22,862 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:27,823 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:27,828 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:32,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:32,838 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:37,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:37,840 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:42,859 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:42,865 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:47,844 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:47,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:52,845 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:52,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:32:57,848 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:32:57,854 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:02,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:02,842 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:07,841 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:07,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:12,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:12,842 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:17,833 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:17,838 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:18,373 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:33:22,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:22,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:27,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:27,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:32,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:32,842 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:37,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:37,848 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:42,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:42,842 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:47,851 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:47,858 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:52,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:52,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:33:57,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:33:57,847 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:02,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:02,840 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:07,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:07,850 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:12,849 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:12,856 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:17,832 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:17,838 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:22,845 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:22,853 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:27,828 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:27,833 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:32,842 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:32,849 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:37,843 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:37,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:42,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:42,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:47,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:47,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:52,846 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:52,853 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:34:57,842 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:34:57,855 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:35:02,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:35:02,840 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:35:07,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:35:07,841 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:35:12,836 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:35:12,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:35:17,838 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:35:17,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:35:19,354 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:35:20,467 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:35:21,104 INFO POST /api/v1/staff/cases/6de1756b-2c31-4988-bc25-0148d83b6a7a/access-requests -> 403
+2026-10-10 06:35:45,126 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:35:45,132 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:36:01,452 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:36:31,150 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:36:56,194 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:37:15,235 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:37:23,497 INFO GET /api/v1/public/broker-key -> 200
+2026-10-10 06:37:23,507 INFO POST /api/v1/intakes -> 200
+2026-10-10 06:37:23,515 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects -> 200
+2026-10-10 06:37:23,523 INFO PUT /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/9aaf343b-c003-42b8-9095-245bd05ff524/content -> 200
+2026-10-10 06:37:23,543 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/9aaf343b-c003-42b8-9095-245bd05ff524/complete -> 200
+2026-10-10 06:37:23,550 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects -> 200
+2026-10-10 06:37:23,560 INFO PUT /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/8f081558-afae-4999-9f01-b0e97197a45d/content -> 200
+2026-10-10 06:37:23,587 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/8f081558-afae-4999-9f01-b0e97197a45d/complete -> 200
+2026-10-10 06:37:23,613 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects -> 200
+2026-10-10 06:37:23,661 INFO PUT /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/84bb51d2-7837-4e31-abc9-b5ec74fb67e9/content -> 200
+2026-10-10 06:37:23,793 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/84bb51d2-7837-4e31-abc9-b5ec74fb67e9/complete -> 200
+2026-10-10 06:37:23,803 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects -> 200
+2026-10-10 06:37:23,851 INFO PUT /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/cc064c0c-425e-4892-8d02-73ebbc288606/content -> 200
+2026-10-10 06:37:23,988 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/objects/cc064c0c-425e-4892-8d02-73ebbc288606/complete -> 200
+2026-10-10 06:37:24,007 INFO POST /api/v1/intakes/220e430c-8106-49b1-a9d1-48e5cc731546/finalize -> 200
+2026-10-10 06:39:42,295 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:39:42,337 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:39:42,347 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:39:42,348 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:39:42,357 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:39:47,344 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:39:47,347 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:39:47,842 INFO GET /api/v1/staff/evidence/e8976d8a-9e90-49f2-874f-d624db26ea1b/protected -> 200
+2026-10-10 06:39:47,858 INFO GET /api/v1/staff/evidence/e8976d8a-9e90-49f2-874f-d624db26ea1b/protected -> 200
+2026-10-10 06:39:52,360 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:39:52,368 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:39:52,403 INFO GET /api/v1/staff/evidence/e8976d8a-9e90-49f2-874f-d624db26ea1b/protected -> 200
+2026-10-10 06:39:57,348 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:39:57,357 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:39:57,389 INFO GET /api/v1/staff/evidence/e8976d8a-9e90-49f2-874f-d624db26ea1b/protected -> 200
+2026-10-10 06:40:02,245 INFO GET /api/v1/staff/evidence/65812c42-2f64-4644-beee-db85767ca9c7/protected -> 200
+2026-10-10 06:40:02,252 INFO GET /api/v1/staff/evidence/65812c42-2f64-4644-beee-db85767ca9c7/protected -> 200
+2026-10-10 06:40:02,345 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:40:02,352 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:40:02,363 INFO GET /api/v1/staff/evidence/65812c42-2f64-4644-beee-db85767ca9c7/protected -> 200
+2026-10-10 06:40:07,356 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:40:07,362 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:41:46,397 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:41:46,401 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:42:08,401 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:42:31,495 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:42:39,480 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:42:57,160 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:43:17,090 INFO GET /api/v1/public/broker-key -> 200
+2026-10-10 06:43:17,107 INFO POST /api/v1/intakes -> 200
+2026-10-10 06:43:17,117 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects -> 200
+2026-10-10 06:43:17,124 INFO PUT /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/60f42ca7-ae47-4236-8a81-2453f6f9b7c6/content -> 200
+2026-10-10 06:43:17,140 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/60f42ca7-ae47-4236-8a81-2453f6f9b7c6/complete -> 200
+2026-10-10 06:43:17,147 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects -> 200
+2026-10-10 06:43:17,156 INFO PUT /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/8736404d-92f8-47e5-a9dc-f0033d781b3b/content -> 200
+2026-10-10 06:43:17,183 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/8736404d-92f8-47e5-a9dc-f0033d781b3b/complete -> 200
+2026-10-10 06:43:17,194 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects -> 200
+2026-10-10 06:43:17,242 INFO PUT /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/af8b77e8-5802-4048-9e98-752f0bb242e2/content -> 200
+2026-10-10 06:43:17,361 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/af8b77e8-5802-4048-9e98-752f0bb242e2/complete -> 200
+2026-10-10 06:43:17,372 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects -> 200
+2026-10-10 06:43:17,449 INFO PUT /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/de5ca898-a5dd-4482-9f60-865cdac8c0c4/content -> 200
+2026-10-10 06:43:17,586 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/objects/de5ca898-a5dd-4482-9f60-865cdac8c0c4/complete -> 200
+2026-10-10 06:43:17,601 INFO POST /api/v1/intakes/5ba857fa-fc7a-4f1e-b2be-748f0916a277/finalize -> 200
+2026-10-10 06:43:23,492 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:43:23,532 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:23,541 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:23,563 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:23,600 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:28,541 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:28,569 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:33,538 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:33,567 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:38,543 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:38,570 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:43,532 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:43,559 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:48,548 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:48,575 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:53,539 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:53,569 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:57,486 ERROR unhandled error: FileNotFoundError
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\applications.py", line 1216, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 197, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\main.py", line 45, in request_context
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 173, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 149, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 149, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\routing.py", line 676, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 2786, in app
+    await route.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1817, in handle
+    await self.original_router.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 2869, in handle
+    await included_router._handle_selected(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1843, in _handle_selected
+    await original_route.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1308, in handle
+    await effective_context.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 165, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 151, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 727, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 362, in run_endpoint_function
+    return await run_in_threadpool(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+        _run_sync_endpoint, function=dependant.call, arguments=values
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2706, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1100, in run
+    result = context.run(func, *args)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\telemetry\_api.py", line 244, in _run_sync_endpoint
+    return function(**arguments)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\routers\staff.py", line 406, in protected_content
+    plaintext = open_envelope(version.envelope, get_storage().get(obj.storage_path))
+                                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\storage.py", line 51, in get
+    def get(self, object_path: str) -> bytes:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: 7SHKQcR1NYWk2Vi52GMtIihn
+2026-10-10 06:43:57,524 ERROR unhandled error: FileNotFoundError
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\applications.py", line 1216, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 197, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\main.py", line 45, in request_context
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 173, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 149, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 149, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\routing.py", line 676, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 2786, in app
+    await route.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1817, in handle
+    await self.original_router.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 2869, in handle
+    await included_router._handle_selected(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1843, in _handle_selected
+    await original_route.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1308, in handle
+    await effective_context.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 165, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 151, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 727, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 362, in run_endpoint_function
+    return await run_in_threadpool(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+        _run_sync_endpoint, function=dependant.call, arguments=values
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2706, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1100, in run
+    result = context.run(func, *args)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\telemetry\_api.py", line 244, in _run_sync_endpoint
+    return function(**arguments)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\routers\staff.py", line 406, in protected_content
+    plaintext = open_envelope(version.envelope, get_storage().get(obj.storage_path))
+                                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\storage.py", line 51, in get
+    def get(self, object_path: str) -> bytes:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: 7SHKQcR1NYWk2Vi52GMtIihn
+2026-10-10 06:43:58,539 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:43:58,566 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:43:58,578 ERROR unhandled error: FileNotFoundError
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\applications.py", line 1216, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\applications.py", line 96, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\telemetry\_asgi.py", line 151, in __call__
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 197, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\main.py", line 45, in request_context
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 173, in call_next
+    raise app_exc from app_exc.__cause__ or app_exc.__context__
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\base.py", line 149, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 91, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\cors.py", line 149, in simple_response
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\routing.py", line 676, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 2786, in app
+    await route.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1817, in handle
+    await self.original_router.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 2869, in handle
+    await included_router._handle_selected(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1843, in _handle_selected
+    await original_route.handle(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 1308, in handle
+    await effective_context.app(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 165, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 151, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 727, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\routing.py", line 362, in run_endpoint_function
+    return await run_in_threadpool(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+        _run_sync_endpoint, function=dependant.call, arguments=values
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\starlette\concurrency.py", line 34, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 2706, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 1100, in run
+    result = context.run(func, *args)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\.venv\Lib\site-packages\fastapi\telemetry\_api.py", line 244, in _run_sync_endpoint
+    return function(**arguments)
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\routers\staff.py", line 406, in protected_content
+    plaintext = open_envelope(version.envelope, get_storage().get(obj.storage_path))
+                                                ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "D:\VeilProof HackBios 3.0\VeilProof\backend\app\storage.py", line 51, in get
+    def get(self, object_path: str) -> bytes:
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: 7SHKQcR1NYWk2Vi52GMtIihn
+2026-10-10 06:44:03,540 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:03,576 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:08,545 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:08,574 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:13,554 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:13,582 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:18,557 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:18,584 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:23,269 INFO GET /api/v1/staff/evidence/8ab9db76-9e8a-42ea-8380-86b40f3c3a6d/protected -> 200
+2026-10-10 06:44:23,282 INFO GET /api/v1/staff/evidence/8ab9db76-9e8a-42ea-8380-86b40f3c3a6d/protected -> 200
+2026-10-10 06:44:23,533 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:23,562 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:23,587 INFO GET /api/v1/staff/evidence/8ab9db76-9e8a-42ea-8380-86b40f3c3a6d/protected -> 200
+2026-10-10 06:44:28,534 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:28,561 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:28,578 INFO GET /api/v1/staff/evidence/8ab9db76-9e8a-42ea-8380-86b40f3c3a6d/protected -> 200
+2026-10-10 06:44:33,532 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:33,559 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:38,544 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:38,574 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:43,546 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:43,574 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:44,286 INFO GET /api/v1/staff/evidence/46115f2f-7162-4ce5-82f2-c64a0904ff3f/protected -> 200
+2026-10-10 06:44:44,310 INFO GET /api/v1/staff/evidence/46115f2f-7162-4ce5-82f2-c64a0904ff3f/protected -> 200
+2026-10-10 06:44:48,542 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:48,570 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:53,534 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:53,561 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:44:58,545 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:44:58,572 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:03,543 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:03,571 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:08,535 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:08,565 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:09,419 INFO POST /api/v1/staff/cases/d882484d-ef43-41ac-935c-1365f1d9c538/releases -> 200
+2026-10-10 06:45:09,432 INFO POST /api/v1/staff/cases/d882484d-ef43-41ac-935c-1365f1d9c538/releases -> 200
+2026-10-10 06:45:12,574 INFO POST /api/v1/staff/cases/d882484d-ef43-41ac-935c-1365f1d9c538/assignments -> 200
+2026-10-10 06:45:13,533 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:13,561 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:18,786 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:45:18,813 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:18,820 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:18,825 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:18,836 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:23,830 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:23,839 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:24,064 INFO GET /api/v1/staff/evidence/8ab9db76-9e8a-42ea-8380-86b40f3c3a6d/protected -> 200
+2026-10-10 06:45:24,085 INFO GET /api/v1/staff/evidence/8ab9db76-9e8a-42ea-8380-86b40f3c3a6d/protected -> 200
+2026-10-10 06:45:28,829 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:28,838 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:32,102 INFO GET /api/v1/staff/evidence/46115f2f-7162-4ce5-82f2-c64a0904ff3f/protected -> 200
+2026-10-10 06:45:32,127 INFO GET /api/v1/staff/evidence/46115f2f-7162-4ce5-82f2-c64a0904ff3f/protected -> 200
+2026-10-10 06:45:33,819 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:33,828 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:33,852 INFO GET /api/v1/staff/evidence/46115f2f-7162-4ce5-82f2-c64a0904ff3f/protected -> 200
+2026-10-10 06:45:38,826 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:38,833 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:43,821 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:43,829 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:48,819 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:48,827 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:50,814 INFO POST /api/v1/staff/cases/d882484d-ef43-41ac-935c-1365f1d9c538/access-requests -> 200
+2026-10-10 06:45:53,816 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:53,828 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:57,504 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:45:57,533 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:57,542 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:45:57,566 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:45:57,599 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:02,553 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:02,596 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:07,553 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:07,585 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:12,556 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:12,583 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:12,778 INFO POST /api/v1/staff/cases/d882484d-ef43-41ac-935c-1365f1d9c538/access-requests/26c7da3f-e6ca-4d3c-a767-78d95c3aed39/privacy-decisions -> 200
+2026-10-10 06:46:17,546 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:17,581 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:24,067 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:46:24,178 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:24,186 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:24,211 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:24,243 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:29,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:29,211 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:34,194 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:34,224 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:39,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:39,209 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:44,191 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:44,218 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:47,078 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:46:47,104 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:47,111 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:47,115 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:47,129 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:52,110 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:52,118 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:52,791 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:52,799 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:53,449 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:53,462 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:46:57,113 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:46:57,122 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:02,112 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:02,122 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:05,772 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:47:05,796 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:05,805 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:05,828 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:05,861 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:10,817 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:10,848 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:15,794 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:15,830 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:20,806 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:20,835 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:25,813 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:25,843 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:28,284 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:47:28,313 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:28,321 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:28,326 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:28,338 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:33,314 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:33,324 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:38,312 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:38,323 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:39,575 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:39,584 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:44,992 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:47:45,015 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:45,024 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:45,047 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:45,082 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:50,018 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:50,048 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:47:55,014 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:47:55,051 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:00,024 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:00,051 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:05,032 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:05,061 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:10,021 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:10,057 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:15,029 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:15,059 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:20,021 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:20,051 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:25,016 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:25,047 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:28,811 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:48:28,837 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:28,846 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:28,850 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:28,862 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:33,863 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:33,872 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:38,842 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:38,852 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:43,860 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:43,871 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:48,862 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:48,873 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:53,853 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:53,863 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:48:58,848 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:48:58,859 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:03,860 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:03,874 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:08,867 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:08,876 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:13,853 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:13,862 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:18,856 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:18,866 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:23,842 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:23,852 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:28,847 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:28,857 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:33,853 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:33,862 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:38,846 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:38,857 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:43,861 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:43,870 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:48,849 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:48,859 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:53,854 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:53,863 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:49:58,850 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:49:58,871 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:03,870 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:03,907 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:08,869 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:08,898 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:13,862 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:13,888 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:18,857 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:18,868 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:23,809 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:50:23,834 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:23,841 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:23,867 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:23,899 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:28,848 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:28,880 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:30,828 INFO POST /api/v1/staff/cases/d882484d-ef43-41ac-935c-1365f1d9c538/access-requests/26c7da3f-e6ca-4d3c-a767-78d95c3aed39/oversight-decisions -> 200
+2026-10-10 06:50:33,835 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:33,868 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:36,520 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 06:50:36,546 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:36,554 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:36,559 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:36,572 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:41,564 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:41,574 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:46,568 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:46,577 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:51,558 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:51,569 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:50:56,567 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:50:56,578 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:01,560 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:01,571 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:06,565 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:06,577 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:10,881 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:10,901 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:10,935 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:10,937 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:11,555 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:11,567 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:16,577 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:16,585 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:21,571 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:21,581 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:26,563 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:26,574 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:28,811 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:28,830 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:28,838 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:28,858 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:31,546 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:31,556 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:31,572 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:31,585 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:36,555 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:36,566 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:36,584 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:36,593 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:41,561 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:41,571 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:41,588 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:41,597 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:46,194 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:46,204 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:46,218 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:46,230 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:51:46,548 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 06:51:46,557 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 06:51:46,574 INFO POST /api/v1/staff/grants/255b246e-543e-470b-a620-70d3c31770c1/activate -> 200
+2026-10-10 06:51:46,583 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 06:53:31,940 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:53:31,945 INFO GET /api/v1/public/upload-policy -> 200
+2026-10-10 06:55:51,234 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:56:25,064 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:56:42,487 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:57:04,266 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:57:24,314 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:58:12,174 INFO POST /api/v1/analysis/sanitize -> 422
+2026-10-10 06:58:35,347 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 06:59:09,239 INFO POST /api/v1/analysis/scan -> 200
+2026-10-10 06:59:43,331 INFO POST /api/v1/analysis/sanitize -> 200
+2026-10-10 07:00:07,308 INFO GET /api/v1/public/broker-key -> 200
+2026-10-10 07:00:07,331 INFO POST /api/v1/intakes -> 200
+2026-10-10 07:00:07,341 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:07,349 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/09fa04b5-5110-49fb-b41e-f15f4630ab36/content -> 200
+2026-10-10 07:00:07,365 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/09fa04b5-5110-49fb-b41e-f15f4630ab36/complete -> 200
+2026-10-10 07:00:07,372 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:07,381 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/88c5f5b9-3d54-4416-8a81-bebc9acb34a1/content -> 200
+2026-10-10 07:00:07,409 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/88c5f5b9-3d54-4416-8a81-bebc9acb34a1/complete -> 200
+2026-10-10 07:00:07,421 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:07,463 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/3a891daa-ea7a-4e49-a063-334c1da923a4/content -> 200
+2026-10-10 07:00:07,591 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/3a891daa-ea7a-4e49-a063-334c1da923a4/complete -> 200
+2026-10-10 07:00:07,601 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:07,666 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/99964f65-c9ee-4d51-be3d-90f3cc951e56/content -> 200
+2026-10-10 07:00:07,815 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/99964f65-c9ee-4d51-be3d-90f3cc951e56/complete -> 200
+2026-10-10 07:00:07,829 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:07,905 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/bf6eadd9-4621-4de7-bac3-5b1934f9520e/content -> 200
+2026-10-10 07:00:07,956 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/bf6eadd9-4621-4de7-bac3-5b1934f9520e/complete -> 200
+2026-10-10 07:00:07,968 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:08,000 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/aeabfa6b-8435-4a34-b518-809c9511af56/content -> 200
+2026-10-10 07:00:08,033 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/aeabfa6b-8435-4a34-b518-809c9511af56/complete -> 200
+2026-10-10 07:00:08,047 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:08,134 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/18f07d19-cbde-4015-b21c-4b1d0205c3ed/content -> 200
+2026-10-10 07:00:08,189 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/18f07d19-cbde-4015-b21c-4b1d0205c3ed/complete -> 200
+2026-10-10 07:00:08,196 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects -> 200
+2026-10-10 07:00:08,204 INFO PUT /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/50c357c4-e55f-43fd-be3c-23064234387f/content -> 200
+2026-10-10 07:00:08,224 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/objects/50c357c4-e55f-43fd-be3c-23064234387f/complete -> 200
+2026-10-10 07:00:08,239 INFO POST /api/v1/intakes/d12008e1-ea3e-4c36-86d8-b031dedd8a26/finalize -> 200
+2026-10-10 07:00:18,770 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 07:00:18,806 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:18,814 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:18,844 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:18,882 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:23,822 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:23,854 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:28,814 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:28,853 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:33,813 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:33,848 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:38,812 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:38,845 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:43,822 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:43,856 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:48,818 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:48,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:53,829 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:53,862 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:00:58,823 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:00:58,858 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:01,682 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/releases -> 200
+2026-10-10 07:01:01,694 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/releases -> 200
+2026-10-10 07:01:01,705 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/releases -> 200
+2026-10-10 07:01:01,715 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/releases -> 200
+2026-10-10 07:01:03,818 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:03,851 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:06,522 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/assignments -> 200
+2026-10-10 07:01:08,811 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:08,841 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:15,706 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 07:01:15,737 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:15,745 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:15,755 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:15,772 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:20,749 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:20,763 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:25,750 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:25,765 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:30,753 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:30,766 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:35,750 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:35,765 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:37,279 INFO GET /api/v1/staff/evidence/a4b486c3-cb3b-4dd3-836e-41851d3328ed/protected -> 200
+2026-10-10 07:01:37,300 INFO GET /api/v1/staff/evidence/a4b486c3-cb3b-4dd3-836e-41851d3328ed/protected -> 200
+2026-10-10 07:01:40,739 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:40,753 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:45,749 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:45,764 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:50,758 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:50,769 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:01:55,749 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:01:55,763 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:00,757 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:00,770 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:02,735 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests -> 422
+2026-10-10 07:02:05,751 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:05,765 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:06,449 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests -> 422
+2026-10-10 07:02:10,763 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:10,781 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:10,796 INFO GET /api/v1/staff/evidence/9afbe498-0bde-4e79-ad95-48d8d760694a/protected -> 200
+2026-10-10 07:02:10,806 INFO GET /api/v1/staff/evidence/9afbe498-0bde-4e79-ad95-48d8d760694a/protected -> 200
+2026-10-10 07:02:10,815 INFO GET /api/v1/staff/evidence/9afbe498-0bde-4e79-ad95-48d8d760694a/protected -> 200
+2026-10-10 07:02:15,745 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:15,761 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:15,778 INFO GET /api/v1/staff/evidence/9afbe498-0bde-4e79-ad95-48d8d760694a/protected -> 200
+2026-10-10 07:02:20,755 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:20,768 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:25,758 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:25,774 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:28,561 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests -> 422
+2026-10-10 07:02:30,757 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:30,771 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:35,761 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:35,775 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:40,754 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:40,768 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:45,751 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:45,766 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:50,749 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:50,763 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:02:55,759 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:02:55,775 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:00,747 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:00,762 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:04,384 INFO GET /api/v1/staff/evidence/57181c69-e612-49c0-a202-a2b544775730/protected -> 200
+2026-10-10 07:03:04,414 INFO GET /api/v1/staff/evidence/57181c69-e612-49c0-a202-a2b544775730/protected -> 200
+2026-10-10 07:03:05,736 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:05,751 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:05,772 INFO GET /api/v1/staff/evidence/57181c69-e612-49c0-a202-a2b544775730/protected -> 200
+2026-10-10 07:03:10,747 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:10,762 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:15,743 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:15,762 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:20,744 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:20,762 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:25,745 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:25,760 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:30,741 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:30,754 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:35,752 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:35,767 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:40,763 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:40,806 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:45,763 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:45,800 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:50,768 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:50,812 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:03:55,750 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:03:55,765 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:00,752 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:00,771 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:05,744 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:05,759 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:10,743 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:10,761 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:13,389 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests -> 200
+2026-10-10 07:04:15,750 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:15,769 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:20,740 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:20,757 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:25,753 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:25,767 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:30,748 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:30,767 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:35,754 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:35,768 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:40,758 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:40,773 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:45,760 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:45,775 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:50,752 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:50,767 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:04:55,755 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:04:55,770 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:00,761 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:00,777 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:05,746 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:05,762 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:10,749 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:10,765 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:11,354 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests -> 200
+2026-10-10 07:05:15,752 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:15,768 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:20,754 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:20,771 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:25,761 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:25,781 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:30,747 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:30,764 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:35,735 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:35,750 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:45,123 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 07:05:45,154 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:45,162 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:45,195 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:45,233 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:50,164 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:50,200 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:05:55,168 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:05:55,204 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:00,171 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:00,206 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:05,167 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:05,205 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:10,166 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:10,201 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:15,183 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:15,221 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:20,167 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:20,203 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:24,349 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests/3a048a7a-1b6e-43b6-b8ed-437cf82f4176/privacy-decisions -> 200
+2026-10-10 07:06:25,162 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:25,198 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:30,165 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:30,202 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:35,179 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:35,216 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:38,158 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests/c48645ca-3368-474c-a862-9a130680f14c/privacy-decisions -> 200
+2026-10-10 07:06:40,155 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:40,188 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:45,179 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:45,216 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:49,570 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 07:06:49,599 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:49,607 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:49,637 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:49,675 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:54,605 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:54,643 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:06:59,610 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:06:59,648 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:04,624 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:04,658 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:09,625 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:09,633 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests/3a048a7a-1b6e-43b6-b8ed-437cf82f4176/oversight-decisions -> 200
+2026-10-10 07:07:09,698 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:14,613 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:14,650 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:19,599 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:19,634 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:23,253 INFO POST /api/v1/staff/cases/ec2ea84b-fa9b-4281-9c25-bdf4e0370d40/access-requests/c48645ca-3368-474c-a862-9a130680f14c/oversight-decisions -> 200
+2026-10-10 07:07:24,606 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:24,643 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:29,610 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:29,663 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:34,624 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:34,660 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:39,605 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:39,644 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:46,216 INFO POST /api/v1/staff/sessions -> 200
+2026-10-10 07:07:46,241 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:46,249 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:46,261 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:46,284 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:51,265 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:51,284 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:52,230 INFO POST /api/v1/staff/grants/fd243487-81ad-4a96-8911-2e41faa5a060/activate -> 200
+2026-10-10 07:07:52,244 INFO POST /api/v1/staff/grants/fd243487-81ad-4a96-8911-2e41faa5a060/activate -> 200
+2026-10-10 07:07:52,278 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:07:52,280 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:07:56,252 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:07:56,268 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:07:58,459 INFO POST /api/v1/staff/grants/fd243487-81ad-4a96-8911-2e41faa5a060/activate -> 200
+2026-10-10 07:07:58,467 INFO POST /api/v1/staff/grants/fd243487-81ad-4a96-8911-2e41faa5a060/activate -> 200
+2026-10-10 07:07:58,479 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:07:58,487 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:01,269 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:01,285 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:01,298 INFO POST /api/v1/staff/grants/fd243487-81ad-4a96-8911-2e41faa5a060/activate -> 200
+2026-10-10 07:08:01,316 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:05,842 INFO POST /api/v1/staff/grants/b6e671ac-2021-4a9f-8765-e21af8069bb2/activate -> 200
+2026-10-10 07:08:05,857 INFO POST /api/v1/staff/grants/b6e671ac-2021-4a9f-8765-e21af8069bb2/activate -> 200
+2026-10-10 07:08:05,861 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:05,871 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:06,269 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:06,289 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:11,193 INFO POST /api/v1/staff/grants/b6e671ac-2021-4a9f-8765-e21af8069bb2/activate -> 200
+2026-10-10 07:08:11,210 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:11,214 INFO POST /api/v1/staff/grants/b6e671ac-2021-4a9f-8765-e21af8069bb2/activate -> 200
+2026-10-10 07:08:11,222 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:11,248 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:11,267 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:11,282 INFO POST /api/v1/staff/grants/b6e671ac-2021-4a9f-8765-e21af8069bb2/activate -> 200
+2026-10-10 07:08:11,293 INFO POST /api/v1/staff/viewer/content -> 200
+2026-10-10 07:08:16,251 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:16,269 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:21,259 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:21,279 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:26,259 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:26,276 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:31,264 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:31,283 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:36,249 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:36,265 INFO GET /api/v1/staff/cases -> 200
+2026-10-10 07:08:41,245 INFO GET /api/v1/staff/notifications -> 200
+2026-10-10 07:08:41,262 INFO GET /api/v1/staff/cases -> 200

@@ -30,14 +30,29 @@ def active_assignment(db: Session, complaint_id: str) -> Assignment | None:
 def can_view_case(db: Session, membership: StaffMembership, complaint_id: str) -> bool:
     if membership.role in ("privacy", "oversight"):
         return True
-    if membership.role == "investigator":
-        assignment = active_assignment(db, complaint_id)
-        if assignment and assignment.investigator_principal_id == membership.human_principal_id:
-            return True
-        # Seeded/demo cases are assigned by stable officer code instead of an
-        # Assignment row; keep the same deny-by-default boundary for them.
-        complaint = db.get(Complaint, complaint_id)
-        return bool(membership.officer_code and complaint and complaint.assigned_officer_code == membership.officer_code)
+    return investigator_has_case_scope(db, membership, complaint_id)
+
+
+def investigator_has_case_scope(
+    db: Session, membership: StaffMembership, complaint_id: str
+) -> bool:
+    """Return whether this investigator is assigned to the case.
+
+    Live assignments use an Assignment row. Demo/seeded records use the
+    stable officer code. All investigator operations must use this same
+    predicate so viewing, requesting access, and opening a grant cannot drift.
+    """
+    if membership.role != "investigator":
+        return False
+    assignment = active_assignment(db, complaint_id)
+    if assignment and assignment.investigator_principal_id == membership.human_principal_id:
+        return True
+    complaint = db.get(Complaint, complaint_id)
+    return bool(
+        membership.officer_code
+        and complaint
+        and complaint.assigned_officer_code == membership.officer_code
+    )
     return False
 
 

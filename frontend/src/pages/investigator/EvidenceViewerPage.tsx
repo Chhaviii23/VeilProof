@@ -24,10 +24,16 @@ function EvidenceContentViewer({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!session?.token) return;
-    
+    if (!session?.token) {
+      setError('Your staff session is not connected to the local API. Use Staff sign in or switch the demo role again.');
+      setLoading(false);
+      return;
+    }
+
     let active = true;
     let url = '';
+    setLoading(true);
+    setError(null);
     
     async function loadContent() {
       try {
@@ -51,7 +57,14 @@ function EvidenceContentViewer({
         url = URL.createObjectURL(blob);
         setContentUrl(url);
       } catch (err: any) {
-        if (active) setError(err.message || 'Failed to load evidence');
+        if (active) {
+          const message = String(err?.message || '');
+          setError(message.includes('case not in scope')
+            ? 'This case is not assigned to your Anti-Corruption Officer account yet. The Privacy & Evidence Officer must release the protected copy and assign the case before it can be opened here.'
+            : message.includes('protected copy not released')
+              ? 'The protected copy has not been released by the Privacy & Evidence Officer yet.'
+              : message || 'Failed to load evidence');
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -133,7 +146,12 @@ export function EvidenceViewerPage() {
 
   const isOriginalMode = mode === 'original';
 
-  const ev = caseRecord?.evidence.find((e) => e.id === evidenceId);
+  // Backend approval notifications link to the sealed original version ID,
+  // while case-page links use the evidence-item ID. Resolve either form so
+  // the approved-original deep link always opens the correct evidence item.
+  const ev = caseRecord?.evidence.find((e) =>
+    e.id === evidenceId || e.versions?.some((v) => v.id === evidenceId)
+  );
   const oar = ev?.originalAccessRequestId
     ? caseRecord?.originalAccessRequests.find((r) => r.id === ev.originalAccessRequestId)
     : undefined;

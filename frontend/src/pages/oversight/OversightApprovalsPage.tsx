@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Button } from '../../components/ui/Button';
 import { useCases, useInvestigator, useApp } from '../../store/AppContext';
+import { api } from '../../services/api';
 import { ACCESS_MODE_LABELS, URGENCY_LABELS } from '../../types';
 import type { OriginalAccessRequest, EvidenceRecord } from '../../types';
 
@@ -35,6 +36,7 @@ type Dec = 'approved' | 'changes' | 'clarification_requested' | 'rejected';
 
 function AccessCard({ item, officerId, officerName, history }: { item: PendingItem; officerId: string; officerName: string; history: number }) {
   const { dispatch, toast } = useApp();
+  const { session } = useInvestigator();
   const [notes, setNotes] = useState('');
   const [checks, setChecks] = useState<boolean[]>(CHECKLIST.map(() => false));
   const [duration, setDuration] = useState(item.req.requestedDurationMinutes);
@@ -48,11 +50,21 @@ function AccessCard({ item, officerId, officerName, history }: { item: PendingIt
 
   async function decide(d: Dec) {
     setLoading(d);
-    await new Promise((r) => setTimeout(r, 400));
-    const decision = d === 'changes' ? 'approved' : d;
-    dispatch({ type: 'OVERSIGHT_REVIEW_DECISION', payload: { caseId: item.caseId, requestId: req.id, decision, officerId, officerName, notes: notes.trim() || undefined, approvedDurationMinutes: d === 'changes' ? duration : undefined } });
-    toast(d === 'approved' || d === 'changes' ? 'success' : 'info', d === 'approved' ? `Limited access granted for ${req.requestedDurationMinutes} minutes.` : d === 'changes' ? `Access approved with changes: ${duration} minutes.` : d === 'rejected' ? 'Access request rejected.' : 'Clarification requested.');
-    setLoading(null);
+    try {
+      const decision = d === 'changes' ? 'approved' : d;
+      if (!session?.token) throw new Error('Oversight session is not connected to the local API. Sign in again.');
+      await api.staffAction(session.token, `/cases/${item.caseId}/access-requests/${req.id}/oversight-decisions`, {
+        decision,
+        notes: notes.trim() || null,
+        approved_duration_minutes: d === 'changes' ? duration : null,
+      });
+      dispatch({ type: 'OVERSIGHT_REVIEW_DECISION', payload: { caseId: item.caseId, requestId: req.id, decision, officerId, officerName, notes: notes.trim() || undefined, approvedDurationMinutes: d === 'changes' ? duration : undefined } });
+      toast(d === 'approved' || d === 'changes' ? 'success' : 'info', d === 'approved' ? `Limited access granted for ${req.requestedDurationMinutes} minutes.` : d === 'changes' ? `Access approved with changes: ${duration} minutes.` : d === 'rejected' ? 'Access request rejected.' : 'Clarification requested.');
+    } catch (err: any) {
+      toast('error', `Approval was not saved: ${err?.message || 'Please try again.'}`);
+    } finally {
+      setLoading(null);
+    }
   }
 
   return (

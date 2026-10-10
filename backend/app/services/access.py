@@ -59,8 +59,7 @@ def create_request(
     acl.require_role(membership, "investigator")
     if body.mode == "forensic_analysis":
         raise ValidationFailure(FORENSIC_UNAVAILABLE)
-    assignment = acl.active_assignment(db, complaint.id)
-    if not assignment or assignment.investigator_principal_id != membership.human_principal_id:
+    if not acl.investigator_has_case_scope(db, membership, complaint.id):
         raise ForbiddenError("only the assigned investigator may request an original")
     if complaint.closed or complaint.lifecycle == "closed":
         raise ConflictError("closed cases do not accept new original requests")
@@ -365,8 +364,7 @@ def activate_grant(
     if grant.requester_principal_id != membership.human_principal_id:
         raise ForbiddenError("grant is bound to a different principal")
     complaint = db.get(models.Complaint, grant.complaint_id)
-    assignment = acl.active_assignment(db, grant.complaint_id)
-    if not assignment or assignment.investigator_principal_id != membership.human_principal_id:
+    if not acl.investigator_has_case_scope(db, membership, grant.complaint_id):
         raise ForbiddenError("no current assignment for this case")
     if complaint.closed:
         raise ForbiddenError("case is closed")
@@ -425,9 +423,8 @@ def viewer_content(db: Session, membership: models.StaffMembership, handle: str)
         grant.state = "expired"
         db.flush()
         raise ForbiddenError("grant expired")
-    assignment = acl.active_assignment(db, grant.complaint_id)
     complaint = db.get(models.Complaint, grant.complaint_id)
-    if not assignment or assignment.investigator_principal_id != membership.human_principal_id:
+    if not acl.investigator_has_case_scope(db, membership, grant.complaint_id):
         raise ForbiddenError("assignment changed")
     if complaint and complaint.closed:
         raise ForbiddenError("case closed")

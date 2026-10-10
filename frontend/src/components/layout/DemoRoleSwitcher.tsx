@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useApp, useInvestigator } from '../../store/AppContext';
 import { ConfirmationDialog } from '../ui/ConfirmationDialog';
 import type { DemoRole } from '../../types';
-import { DEMO_INVESTIGATORS } from '../../services/fixtures';
+import { DEMO_CREDENTIALS, DEMO_INVESTIGATORS } from '../../services/fixtures';
+import { api } from '../../services/api';
 
 const ROLE_LABELS: Record<DemoRole, string> = {
   reporter: 'Reporter view',
@@ -51,7 +52,7 @@ export function DemoRoleSwitcher({ compact }: DemoRoleSwitcherProps) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  function switchRole(role: DemoRole) {
+  async function switchRole(role: DemoRole) {
     setOpen(false);
     if (role === currentRole) return;
 
@@ -65,9 +66,19 @@ export function DemoRoleSwitcher({ compact }: DemoRoleSwitcherProps) {
       const invId = ROLE_TO_INV_ID[role];
       const inv = invId ? DEMO_INVESTIGATORS.find((i) => i.id === invId) : null;
       if (inv) {
-        setSession({ investigator: inv, signedInAt: new Date().toISOString() });
-        navigate(ROLE_DEST[role]);
-        toast('info', `Switched to ${inv.name} — ${inv.role}.`);
+        // The demo switcher must create the same server session as the sign-in
+        // page. A fixture-only session has no bearer token, which leaves
+        // evidence viewers waiting forever and makes every staff action fail.
+        const credentials = DEMO_CREDENTIALS.find((c) => c.investigatorId === inv.id);
+        if (!credentials) return;
+        try {
+          const res = await api.staffLogin(credentials.username, credentials.password);
+          setSession({ investigator: res.investigator as typeof inv, signedInAt: new Date().toISOString(), token: res.token });
+          navigate(ROLE_DEST[role]);
+          toast('info', `Switched to ${inv.name} — ${inv.role}.`);
+        } catch {
+          toast('error', 'Could not start the local staff session. Please sign in again.');
+        }
       }
     }
   }

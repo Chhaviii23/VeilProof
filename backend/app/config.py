@@ -31,6 +31,11 @@ class Settings(BaseSettings):
 
     storage_backend: str = "local"
     storage_local_dir: str = str(BACKEND_DIR / "storage")
+    # Supabase Storage is accessed only by the backend service role. Objects
+    # remain client-encrypted ciphertext; never put this key in the database.
+    supabase_url: str | None = None
+    supabase_service_key: str | None = None
+    supabase_storage_bucket: str = "veilproof-private"
 
     allowed_origins: str = "http://localhost:8443,http://127.0.0.1:8443,http://localhost:5173"
 
@@ -102,6 +107,13 @@ class Settings(BaseSettings):
                 problems.append("production-like profile refuses demo access-duration override")
         if self.storage_backend not in {"local", "supabase"}:
             problems.append(f"unknown STORAGE_BACKEND={self.storage_backend!r}")
+        if self.storage_backend == "supabase":
+            if not self.supabase_url:
+                problems.append("STORAGE_BACKEND=supabase requires SUPABASE_URL")
+            if not self.supabase_service_key:
+                problems.append("STORAGE_BACKEND=supabase requires SUPABASE_SERVICE_KEY")
+            if self.supabase_service_key and self.supabase_service_key.startswith("sb_publishable_"):
+                problems.append("SUPABASE_SERVICE_KEY must be a server-only secret, not a publishable key")
         if self.proof_backend not in {"local_registry", "evm"}:
             problems.append(f"unknown PROOF_BACKEND={self.proof_backend!r}")
         if self.proof_backend == "evm" and not self.rpc_url:
