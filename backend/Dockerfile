@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir -r requirements.txt gunicorn uvicorn[standard]
 COPY . .
 
 # Set up storage directories if using local storage
-RUN mkdir -p /app/storage/keys /app/storage/objects && chown -R 1000:1000 /app/storage
+RUN mkdir -p /app/keys /app/storage/keys /app/storage/objects && chown -R 1000:1000 /app/keys /app/storage
 
 # Run as non-root user
 USER 1000:1000
